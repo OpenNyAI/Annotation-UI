@@ -1,6 +1,7 @@
 import { Box, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { getData } from "../../api/apiRequest";
+import { theme } from "../../theming/theme";
 
 interface PageData {
   id: number;
@@ -23,12 +24,8 @@ export const Home = () => {
         height: "55vh",
         width: "100%",
         maxWidth: "3xl",
-        borderRadius: 8,
-        border: (theme) =>
-          `1px solid ${theme.palette.mode === "light" ? "#e0e0e0" : "#424242"}`,
-        "&:last-child": {
-          marginTop: 2,
-        },
+        backgroundColor: theme.palette.primary.main,
+        color: theme.palette.text.primary,
       }}
     >
       <Box
@@ -41,16 +38,8 @@ export const Home = () => {
         <Box sx={{ spaceY: 6 }}>
           {apiData.map((item) => (
             <Box key={item.id}>
-              <Typography
-                variant="h2"
-                sx={{ fontSize: "2xl", fontWeight: "bold" }}
-              >
-                {item.title}
-              </Typography>
-              <Typography
-                variant="body1"
-                sx={{ mt: 2, color: "text.secondary" }}
-              >
+              <Typography variant="h2">{item.title}</Typography>
+              <Typography variant="body1" sx={{ mt: 2 }}>
                 {item.content}
               </Typography>
             </Box>

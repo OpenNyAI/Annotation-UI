@@ -4,7 +4,7 @@ import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 import { type FC, type ReactElement } from "react";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
-import theme from "../theming/theme";
+import { theme } from "../theming/theme";
 
 const queryClient = new QueryClient({
   defaultOptions: {
