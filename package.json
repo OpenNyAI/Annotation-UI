@@ -3,6 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@emotion/react": "^11.11.4",
+    "@emotion/styled": "^11.11.5",
+    "@mui/icons-material": "^5.15.16",
+    "@mui/material": "^5.15.16",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
@@ -10,9 +14,26 @@
     "@types/node": "^16.18.96",
     "@types/react": "^18.3.1",
     "@types/react-dom": "^18.3.0",
+    "axios": "^1.6.8",
+    "axios-mock-adapter": "^1.22.0",
+    "crypto-js": "^4.2.0",
+    "css-mediaquery": "^0.1.2",
+    "jsencrypt": "^3.3.2",
+    "jwt-decode": "^4.0.0",
+    "lodash": "^4.17.21",
+    "moment": "^2.30.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-error-boundary": "^4.0.13",
+    "react-feather": "^2.0.10",
+    "react-hook-form": "^7.51.4",
+    "react-number-format": "^5.3.4",
+    "react-pdf": "^8.0.0",
+    "react-query": "^3.39.3",
+    "react-router-dom": "^6.23.0",
     "react-scripts": "5.0.1",
+    "react-table": "^7.8.0",
+    "to-words": "^4.0.1",
     "typescript": "^4.9.5",
     "web-vitals": "^2.1.4"
   },
@@ -39,5 +60,51 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "@types/css-mediaquery": "^0.1.4",
+    "@types/react-table": "^7.7.20",
+    "cross-env": "^7.0.3",
+    "eslint": "^8.57.0",
+    "husky": "^9.0.11",
+    "msw": "^2.2.14",
+    "prettier": "^3.2.5"
+  },
+  "msw": {
+    "workerDirectory": "public"
+  },
+  "jest": {
+    "coveragePathIgnorePatterns": [
+      "src/reportWebVitals",
+      "src/mocks",
+      "src/theming",
+      "src/types",
+      "src/App",
+      "src/views",
+      "src/index",
+      "src/components",
+      "src/providers",
+      "src/constant",
+      "src/hooks",
+      "src/utility"
+    ],
+    "transformIgnorePatterns": [
+      "node_modules/(?!axios)/"
+    ],
+    "collectCoverageFrom": [
+      "src/**/*.tsx",
+      "!**/node_modules/**",
+      "!**/src/test-utils/**",
+      "!**/src/index.tsx"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "statements": 10,
+        "branches": 10,
+        "functions": 10,
+        "lines": 10
+      }
+    }
   }
 }
