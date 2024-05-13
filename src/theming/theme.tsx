@@ -13,14 +13,11 @@ const themeBase = createTheme({
     text: {
       primary: "#FAFAFA",
     },
+    borderGrey: "#C4C4C4",
   },
-  color: {
-    inputLabel: "#FAFAFA",
-    grey: "#2C2F33",
-    black: "#000000",
-  },
+
   typography: {
-    fontFamily: "Roboto, sans-serif",
+    fontFamily: "Gilroy",
     fontSize: 16,
     h2: {
       fontSize: "2.5rem",
@@ -29,6 +26,15 @@ const themeBase = createTheme({
     body1: {
       fontSize: "1rem",
       lineHeight: 1.5,
+    },
+  },
+  breakpoints: {
+    values: {
+      xs: 0,
+      sm: 600,
+      md: 900,
+      lg: 1200,
+      xl: 1330,
     },
   },
 });
@@ -54,9 +60,9 @@ export const theme = responsiveFontSizes(
             },
           },
           root: {
-            color: themeBase.color.inputLabel,
+            color: themeBase.palette.text.primary,
             "&.Mui-focused": {
-              color: themeBase.color.inputLabel,
+              color: themeBase.palette.text.primary,
             },
             fontSize: 20,
             fontWeight: 400,
@@ -70,7 +76,7 @@ export const theme = responsiveFontSizes(
             fontWeight: 400,
           },
           root: {
-            color: themeBase.color.inputLabel,
+            color: themeBase.palette.text.primary,
           },
         },
       },
@@ -91,10 +97,10 @@ export const theme = responsiveFontSizes(
             fontWeight: "700",
           },
           contained: {
-            backgroundColor: themeBase.color.grey,
-            color: themeBase.color.inputLabel,
-            ":hover": {
-              backgroundColor: themeBase.color.grey,
+            backgroundColor: themeBase.palette.primary.main,
+            color: themeBase.palette.text.primary,
+            "&:hover": {
+              backgroundColor: themeBase.palette.primary.main,
             },
             borderRadius: "4px",
             padding: "8px 16px",
@@ -103,7 +109,7 @@ export const theme = responsiveFontSizes(
             height: "auto",
             paddingTop: 0,
             paddingBottom: 0,
-            color: themeBase.color.inputLabel,
+            color: themeBase.palette.text.primary,
           },
         },
       },

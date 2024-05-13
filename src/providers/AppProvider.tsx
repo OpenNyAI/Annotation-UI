@@ -22,8 +22,8 @@ export const AppProvider: FC<{ children: ReactElement }> = ({ children }) => (
   <QueryClientProvider client={queryClient}>
     <ThemeProvider theme={theme}>
       <LocalizationProvider dateAdapter={AdapterMoment} />
+      {children}
     </ThemeProvider>
-    {children}
     <ReactQueryDevtools initialIsOpen={false} />
   </QueryClientProvider>
 );

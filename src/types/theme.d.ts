@@ -2,18 +2,14 @@ import type React from "react";
 
 import "@emotion/react";
 
-interface ThemeColors {
-  inputLabel: React.CSSProperties["color"];
-  grey: React.CSSProperties["color"];
-  black: React.CSSProperties["color"];
-}
-
 interface AdditionalButtonColors {
   teritiary: ButtonColors["color"];
 }
 
+interface AdditionalPalette {
+  borderGrey: PaletteOptions["color"];
+}
 interface MF_Theme {
-  color: ThemeColors;
   palette: Palette;
 }
 
