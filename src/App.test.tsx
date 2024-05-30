@@ -1,9 +1,12 @@
-import React from 'react';
-import { render, screen } from '@testing-library/react';
-import App from './App';
+import App from "./App";
+import { render, screen } from "./utility/test-utils";
 
-test('renders learn react link', () => {
-  render(<App />);
-  const linkElement = screen.getByText(/learn react/i);
-  expect(linkElement).toBeInTheDocument();
+vitest.mock("./pages/home", () => ({
+  Home: () => <div>Home page</div>,
+}));
+
+test("renders learn react link", () => {
+  render(<App />, { initialEntries: ["/home"] });
+
+  expect(screen.getByText("Home page")).toBeInTheDocument();
 });
