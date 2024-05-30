@@ -1,19 +1,16 @@
-import { CssBaseline } from "@mui/material";
-import "./App.css";
+import { CssBaseline, ThemeProvider } from "@mui/material";
+import { Route, Routes } from "react-router-dom";
 import { Home } from "./pages/home";
-import { AppProvider } from "./providers/AppProvider";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { theme } from "./theming/theme";
 
 export const App = () => (
-  <AppProvider>
-    <>
+  <>
+    <ThemeProvider theme={theme}>
       <CssBaseline />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/home" element={<Home />} />
-        </Routes>
-      </BrowserRouter>
-    </>
-  </AppProvider>
+      <Routes>
+        <Route path="/home" element={<Home />} />
+      </Routes>
+    </ThemeProvider>
+  </>
 );
 export default App;

@@ -1,53 +1,51 @@
-/* eslint-disable import/no-extraneous-dependencies */
-import { type ReactElement } from 'react';
-import { render, renderHook, type RenderOptions } from '@testing-library/react';
-import mediaQuery from 'css-mediaquery';
-import { queryClient, TestProvider, type TestProviderProps } from '../providers/TestProviders';
+import { ThemeProvider } from "@mui/material/styles";
+import {
+  RenderHookOptions,
+  RenderOptions,
+  render,
+  renderHook,
+} from "@testing-library/react";
+import { ReactNode } from "react";
+import { MemoryRouter, MemoryRouterProps } from "react-router-dom";
+import { theme } from "../theming/theme";
 
-interface TestWrapperProps extends Omit<RenderOptions, 'wrapper'> {
-    wrapperProps?: TestProviderProps['defaultProviderValues'];
+interface ProvidersWrapperProps extends MemoryRouterProps {}
+
+interface CustomRenderOptions extends RenderOptions {
+  initialEntries?: string[];
 }
 
-afterEach(() => {
-    queryClient.clear();
-});
-
-const createMatchMedia =
-    (width: number) =>
-    (query: string): MediaQueryList => ({
-        matches: mediaQuery.match(query, { width }),
-        media: query,
-        onchange: null,
-        addListener: () => jest.fn(),
-        removeListener: () => jest.fn(),
-        addEventListener: jest.fn(),
-        removeEventListener: jest.fn(),
-        dispatchEvent: jest.fn(),
-    });
-
-const resizeScreenSize = (width: number) => {
-    window.matchMedia = createMatchMedia(width);
+const ProvidersWrapper = ({
+  children,
+  initialEntries,
+}: ProvidersWrapperProps) => {
+  return (
+    <ThemeProvider theme={theme}>
+      <MemoryRouter initialEntries={initialEntries}>{children}</MemoryRouter>
+    </ThemeProvider>
+  );
 };
 
-const customRender = (ui: ReactElement, options?: TestWrapperProps) =>
-    render(ui, {
-        wrapper: (props) => (
-            <TestProvider {...props} defaultProviderValues={options?.wrapperProps} />
-        ),
-        ...options,
-    });
+const customRender = (ui: ReactNode, options?: CustomRenderOptions) =>
+  render(ui, {
+    wrapper: ({ children, ...rest }) => (
+      <ProvidersWrapper {...rest} initialEntries={options?.initialEntries}>
+        {children}
+      </ProvidersWrapper>
+    ),
+    ...options,
+  });
 
-const renderHookWithProvider = (
-    ui: (initialProps: unknown) => unknown,
-    options?: TestWrapperProps,
+const renderHookWithProvider = <T,>(
+  ui: (initialProps: unknown) => unknown,
+  options?: RenderHookOptions<T>
 ) =>
-    renderHook(ui, {
-        wrapper: ({ children, ...props }) => (
-            <TestProvider {...props} defaultProviderValues={options?.wrapperProps}>
-                {children}
-            </TestProvider>
-        ),
-    });
+  renderHook(ui, {
+    wrapper: ({ children, ...props }) => (
+      <ProvidersWrapper {...props}>{children}</ProvidersWrapper>
+    ),
+    ...options,
+  });
 
-export * from '@testing-library/react';
-export { customRender as render, resizeScreenSize, renderHookWithProvider };
+export * from "@testing-library/react";
+export { customRender as render, renderHookWithProvider };

@@ -32,6 +32,7 @@ export const Home = () => {
 
   return (
     <Box sx={{ margin: "32px" }}>
+      <Typography>Custom UI</Typography>
       <Box
         sx={{
           display: "flex",
