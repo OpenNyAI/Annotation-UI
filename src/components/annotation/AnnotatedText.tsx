@@ -57,7 +57,11 @@ export const AnnotatedText = ({
       >
         {text}
       </Typography>
-      <IconButton size="small" onClick={handleDelete}>
+      <IconButton
+        data-testid="annotation-delete-button"
+        size="small"
+        onClick={handleDelete}
+      >
         <Delete />
       </IconButton>
     </Box>

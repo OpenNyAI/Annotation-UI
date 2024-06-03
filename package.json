@@ -22,6 +22,7 @@
     "preview": "vite preview",
     "test": "vitest",
     "test:nowatch": "vitest --watch=false",
+    "test:coverage": "vitest --coverage",
     "test:ui": "vitest --ui",
     "lint": "eslint 'src/**/*.{js,jsx,ts,tsx}'",
     "lint:fix": "eslint --fix 'src/**/*.{js,jsx,ts,tsx}'",

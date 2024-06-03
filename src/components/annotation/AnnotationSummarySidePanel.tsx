@@ -63,6 +63,7 @@ export const AnnotationSummarySidePanel = ({
         Selection Summary
       </Typography>
       <Box
+        data-testid="annotation-text-list"
         sx={{
           height: "60%",
           display: "flex",
@@ -99,6 +100,7 @@ export const AnnotationSummarySidePanel = ({
         }}
       >
         <Typography
+          data-testid="annotation-text-answer"
           sx={{
             whiteSpace: "pre-wrap",
             height: "100%",

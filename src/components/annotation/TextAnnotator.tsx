@@ -62,7 +62,7 @@ const TextAnnotator = ({
 
   useEffect(() => {
     if (quillRef.current) {
-      quillRef.current.setText(text);
+      quillRef.current.formatText(0, text.length, { background: "inherit" });
       annotatedTexts.forEach((selectedText) => {
         const { startIndex, text } = selectedText;
         quillRef.current!.formatText(
@@ -75,7 +75,13 @@ const TextAnnotator = ({
     }
   }, [annotatedTexts, text]);
 
-  return <div id={id} style={{ fontSize: "16px", height: "100%" }}></div>;
+  return (
+    <div
+      id={id}
+      data-testid={id}
+      style={{ fontSize: "16px", height: "100%" }}
+    ></div>
+  );
 };
 
 export default TextAnnotator;
