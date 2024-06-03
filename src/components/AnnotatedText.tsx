@@ -2,17 +2,23 @@ import { Delete } from "@mui/icons-material";
 import { Box, IconButton, Typography } from "@mui/material";
 import { MouseEvent } from "react";
 
-type SelectedTextProps = {
+type AnnotatedTextProps = {
   text: string;
   onDelete(): void;
   onClick(): void;
+  onDragStart(): void;
+  onDragEnter(): void;
+  onDragEnd(): void;
 };
 
-export const SelectedText = ({
+export const AnnotatedText = ({
   text,
   onDelete,
   onClick,
-}: SelectedTextProps) => {
+  onDragStart,
+  onDragEnter,
+  onDragEnd,
+}: AnnotatedTextProps) => {
   const handleDelete = (event: MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
     onDelete();
@@ -20,6 +26,7 @@ export const SelectedText = ({
 
   return (
     <Box
+      component={"div"}
       sx={{
         display: "flex",
         flexDirection: "row",
@@ -33,6 +40,11 @@ export const SelectedText = ({
         borderRadius: "8px",
       }}
       onClick={onClick}
+      draggable
+      onDragStart={onDragStart}
+      onDragEnter={onDragEnter}
+      onDragOver={(e) => e.preventDefault()}
+      onDragEnd={onDragEnd}
     >
       <Typography
         sx={{

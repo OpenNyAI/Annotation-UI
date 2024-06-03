@@ -2,26 +2,26 @@ import Quill, { Range } from "quill";
 import "quill/dist/quill.snow.css";
 import { useEffect, useRef } from "react";
 
-export type TextSelection = {
+export type TextAnnotation = {
   id: string;
   text: string;
   startIndex: number;
   endIndex: number;
 };
 
-type TextSelectorProps = {
+type TextAnnotatorProps = {
   id: string;
   text: string;
-  selectedTexts: TextSelection[];
-  onTextSelection(text: TextSelection): void;
+  annotatedTexts: TextAnnotation[];
+  onTextAnnotation(text: TextAnnotation): void;
 };
 
-const TextSelector = ({
+const TextAnnotator = ({
   id,
   text,
-  selectedTexts,
-  onTextSelection,
-}: TextSelectorProps) => {
+  annotatedTexts,
+  onTextAnnotation,
+}: TextAnnotatorProps) => {
   const quillRef = useRef<Quill | null>(null);
 
   useEffect(() => {
@@ -43,7 +43,7 @@ const TextSelector = ({
       if (range && range.length !== 0) {
         const text = quillInstance.getText(range);
         const { index, length } = range;
-        onTextSelection({
+        onTextAnnotation({
           id,
           text,
           startIndex: index,
@@ -58,12 +58,12 @@ const TextSelector = ({
       quillInstance.off(Quill.events.SELECTION_CHANGE, handleTextSelection);
       quillInstance.setContents([]);
     };
-  }, [id]);
+  }, [id, text]);
 
   useEffect(() => {
     if (quillRef.current) {
       quillRef.current.setText(text);
-      selectedTexts.forEach((selectedText) => {
+      annotatedTexts.forEach((selectedText) => {
         const { startIndex, text } = selectedText;
         quillRef.current!.formatText(
           startIndex,
@@ -73,9 +73,9 @@ const TextSelector = ({
         );
       });
     }
-  }, [selectedTexts, text]);
+  }, [annotatedTexts, text]);
 
   return <div id={id} style={{ fontSize: "16px", height: "100%" }}></div>;
 };
 
-export default TextSelector;
+export default TextAnnotator;
