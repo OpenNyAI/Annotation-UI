@@ -7,6 +7,7 @@ export type TextAnnotation = {
   text: string;
   startIndex: number;
   endIndex: number;
+  isFocused?: boolean;
 };
 
 type TextAnnotatorProps = {
@@ -38,9 +39,9 @@ const TextAnnotator = ({
     const handleTextSelection = (
       range: Range | null,
       _oldRange: Range | null,
-      _source: string
+      source: string
     ): void => {
-      if (range && range.length !== 0) {
+      if (range && range.length !== 0 && source !== "api") {
         const text = quillInstance.getText(range);
         const { index, length } = range;
         onTextAnnotation({
@@ -65,6 +66,9 @@ const TextAnnotator = ({
       quillRef.current.formatText(0, text.length, { background: "inherit" });
       annotatedTexts.forEach((selectedText) => {
         const { startIndex, text } = selectedText;
+        if (selectedText.isFocused) {
+          quillRef.current?.setSelection(startIndex, text.length, "api");
+        }
         quillRef.current!.formatText(
           startIndex,
           text.length,
