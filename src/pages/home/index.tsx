@@ -2,9 +2,9 @@ import { Send } from "@mui/icons-material";
 import { Box, Button, Divider, IconButton, Typography } from "@mui/material";
 import { produce } from "immer";
 import { ChangeEvent, useState } from "react";
+import { AnnotationSummarySidePanel } from "../../components/AnnotationSummarySidePanel";
 import { LabelledInput } from "../../components/LabelledInput";
-import { SelectionSummarySidePanel } from "../../components/SelectionSummarySidePanel";
-import TextSelector, { TextSelection } from "../../components/TextSelector";
+import TextAnnotator, { TextAnnotation } from "../../components/TextAnnotator";
 
 const dummyText = `Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of "de Finibus Bonorum et Malorum" (The Extremes of Good and Evil) by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular during the Renaissance. The first line of Lorem Ipsum, "Lorem ipsum dolor sit amet..", comes from a line in section 1.10.32.
 
@@ -36,14 +36,14 @@ const dummyResults = new Array(2).fill(result);
 
 type QuestionAnswer = {
   question: string;
-  answer: TextSelection | string[];
+  answer: TextAnnotation | string[];
 };
 
 const MAX_QUESTIONS = 10;
 
 export const Home = () => {
   const [currentQuestion, setCurrentQuestion] = useState<number>(0);
-  const [selectedTexts, setSelectedTexts] = useState<TextSelection[]>([]);
+  const [annotatedTexts, setAnnotatedTexts] = useState<TextAnnotation[]>([]);
 
   const handleNext = () => {};
   const handlePrev = () => {};
@@ -54,17 +54,16 @@ export const Home = () => {
     }
   };
 
-  const handleTextSelection = (highlightedText: TextSelection) => {
-    setSelectedTexts((prev) => [...prev, highlightedText]);
+  const handleTextAnnotation = (annotatedText: TextAnnotation) => {
+    setAnnotatedTexts((prev) => [...prev, annotatedText]);
   };
 
-  const handleDeleteTextSelection = (index: number) => {
-    const updatedSelectedTexts = produce(selectedTexts, (draft) => {
+  const handleDeleteTextAnnotation = (index: number) => {
+    const updatedAnnotations = produce(annotatedTexts, (draft) => {
       draft.splice(index, 1);
       return draft;
     });
-    console.log(updatedSelectedTexts);
-    setSelectedTexts(updatedSelectedTexts);
+    setAnnotatedTexts(updatedAnnotations);
   };
 
   return (
@@ -95,13 +94,13 @@ export const Home = () => {
             height: "40%",
           }}
         >
-          <TextSelector
+          <TextAnnotator
             id="main-editor"
             text={dummyText}
-            selectedTexts={selectedTexts.filter(
+            annotatedTexts={annotatedTexts.filter(
               (item) => item.id === "main-editor"
             )}
-            onTextSelection={handleTextSelection}
+            onTextAnnotation={handleTextAnnotation}
           />
         </Box>
         <Box
@@ -129,7 +128,7 @@ export const Home = () => {
           <Typography variant="subtitle1">Results</Typography>
           {dummyResults.map((result, index) => {
             const id = "result_" + index;
-            const editorSelectedText = selectedTexts.filter(
+            const editorAnnotatedTexts = annotatedTexts.filter(
               (item) => item.id == id
             );
             return (
@@ -146,11 +145,11 @@ export const Home = () => {
                   maxHeight: "340px",
                 }}
               >
-                <TextSelector
+                <TextAnnotator
                   id={id}
                   text={result}
-                  selectedTexts={editorSelectedText}
-                  onTextSelection={handleTextSelection}
+                  annotatedTexts={editorAnnotatedTexts}
+                  onTextAnnotation={handleTextAnnotation}
                 />
               </Box>
             );
@@ -181,13 +180,14 @@ export const Home = () => {
           </Box>
         </Box>
       </Box>
-      {selectedTexts.length > 0 && (
+      {annotatedTexts.length > 0 && (
         <>
           <Divider orientation="vertical" />
-          <SelectionSummarySidePanel
-            textSelections={selectedTexts}
-            onDelete={handleDeleteTextSelection}
+          <AnnotationSummarySidePanel
+            textAnnotations={annotatedTexts}
+            onDelete={handleDeleteTextAnnotation}
             onSelect={() => {}}
+            onUpdateSelections={setAnnotatedTexts}
           />
         </>
       )}
