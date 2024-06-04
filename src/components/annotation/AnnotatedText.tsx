@@ -1,6 +1,6 @@
 import { Delete } from "@mui/icons-material";
 import { Box, IconButton, Typography } from "@mui/material";
-import { MouseEvent } from "react";
+import React, { MouseEvent, useState } from "react";
 
 type AnnotatedTextProps = {
   text: string;
@@ -19,9 +19,21 @@ export const AnnotatedText = ({
   onDragEnter,
   onDragEnd,
 }: AnnotatedTextProps) => {
+  const [isHovered, setIsHovered] = useState(false);
+
   const handleDelete = (event: MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
     onDelete();
+  };
+
+  const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    setIsHovered(true);
+  };
+
+  const handleDragLeave = (event: React.DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    setIsHovered(false);
   };
 
   return (
@@ -30,21 +42,30 @@ export const AnnotatedText = ({
       sx={{
         display: "flex",
         flexDirection: "row",
-        padding: "8px",
+        padding: "16px",
         alignItems: "center",
         "& :hover": {
           cursor: "pointer",
         },
         justifyContent: "space-between",
-        border: (theme) => `0.5px solid ${theme.palette.borderGrey}`,
+        border: "1px solid #e0e0e0",
         borderRadius: "8px",
+        boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+        backgroundColor: "#3B3B3B",
+        borderLeft: isHovered ? "4px solid #89CFF0" : "1px solid #e0e0e0",
+        borderBottom: isHovered ? "4px solid #89CFF0" : "1px solid #e0e0e0",
       }}
       onClick={onClick}
       draggable
+      onMouseLeave={() => setIsHovered(false)}
       onDragStart={onDragStart}
       onDragEnter={onDragEnter}
-      onDragOver={(e) => e.preventDefault()}
-      onDragEnd={onDragEnd}
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
+      onDragEnd={() => {
+        setIsHovered(false);
+        onDragEnd();
+      }}
     >
       <Typography
         sx={{
