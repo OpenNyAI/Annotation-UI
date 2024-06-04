@@ -1,6 +1,7 @@
 import { Box, Divider, Typography } from "@mui/material";
 import { produce } from "immer";
 import { useRef } from "react";
+import { Styles } from "../../types/styles";
 import { AnnotatedText } from "./AnnotatedText";
 import { TextAnnotation } from "./TextAnnotator";
 
@@ -9,6 +10,41 @@ type AnnotationSummarySidePanelProps = {
   onDelete(index: number): void;
   onSelect(index: number): void;
   onUpdateSelections(updatedSelections: TextAnnotation[]): void;
+};
+
+const styles: Styles = {
+  container: {
+    height: "100%",
+    width: "30%",
+    display: "flex",
+    overflowY: "hidden",
+    overflowX: "hidden",
+    flexDirection: "column",
+    padding: 3,
+    gap: 1,
+  },
+  annotationsList: {
+    height: "60%",
+    display: "flex",
+    flexDirection: "column",
+    gap: 1,
+    overflow: "scroll",
+  },
+  answerBox: {
+    height: "40%",
+    display: "flex",
+    flexDirection: "column",
+    gap: 1,
+    overflow: "scroll",
+  },
+  answerText: {
+    whiteSpace: "pre-wrap",
+    height: "100%",
+    border: "0.5px solid grey",
+    borderRadius: "8px",
+    padding: 1,
+    fontSize: "16px",
+  },
 };
 
 export const AnnotationSummarySidePanel = ({
@@ -47,31 +83,11 @@ export const AnnotationSummarySidePanel = ({
   };
 
   return (
-    <Box
-      sx={{
-        height: "100%",
-        width: "30%",
-        display: "flex",
-        overflowY: "hidden",
-        overflowX: "hidden",
-        flexDirection: "column",
-        padding: 3,
-        gap: 1,
-      }}
-    >
+    <Box sx={styles.container}>
       <Typography variant="h6" sx={{ textDecoration: "underline" }}>
         Selection Summary
       </Typography>
-      <Box
-        data-testid="annotation-text-list"
-        sx={{
-          height: "60%",
-          display: "flex",
-          flexDirection: "column",
-          gap: 1,
-          overflow: "scroll",
-        }}
-      >
+      <Box data-testid="annotation-text-list" sx={styles.annotationsList}>
         {textAnnotations.map((annotatedText, index) => {
           return (
             <AnnotatedText
@@ -90,26 +106,8 @@ export const AnnotationSummarySidePanel = ({
       <Typography variant="h6" sx={{ textDecoration: "underline" }}>
         Answer
       </Typography>
-      <Box
-        sx={{
-          height: "40%",
-          display: "flex",
-          flexDirection: "column",
-          gap: 1,
-          overflow: "scroll",
-        }}
-      >
-        <Typography
-          data-testid="annotation-text-answer"
-          sx={{
-            whiteSpace: "pre-wrap",
-            height: "100%",
-            border: "0.5px solid grey",
-            borderRadius: "8px",
-            padding: 1,
-            fontSize: "16px",
-          }}
-        >
+      <Box sx={styles.answerBox}>
+        <Typography data-testid="annotation-text-answer" sx={styles.answerText}>
           {textAnnotations.map((item) => item.text).join("\n\n")}
         </Typography>
       </Box>
