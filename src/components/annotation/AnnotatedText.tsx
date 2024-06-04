@@ -1,6 +1,7 @@
 import { Delete } from "@mui/icons-material";
 import { Box, IconButton, Typography } from "@mui/material";
 import React, { MouseEvent, useState } from "react";
+import { Styles } from "../../types/styles";
 
 type AnnotatedTextProps = {
   text: string;
@@ -9,6 +10,30 @@ type AnnotatedTextProps = {
   onDragStart(): void;
   onDragEnter(): void;
   onDragEnd(): void;
+};
+
+const styles: Styles = {
+  container: {
+    display: "flex",
+    flexDirection: "row",
+    padding: "16px",
+    alignItems: "center",
+    "& :hover": {
+      cursor: "pointer",
+    },
+    justifyContent: "space-between",
+    border: "1px solid #e0e0e0",
+    borderRadius: "8px",
+    boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+    backgroundColor: "#3B3B3B",
+  },
+  annotatedText: {
+    display: "-webkit-box",
+    overflow: "hidden",
+    WebkitBoxOrient: "vertical",
+    WebkitLineClamp: 3,
+    fontSize: "16px",
+  },
 };
 
 export const AnnotatedText = ({
@@ -39,22 +64,11 @@ export const AnnotatedText = ({
   return (
     <Box
       component={"div"}
-      sx={{
-        display: "flex",
-        flexDirection: "row",
-        padding: "16px",
-        alignItems: "center",
-        "& :hover": {
-          cursor: "pointer",
-        },
-        justifyContent: "space-between",
-        border: "1px solid #e0e0e0",
-        borderRadius: "8px",
-        boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-        backgroundColor: "#3B3B3B",
+      style={{
         borderLeft: isHovered ? "4px solid #89CFF0" : "1px solid #e0e0e0",
         borderBottom: isHovered ? "4px solid #89CFF0" : "1px solid #e0e0e0",
       }}
+      sx={styles.container}
       onClick={onClick}
       draggable
       onMouseLeave={() => setIsHovered(false)}
@@ -67,17 +81,7 @@ export const AnnotatedText = ({
         onDragEnd();
       }}
     >
-      <Typography
-        sx={{
-          display: "-webkit-box",
-          overflow: "hidden",
-          WebkitBoxOrient: "vertical",
-          WebkitLineClamp: 3,
-          fontSize: "16px",
-        }}
-      >
-        {text}
-      </Typography>
+      <Typography sx={styles.annotatedText}>{text}</Typography>
       <IconButton
         data-testid="annotation-delete-button"
         size="small"
