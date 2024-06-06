@@ -26,6 +26,7 @@ export default defineConfig({
     environmentMatchGlobs: [["**/*.test.tsx", "jsdom"]],
     coverage: {
       provider: "istanbul",
+      exclude: ["src/mocks/", "src/utility", "src/theming"],
     },
   },
 });

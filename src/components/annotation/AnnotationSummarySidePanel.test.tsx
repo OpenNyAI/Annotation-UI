@@ -137,6 +137,7 @@ describe("AnnotationSummarySidePanel", () => {
 
     await fireEvent.dragStart(dragElement);
     await fireEvent.dragEnter(dropElement);
+    await fireEvent.dragOver(dropElement);
     await fireEvent.drop(dropElement);
     await fireEvent.dragLeave(dragElement);
     await fireEvent.dragEnd(dragElement);
@@ -161,6 +162,7 @@ describe("AnnotationSummarySidePanel", () => {
 
     await fireEvent.dragStart(dragElement);
     await fireEvent.dragEnter(dragElement);
+    await fireEvent.dragOver(dragElement);
     await fireEvent.drop(dragElement);
     await fireEvent.dragLeave(dragElement);
     await fireEvent.dragEnd(dragElement);
