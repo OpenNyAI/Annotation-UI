@@ -7,6 +7,7 @@ import {
 } from "@testing-library/react";
 import { ReactNode } from "react";
 import { MemoryRouter, MemoryRouterProps } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
 import { theme } from "../theming/theme";
 
 interface ProvidersWrapperProps extends MemoryRouterProps {}
@@ -21,6 +22,7 @@ const ProvidersWrapper = ({
 }: ProvidersWrapperProps) => {
   return (
     <ThemeProvider theme={theme}>
+      <ToastContainer />
       <MemoryRouter initialEntries={initialEntries}>{children}</MemoryRouter>
     </ThemeProvider>
   );
