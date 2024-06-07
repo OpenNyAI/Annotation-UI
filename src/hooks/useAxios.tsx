@@ -1,8 +1,9 @@
 import axios, { AxiosError } from "axios";
-import { useReducer } from "react";
+import { useEffect, useReducer } from "react";
 import { axiosInstance } from "../api/axiosInstance";
 import { HttpError } from "../errors/httpError";
 import { asyncStateReducer } from "../reducers/asyncState";
+import { useAuth } from "./useAuth";
 
 function createErrorFromAxiosError(
   err: AxiosError<any, any>
@@ -20,6 +21,43 @@ const useAxios = <T,>() => {
   const [asyncState, dispatch] = useReducer(asyncStateReducer<T>, {
     status: "idle",
   });
+  const { auth, setAuth } = useAuth();
+
+  useEffect(() => {
+    const requestIntercept = axiosInstance.interceptors.request.use(
+      (config) => {
+        if (!config.headers["Authorization"] && auth.accessToken) {
+          config.headers["Authorization"] = `Bearer ${auth.accessToken}`;
+        }
+        return config;
+      }
+    );
+
+    const responseIntercept = axiosInstance.interceptors.response.use(
+      (response) => response,
+      async (error) => {
+        const prevRequest = error?.config;
+        if (error?.response?.status === 403 && !prevRequest?.sent) {
+          prevRequest.sent = true;
+          const response = await axios.get("/refresh", {
+            withCredentials: true,
+          });
+
+          setAuth({ accessToken: response.data.accessToken });
+
+          prevRequest.headers["Authorization"] =
+            `Bearer ${response.data.accessToken}`;
+          return axiosInstance(prevRequest);
+        }
+        return Promise.reject(error);
+      }
+    );
+
+    return () => {
+      axiosInstance.interceptors.request.eject(requestIntercept);
+      axiosInstance.interceptors.response.eject(responseIntercept);
+    };
+  }, [auth?.accessToken, setAuth]);
 
   const makeRequest = async <K,>(
     url: string,
@@ -54,5 +92,7 @@ const useAxios = <T,>() => {
 
   return { makeRequest, ...asyncState };
 };
+
+export type UseAxiosResult = ReturnType<typeof useAxios>;
 
 export default useAxios;
