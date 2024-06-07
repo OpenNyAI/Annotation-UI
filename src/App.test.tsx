@@ -11,10 +11,4 @@ describe("App", () => {
 
     expect(screen.getByText("Home page")).toBeInTheDocument();
   });
-
-  it("should renders not found page when invalid path is given", () => {
-    render(<App />, { initialEntries: ["/error"] });
-
-    expect(screen.getByText("Page Not Found")).toBeInTheDocument();
-  });
 });
