@@ -69,15 +69,12 @@ export const ForgotPassword = () => {
 
   const handleForgotPassword = async () => {
     const { email } = getValues();
-    const formData = new FormData();
 
     try {
-      const response = await makeRequest(
-        "/auth/forgot-password",
-        "POST",
-        formData
-      );
-      navigate("/");
+      await makeRequest("/auth/reset-password", "POST", {
+        email,
+      });
+      toast.success("Email sent Successfully");
     } catch (err: any) {
       toast.error(err.message);
     }
