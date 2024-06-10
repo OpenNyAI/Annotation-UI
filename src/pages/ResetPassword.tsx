@@ -4,7 +4,7 @@ import { LoadingButton } from "@mui/lab";
 import { Box, IconButton, InputAdornment, Typography } from "@mui/material";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import zod from "zod";
 import OpennyAILogo from "../assets/OpennyaiLogo.svg";
@@ -63,6 +63,7 @@ export const ResetPassword = () => {
 
   const { makeRequest, status } = useAxios();
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
 
   const {
     control,
@@ -85,10 +86,11 @@ export const ResetPassword = () => {
     try {
       await makeRequest("/auth/update-password", "POST", {
         reset_id,
-        password,
+        new_password: password,
         verification_code,
       });
       toast.success("Password updated successfully");
+      navigate("/signin");
     } catch (err: any) {
       toast.error(err.message);
     }

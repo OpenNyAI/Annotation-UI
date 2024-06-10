@@ -1,5 +1,6 @@
 import userEvent from "@testing-library/user-event";
 import { HttpResponse, http } from "msw";
+import { Route, Routes } from "react-router-dom";
 import { server } from "../mocks/server";
 import { render, screen } from "../utility/test-utils";
 import { ResetPassword } from "./ResetPassword";
@@ -21,7 +22,13 @@ describe("ResetPassword", () => {
   });
 
   it("should make api call to update the password", async () => {
-    render(<ResetPassword />);
+    render(
+      <Routes>
+        <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/signin" element={<div>Sign In Page</div>} />
+      </Routes>,
+      { initialEntries: ["/reset-password"] }
+    );
 
     const resetIdField = screen.getByPlaceholderText("Enter Reset ID");
     const verificationField = screen.getByPlaceholderText(
@@ -45,6 +52,7 @@ describe("ResetPassword", () => {
     expect(
       screen.getByText("Password updated successfully")
     ).toBeInTheDocument();
+    expect(screen.getByText("Sign In Page")).toBeInTheDocument();
   });
 
   it("should make api call to update the password and show the error", async () => {
