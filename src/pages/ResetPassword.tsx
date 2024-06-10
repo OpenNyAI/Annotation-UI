@@ -4,7 +4,7 @@ import { LoadingButton } from "@mui/lab";
 import { Box, IconButton, InputAdornment, Typography } from "@mui/material";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import zod from "zod";
 import OpennyAILogo from "../assets/OpennyaiLogo.svg";
@@ -79,19 +79,16 @@ export const ResetPassword = () => {
     mode: "onChange",
   });
 
-  const navigate = useNavigate();
-
   const handleResetPassword = async () => {
     const { password, reset_id, verification_code } = getValues();
-    const formData = new FormData();
 
     try {
-      const response = await makeRequest(
-        "/auth/forgot-password",
-        "POST",
-        formData
-      );
-      navigate("/");
+      await makeRequest("/auth/update-password", "POST", {
+        reset_id,
+        password,
+        verification_code,
+      });
+      toast.success("Password updated successfully");
     } catch (err: any) {
       toast.error(err.message);
     }
@@ -150,7 +147,7 @@ export const ResetPassword = () => {
                 </Typography>
               }
               id="verification_code"
-              placeholder="Enter Verification Code"
+              placeholder="Enter Verification code"
               type="text"
               variant="outlined"
               size="small"
@@ -172,7 +169,7 @@ export const ResetPassword = () => {
             <LabelledInput
               label={<Typography sx={styles.inputLabel}>Password</Typography>}
               id="password"
-              placeholder="Enter your password"
+              placeholder="Enter new password"
               type={showPassword ? "text" : "password"}
               variant="outlined"
               size="small"
@@ -210,7 +207,7 @@ export const ResetPassword = () => {
                 <Typography sx={styles.inputLabel}>Confirm Password</Typography>
               }
               id="confirm_password"
-              placeholder="Confirm your password"
+              placeholder="Confirm new password"
               type={showConfirmPassword ? "text" : "password"}
               variant="outlined"
               size="small"
