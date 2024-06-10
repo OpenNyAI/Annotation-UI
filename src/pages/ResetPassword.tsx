@@ -4,13 +4,14 @@ import { LoadingButton } from "@mui/lab";
 import { Box, IconButton, InputAdornment, Typography } from "@mui/material";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import zod from "zod";
 import OpennyAILogo from "../assets/OpennyaiLogo.svg";
 import { LabelledInput } from "../components/LabelledInput";
 import useAxios from "../hooks/useAxios";
 import { Styles } from "../types/styles";
+import { PasswordSchema } from "./SignUp";
 
 const styles: Styles = {
   container: {
@@ -33,40 +34,14 @@ const styles: Styles = {
     },
     gap: "28px",
   },
-  link: (theme) => ({
-    color: theme.palette.text.primary,
-    textAlign: "right",
-    fontSize: {
-      xs: "14px",
-      sm: "18px",
-      md: "20px",
-    },
-  }),
 };
 
-export const PasswordSchema = zod
-  .string()
-  .regex(/[a-z]+/, {
-    message: "password should contain minimum of 1 lowercase character",
-  })
-  .regex(/[0-9]+/, {
-    message: "password should contain minimum of 1 number",
-  })
-  .regex(/[A-Z]+/, {
-    message: "password should contain minimum of 1 uppercase character",
-  })
-  .min(8, { message: "password should be minimum of 8 characters" });
-
-const SignUpSchema = zod
+const ResetPasswordSchema = zod
   .object({
-    name: zod.string().trim().min(1, { message: "name can't be empty" }),
-    username: zod
+    reset_id: zod.string().min(1, { message: "Reset id can't be empty" }),
+    verification_code: zod
       .string()
-      .trim()
-      .min(1, { message: "username can't be empty" }),
-    email: zod
-      .string({ required_error: "email address can't be empty" })
-      .email({ message: "invalid email address" }),
+      .min(1, { message: "Verification code can't be empty" }),
     password: PasswordSchema,
     confirm_password: zod.string(),
   })
@@ -80,38 +55,43 @@ const SignUpSchema = zod
     }
   });
 
-type SignUpFields = zod.infer<typeof SignUpSchema>;
+type ResetPasswordFields = zod.infer<typeof ResetPasswordSchema>;
 
-export const SignUp = () => {
+export const ResetPassword = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const { makeRequest, status } = useAxios();
+  const [searchParams] = useSearchParams();
 
   const {
     control,
     getValues,
     formState: { isValid, isDirty },
-  } = useForm<SignUpFields>({
-    resolver: zodResolver(SignUpSchema),
+  } = useForm<ResetPasswordFields>({
+    resolver: zodResolver(ResetPasswordSchema),
     defaultValues: {
-      email: "",
-      username: "",
       password: "",
-      name: "",
       confirm_password: "",
+      reset_id: searchParams.get("reset_id") ?? "",
+      verification_code: searchParams.get("verification_code") ?? "",
     },
     mode: "onChange",
   });
 
   const navigate = useNavigate();
 
-  const handleSignUp = async () => {
-    const { email, password, username, name } = getValues();
-    const body = { name, email, password, username };
+  const handleResetPassword = async () => {
+    const { password, reset_id, verification_code } = getValues();
+    const formData = new FormData();
+
     try {
-      await makeRequest("/auth/signup", "POST", body);
-      navigate("/signin");
+      const response = await makeRequest(
+        "/auth/forgot-password",
+        "POST",
+        formData
+      );
+      navigate("/");
     } catch (err: any) {
       toast.error(err.message);
     }
@@ -123,20 +103,28 @@ export const SignUp = () => {
         <OpennyAILogo />
       </Box>
       <Box sx={styles.formContainer}>
-        <Typography variant="h5" sx={{ margin: "16px", textAlign: "center" }}>
-          Welcome to Annotation UI, Please Sign up
-        </Typography>
+        <Box>
+          <Typography variant="h5" sx={{ margin: "16px", textAlign: "center" }}>
+            Welcome to Annotation UI, Reset password
+          </Typography>
+          <Typography
+            variant="subtitle2"
+            sx={{ marginY: "16px", textAlign: "center" }}
+          >
+            Update your password
+          </Typography>
+        </Box>
         <Controller
-          name="name"
+          name="reset_id"
           control={control}
           render={({
             field: { onChange, onBlur, value },
             fieldState: { error },
           }) => (
             <LabelledInput
-              label={<Typography sx={styles.inputLabel}>Name</Typography>}
-              id="name"
-              placeholder="Enter your name"
+              label={<Typography sx={styles.inputLabel}>Reset ID</Typography>}
+              id="reset_id"
+              placeholder="Enter Reset ID"
               type="text"
               variant="outlined"
               size="small"
@@ -149,39 +137,21 @@ export const SignUp = () => {
           )}
         />
         <Controller
-          name="username"
+          name="verification_code"
           control={control}
           render={({
             field: { onChange, onBlur, value },
             fieldState: { error },
           }) => (
             <LabelledInput
-              label={<Typography sx={styles.inputLabel}>Username</Typography>}
-              id="username"
-              placeholder="Enter your username"
+              label={
+                <Typography sx={styles.inputLabel}>
+                  Verification Code
+                </Typography>
+              }
+              id="verification_code"
+              placeholder="Enter Verification Code"
               type="text"
-              variant="outlined"
-              size="small"
-              value={value}
-              error={!!error}
-              helperText={error?.message}
-              onChange={onChange}
-              onBlur={onBlur}
-            />
-          )}
-        />
-        <Controller
-          name="email"
-          control={control}
-          render={({
-            field: { onChange, onBlur, value },
-            fieldState: { error },
-          }) => (
-            <LabelledInput
-              label={<Typography sx={styles.inputLabel}>Email</Typography>}
-              id="email"
-              placeholder="Enter your email"
-              type="email"
               variant="outlined"
               size="small"
               value={value}
@@ -215,6 +185,7 @@ export const SignUp = () => {
                 endAdornment: (
                   <InputAdornment position="end">
                     <IconButton
+                      size="small"
                       data-testid="password-visibility"
                       onClick={() => setShowPassword(!showPassword)}
                       edge="end"
@@ -272,19 +243,11 @@ export const SignUp = () => {
           type="submit"
           size="small"
           loading={status === "pending"}
-          onClick={handleSignUp}
+          onClick={handleResetPassword}
           disabled={!isDirty || !isValid}
         >
-          Sign Up
+          Reset
         </LoadingButton>
-        <Typography sx={styles.link}>
-          <Link
-            to="/signin"
-            style={{ textDecoration: "none", color: "inherit" }}
-          >
-            Already have an account? Sign in
-          </Link>
-        </Typography>
       </Box>
     </Box>
   );

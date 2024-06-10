@@ -11,6 +11,7 @@ vitest.mock("./pages/SignIn", () => ({
 
 vitest.mock("./pages/SignUp", () => ({
   SignUp: () => <div>SignUp page</div>,
+  PasswordSchema: vitest.fn().mockResolvedValue({}),
 }));
 
 vitest.mock("./pages/ForgotPassword", () => ({
