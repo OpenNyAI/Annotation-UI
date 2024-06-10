@@ -33,7 +33,11 @@ export const AuthContextProvider = ({
 
   const updateAuthState = (updatedAuthState: AuthState) => {
     setAuth(updatedAuthState);
-    setStoredAccessToken(updatedAuthState.accessToken!);
+    if (updatedAuthState.accessToken) {
+      setStoredAccessToken(updatedAuthState.accessToken);
+    } else {
+      setStoredAccessToken(null);
+    }
   };
 
   return (
