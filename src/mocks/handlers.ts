@@ -1,14 +1,13 @@
 import { HttpResponse, http } from "msw";
 
 export const handlers = [
-  http.post(`/signin`, () => {
+  http.post(`/auth/login`, () => {
     return HttpResponse.json({
       access_token: "access-token",
-      refresh_token: "refresh_token",
       token_type: "bearer",
     });
   }),
-  http.post(`/signup`, () => {
+  http.post(`/auth/signup`, () => {
     return HttpResponse.json({});
   }),
 ];

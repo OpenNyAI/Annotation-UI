@@ -38,16 +38,21 @@ const useAxios = <T,>() => {
       async (error) => {
         const prevRequest = error?.config;
         if (error?.response?.status === 403 && !prevRequest?.sent) {
-          prevRequest.sent = true;
-          const response = await axios.get("/refresh", {
-            withCredentials: true,
-          });
+          try {
+            prevRequest.sent = true;
+            const response = await axios.get("/refresh", {
+              withCredentials: true,
+            });
 
-          setAuth({ accessToken: response.data.accessToken });
+            setAuth({ accessToken: response.data.accessToken });
 
-          prevRequest.headers["Authorization"] =
-            `Bearer ${response.data.accessToken}`;
-          return axiosInstance(prevRequest);
+            prevRequest.headers["Authorization"] =
+              `Bearer ${response.data.accessToken}`;
+            return axiosInstance(prevRequest);
+          } catch (error) {
+            setAuth({});
+            return Promise.reject(error);
+          }
         }
         return Promise.reject(error);
       }

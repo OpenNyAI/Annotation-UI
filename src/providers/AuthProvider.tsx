@@ -1,10 +1,5 @@
-import {
-  Dispatch,
-  PropsWithChildren,
-  SetStateAction,
-  createContext,
-  useState,
-} from "react";
+import { PropsWithChildren, createContext, useState } from "react";
+import { useLocalStorage } from "../hooks/useLocalStorage";
 
 export type AuthState = {
   accessToken?: string;
@@ -12,7 +7,7 @@ export type AuthState = {
 
 export type AuthContextValue = {
   auth: AuthState;
-  setAuth: Dispatch<SetStateAction<AuthState>>;
+  setAuth(authState: AuthState): void;
 };
 
 export const AuthContext = createContext<AuthContextValue | undefined>(
@@ -27,10 +22,22 @@ export const AuthContextProvider = ({
   children,
   authState,
 }: AuthContextProviderProps) => {
-  const [auth, setAuth] = useState<AuthState>(authState ?? {});
+  const [storedAccessToken, setStoredAccessToken] = useLocalStorage(
+    "accessToken",
+    null
+  );
+
+  const [auth, setAuth] = useState<AuthState>(
+    authState ?? { accessToken: storedAccessToken ?? undefined }
+  );
+
+  const updateAuthState = (updatedAuthState: AuthState) => {
+    setAuth(updatedAuthState);
+    setStoredAccessToken(updatedAuthState.accessToken!);
+  };
 
   return (
-    <AuthContext.Provider value={{ auth, setAuth }}>
+    <AuthContext.Provider value={{ auth, setAuth: updateAuthState }}>
       {children}
     </AuthContext.Provider>
   );
