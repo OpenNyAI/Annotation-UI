@@ -40,8 +40,7 @@ const dummyResults = new Array(2).fill(result);
 
 const styles: Styles = {
   container: {
-    height: "100vh",
-    width: "100vw",
+    height: "calc(100vh - 80px)",
     display: "flex",
     flexDirection: "row",
     overflow: "hidden",
@@ -172,24 +171,14 @@ export const Home = () => {
             fullWidth
             type="text"
           />
-          <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-            <Button
-              variant="contained"
-              sx={{ width: "120px" }}
-              disabled={currentQuestion === 0}
-              onClick={handlePrev}
-            >
-              Prev
-            </Button>
-            <Button
-              variant="contained"
-              sx={{ width: "120px" }}
-              disabled={currentQuestion === MAX_QUESTIONS}
-              onClick={handleNext}
-            >
-              Next
-            </Button>
-          </Box>
+          <Button
+            variant="contained"
+            sx={{ width: "120px", mx: "auto" }}
+            disabled={currentQuestion === MAX_QUESTIONS}
+            onClick={handleNext}
+          >
+            Submit
+          </Button>
         </Box>
       </Box>
       {annotatedTexts.length > 0 && (
