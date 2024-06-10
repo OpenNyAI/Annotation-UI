@@ -30,13 +30,13 @@ describe("SignIn", () => {
       { initialEntries: ["/signin"] }
     );
 
-    const emailField = screen.getByPlaceholderText("Enter your email");
+    const usernameField = screen.getByPlaceholderText("Enter your username");
     const passwordField = screen.getByPlaceholderText("Enter your password");
     const signInBtn = screen.getByRole("button", {
       name: "Sign In",
     });
 
-    await userEvent.type(emailField, "test@test.com");
+    await userEvent.type(usernameField, "testuser");
     await userEvent.type(passwordField, "password");
 
     await userEvent.click(signInBtn);
@@ -46,7 +46,7 @@ describe("SignIn", () => {
 
   it("Should make sign request and show notification on error", async () => {
     server.use(
-      http.post("/signin", () => {
+      http.post("/auth/login", () => {
         return HttpResponse.json(
           { message: "Invalid Credentials" },
           { status: 401 }
@@ -56,13 +56,13 @@ describe("SignIn", () => {
 
     render(<SignIn />);
 
-    const emailField = screen.getByPlaceholderText("Enter your email");
+    const usernameField = screen.getByPlaceholderText("Enter your username");
     const passwordField = screen.getByPlaceholderText("Enter your password");
     const signInBtn = screen.getByRole("button", {
       name: "Sign In",
     });
 
-    await userEvent.type(emailField, "test@test.com");
+    await userEvent.type(usernameField, "test@test.com");
     await userEvent.type(passwordField, "password");
 
     await userEvent.click(signInBtn);

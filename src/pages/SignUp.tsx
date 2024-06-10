@@ -59,7 +59,11 @@ const PasswordSchema = zod
 
 const SignUpSchema = zod
   .object({
-    name: zod.string().min(1, { message: "name can't be empty" }),
+    name: zod.string().trim().min(1, { message: "name can't be empty" }),
+    username: zod
+      .string()
+      .trim()
+      .min(1, { message: "username can't be empty" }),
     email: zod
       .string({ required_error: "email address can't be empty" })
       .email({ message: "invalid email address" }),
@@ -92,6 +96,7 @@ export const SignUp = () => {
     resolver: zodResolver(SignUpSchema),
     defaultValues: {
       email: "",
+      username: "",
       password: "",
       name: "",
       confirm_password: "",
@@ -102,12 +107,11 @@ export const SignUp = () => {
   const navigate = useNavigate();
 
   const handleSignUp = async () => {
-    const { email, password, name } = getValues();
-    const email_id = email;
-    const body = { name, email_id, password };
+    const { email, password, username, name } = getValues();
+    const body = { name, email, password, username };
     try {
-      await makeRequest("/signup", "POST", body);
-      navigate("/");
+      await makeRequest("/auth/signup", "POST", body);
+      navigate("/signin");
     } catch (err: any) {
       toast.error(err.message);
     }
@@ -133,6 +137,28 @@ export const SignUp = () => {
               label={<Typography sx={styles.inputLabel}>Name</Typography>}
               id="name"
               placeholder="Enter your name"
+              type="text"
+              variant="outlined"
+              size="small"
+              value={value}
+              error={!!error}
+              helperText={error?.message}
+              onChange={onChange}
+              onBlur={onBlur}
+            />
+          )}
+        />
+        <Controller
+          name="username"
+          control={control}
+          render={({
+            field: { onChange, onBlur, value },
+            fieldState: { error },
+          }) => (
+            <LabelledInput
+              label={<Typography sx={styles.inputLabel}>Username</Typography>}
+              id="username"
+              placeholder="Enter your username"
               type="text"
               variant="outlined"
               size="small"

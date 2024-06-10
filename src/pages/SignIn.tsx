@@ -9,6 +9,7 @@ import { toast } from "react-toastify";
 import zod from "zod";
 import OpennyAILogo from "../assets/OpennyaiLogo.svg";
 import { LabelledInput } from "../components/LabelledInput";
+import { useAuth } from "../hooks/useAuth";
 import useAxios from "../hooks/useAxios";
 import { Styles } from "../types/styles";
 
@@ -45,15 +46,17 @@ const styles: Styles = {
 };
 
 const SignInSchema = zod.object({
-  email: zod
-    .string({ required_error: "email address can't be empty" })
-    .email({ message: "invalid email address" }),
+  username: zod
+    .string({ required_error: "username can't be empty" })
+    .trim()
+    .min(1, { message: "username can't be empty" }),
   password: zod.string().min(1, { message: "password can't be empty" }),
 });
 type SignInFields = zod.infer<typeof SignInSchema>;
 
 export const SignIn = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const { setAuth } = useAuth();
 
   const { makeRequest, status } = useAxios();
 
@@ -64,7 +67,7 @@ export const SignIn = () => {
   } = useForm<SignInFields>({
     resolver: zodResolver(SignInSchema),
     defaultValues: {
-      email: "",
+      username: "",
       password: "",
     },
     mode: "onChange",
@@ -73,13 +76,16 @@ export const SignIn = () => {
   const navigate = useNavigate();
 
   const handleSignIn = async () => {
-    const { email, password } = getValues();
-    const email_id = email;
-    const body = { email_id, password };
+    const { username, password } = getValues();
+    const formData = new FormData();
+    formData.append("username", username);
+    formData.append("password", password);
     try {
-      await makeRequest("/signin", "POST", body);
+      const response = await makeRequest("/auth/login", "POST", formData);
+      setAuth({ accessToken: response.access_token });
       navigate("/");
     } catch (err: any) {
+      console.log(err.message);
       toast.error(err.message);
     }
   };
@@ -94,17 +100,17 @@ export const SignIn = () => {
           Welcome to Annotation UI, Please Sign in
         </Typography>
         <Controller
-          name="email"
+          name="username"
           control={control}
           render={({
             field: { onChange, onBlur, value },
             fieldState: { error },
           }) => (
             <LabelledInput
-              label={<Typography sx={styles.inputLabel}>Email</Typography>}
-              id="email"
-              placeholder="Enter your email"
-              type="email"
+              label={<Typography sx={styles.inputLabel}>Username</Typography>}
+              id="username"
+              placeholder="Enter your username"
+              type="text"
               variant="outlined"
               size="small"
               value={value}

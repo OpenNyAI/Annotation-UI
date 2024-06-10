@@ -12,6 +12,18 @@ const themeBase = createTheme({
     },
     text: {
       primary: "#FAFAFA",
+      secondary: "#DFDFDF",
+      disabled: "#2C2F33",
+    },
+    success: {
+      light: "#42BE65",
+      main: "#42BE65",
+      dark: "#42BE65",
+    },
+    error: {
+      light: "#FFB4AB",
+      main: "#FFB4AB",
+      dark: "#FFB4AB",
     },
     borderGrey: "#C4C4C4",
   },

@@ -21,16 +21,17 @@ describe("Sign Up", () => {
     expect(signUpBtn).toBeDisabled();
   });
 
-  it("Should make sign up request and redirect to home on successful signup", async () => {
+  it("Should make sign up request and redirect to signin page on successful signup", async () => {
     render(
       <Routes>
         <Route path="/signup" element={<SignUp />} />
-        <Route path="/" element={<div>Home Page</div>} />
+        <Route path="/signin" element={<div>Sign In Page</div>} />
       </Routes>,
       { initialEntries: ["/signup"] }
     );
 
     const nameField = screen.getByPlaceholderText("Enter your name");
+    const usernameField = screen.getByPlaceholderText("Enter your username");
     const emailField = screen.getByPlaceholderText("Enter your email");
     const passwordField = screen.getByPlaceholderText("Enter your password");
     const confirmPasswordField = screen.getByPlaceholderText(
@@ -41,18 +42,19 @@ describe("Sign Up", () => {
     });
 
     await userEvent.type(nameField, "Test User");
+    await userEvent.type(usernameField, "tester12");
     await userEvent.type(emailField, "test@test.com");
     await userEvent.type(passwordField, "Password123");
     await userEvent.type(confirmPasswordField, "Password123");
 
     await userEvent.click(signUpBtn);
 
-    expect(screen.getByText("Home Page")).toBeInTheDocument();
+    expect(screen.getByText("Sign In Page")).toBeInTheDocument();
   });
 
   it("Should make sign up request and show notification on error", async () => {
     server.use(
-      http.post("/signup", () => {
+      http.post("/auth/signup", () => {
         return HttpResponse.json({ message: "Bad request" }, { status: 400 });
       })
     );
@@ -60,6 +62,7 @@ describe("Sign Up", () => {
     render(<SignUp />);
 
     const nameField = screen.getByPlaceholderText("Enter your name");
+    const usernameField = screen.getByPlaceholderText("Enter your username");
     const emailField = screen.getByPlaceholderText("Enter your email");
     const passwordField = screen.getByPlaceholderText("Enter your password");
     const confirmPasswordField = screen.getByPlaceholderText(
@@ -70,6 +73,7 @@ describe("Sign Up", () => {
     });
 
     await userEvent.type(nameField, "Test User");
+    await userEvent.type(usernameField, "tester12");
     await userEvent.type(emailField, "test@test.com");
     await userEvent.type(passwordField, "Password123");
     await userEvent.type(confirmPasswordField, "Password123");
