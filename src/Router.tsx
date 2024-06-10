@@ -1,6 +1,7 @@
 import { Route, Routes } from "react-router-dom";
 import { PrivateRoute } from "./components/PrivateRoute";
 import { PublicRoute } from "./components/PublicRoute";
+import { ForgotPassword } from "./pages/ForgotPassword";
 import { Home } from "./pages/Home";
 import { NotFound } from "./pages/NotFound";
 import { SignIn } from "./pages/SignIn";
@@ -30,6 +31,14 @@ export const Router = () => {
         element={
           <PublicRoute>
             <SignIn />
+          </PublicRoute>
+        }
+      />
+      <Route
+        path="/forgot-password"
+        element={
+          <PublicRoute>
+            <ForgotPassword />
           </PublicRoute>
         }
       />

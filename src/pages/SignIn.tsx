@@ -85,7 +85,6 @@ export const SignIn = () => {
       setAuth({ accessToken: response.access_token });
       navigate("/");
     } catch (err: any) {
-      console.log(err.message);
       toast.error(err.message);
     }
   };

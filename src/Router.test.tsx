@@ -13,6 +13,10 @@ vitest.mock("./pages/SignUp", () => ({
   SignUp: () => <div>SignUp page</div>,
 }));
 
+vitest.mock("./pages/ForgotPassword", () => ({
+  ForgotPassword: () => <div>Forgot password page</div>,
+}));
+
 describe("Router", () => {
   it("should renders home page when route is /", () => {
     render(<Router />, { initialEntries: ["/"] });
@@ -30,6 +34,12 @@ describe("Router", () => {
     render(<Router />, { initialEntries: ["/signup"], authState: {} });
 
     expect(screen.getByText("SignUp page")).toBeInTheDocument();
+  });
+
+  it("should render forgot password page", () => {
+    render(<Router />, { initialEntries: ["/forgot-password"], authState: {} });
+
+    expect(screen.getByText("Forgot password page")).toBeInTheDocument();
   });
 
   it("should renders not found page when invalid path is given", () => {
