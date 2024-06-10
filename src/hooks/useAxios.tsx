@@ -40,14 +40,17 @@ const useAxios = <T,>() => {
         if (error?.response?.status === 403 && !prevRequest?.sent) {
           try {
             prevRequest.sent = true;
-            const response = await axios.get("/refresh", {
-              withCredentials: true,
-            });
+            const response = await axios.get(
+              `${import.meta.env.VITE_API_URL}/auth/refresh-token`,
+              {
+                withCredentials: true,
+              }
+            );
 
-            setAuth({ accessToken: response.data.accessToken });
+            setAuth({ accessToken: response.data.access_token });
 
             prevRequest.headers["Authorization"] =
-              `Bearer ${response.data.accessToken}`;
+              `Bearer ${response.data.access_token}`;
             return axiosInstance(prevRequest);
           } catch (error) {
             setAuth({});
