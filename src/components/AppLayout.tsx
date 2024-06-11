@@ -12,7 +12,7 @@ import { useTheme } from "@mui/material/styles";
 import { useState } from "react";
 import { Route, Routes, useLocation } from "react-router-dom";
 import { AnnotationPage } from "../pages/AnnotationPage";
-import { FilesList } from "../pages/FilesList";
+import { DocumentsList } from "../pages/DocumentsList";
 import { NotFound } from "../pages/NotFound";
 import { QuestionAndAnswers } from "../pages/QuestionAndAnswers";
 import { AppBar } from "./AppBar";
@@ -21,6 +21,7 @@ import { NavigationItem } from "./NavigationItem";
 import { PrivateRoute } from "./PrivateRoute";
 
 export const drawerWidth = 240;
+const APP_BAR_HEIGHT = 84;
 
 export default function AppLayout() {
   const theme = useTheme();
@@ -91,14 +92,17 @@ export default function AppLayout() {
           />
         </List>
       </Drawer>
-      <Box component="main" sx={{ flexGrow: 1 }}>
+      <Box
+        component="main"
+        sx={{ flexGrow: 1, height: `calc(100vh - ${APP_BAR_HEIGHT}px)` }}
+      >
         <DrawerHeader />
         <Routes>
           <Route
             path="/"
             element={
               <PrivateRoute>
-                <FilesList />
+                <DocumentsList />
               </PrivateRoute>
             }
           />

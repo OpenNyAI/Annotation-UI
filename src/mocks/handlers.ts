@@ -19,4 +19,18 @@ export const handlers = [
   http.post(`/auth/update-password`, () => {
     return HttpResponse.json({});
   }),
+
+  http.get(`/user/documents`, () => {
+    return HttpResponse.json({
+      documents: [
+        {
+          id: "1",
+          file_name: "File1.txt",
+          last_edited_by: "user",
+          number_of_questions: 2,
+          max_questions: 24,
+        },
+      ],
+    });
+  }),
 ];
