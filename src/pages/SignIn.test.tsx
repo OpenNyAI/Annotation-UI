@@ -21,11 +21,11 @@ describe("SignIn", () => {
     expect(signInBtn).toBeDisabled();
   });
 
-  it("Should make sign request and redirect to home on successful signin", async () => {
+  it("Should make sign request and redirect to filesListing on successful signin", async () => {
     render(
       <Routes>
         <Route path="/signin" element={<SignIn />} />
-        <Route path="/" element={<div>Home Page</div>} />
+        <Route path="/" element={<div>FilesList Page</div>} />
       </Routes>,
       { initialEntries: ["/signin"] }
     );
@@ -41,7 +41,7 @@ describe("SignIn", () => {
 
     await userEvent.click(signInBtn);
 
-    expect(screen.getByText("Home Page")).toBeInTheDocument();
+    expect(screen.getByText("FilesList Page")).toBeInTheDocument();
   });
 
   it("Should make sign request and show notification on error", async () => {
