@@ -1,9 +1,9 @@
 import { render, screen } from "../utility/test-utils";
-import { Home } from "./Home";
+import { AnnotationPage } from "./AnnotationPage";
 
 describe("Home", () => {
   it("Should render home page", () => {
-    render(<Home />);
+    render(<AnnotationPage />);
 
     expect(screen.getByText("Question")).toBeInTheDocument();
   });

@@ -84,7 +84,7 @@ type QuestionAnswer = {
 
 const MAX_QUESTIONS = 10;
 
-export const Home = () => {
+export const AnnotationPage = () => {
   const [currentQuestion, setCurrentQuestion] = useState<number>(0);
   const [annotatedTexts, setAnnotatedTexts] = useState<TextAnnotation[]>([]);
 

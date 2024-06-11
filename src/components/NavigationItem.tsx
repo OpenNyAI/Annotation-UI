@@ -23,7 +23,18 @@ export const NavigationItem = ({
   icon,
 }: NavigationItemProps) => {
   return (
-    <ListItem key={title} disablePadding sx={{ display: "block" }}>
+    <ListItem
+      key={title}
+      disablePadding
+      sx={{
+        display: "block",
+        borderRadius: "8px",
+        background: isSelected ? "#3B3B3B" : "inherit",
+        "&:hover": {
+          background: isSelected ? "#3B3B3B" : "#1B1B1B",
+        },
+      }}
+    >
       <Link to={to} style={{ textDecoration: "inherit", color: "inherit" }}>
         <ListItemButton
           selected={isSelected}
@@ -31,12 +42,6 @@ export const NavigationItem = ({
             minHeight: 48,
             justifyContent: isOpen ? "initial" : "center",
             px: 2.5,
-            "&.Mui-selected": {
-              background: "#3B3B3B",
-            },
-            "&:hover": {
-              background: isSelected ? "inherit" : "#1B1B1B",
-            },
           }}
         >
           <ListItemIcon

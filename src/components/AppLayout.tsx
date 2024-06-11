@@ -11,7 +11,8 @@ import Typography from "@mui/material/Typography";
 import { useTheme } from "@mui/material/styles";
 import { useState } from "react";
 import { Route, Routes, useLocation } from "react-router-dom";
-import { Home } from "../pages/Home";
+import { AnnotationPage } from "../pages/AnnotationPage";
+import { FilesList } from "../pages/FilesList";
 import { NotFound } from "../pages/NotFound";
 import { QuestionAndAnswers } from "../pages/QuestionAndAnswers";
 import { AppBar } from "./AppBar";
@@ -66,11 +67,18 @@ export default function AppLayout() {
           </IconButton>
         </DrawerHeader>
         <Divider />
-        <List sx={{ mx: "4px" }}>
+        <List
+          sx={{
+            mx: "4px",
+            display: "flex",
+            flexDirection: "column",
+            gap: "8px",
+          }}
+        >
           <NavigationItem
             title="Annotate"
             to="/"
-            isSelected={pathname === "/"}
+            isSelected={pathname === "/" || pathname.includes("annotate")}
             isOpen={open}
             icon={<TextSnippetTwoTone />}
           />
@@ -90,7 +98,15 @@ export default function AppLayout() {
             path="/"
             element={
               <PrivateRoute>
-                <Home />
+                <FilesList />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/annotate/:fileId"
+            element={
+              <PrivateRoute>
+                <AnnotationPage />
               </PrivateRoute>
             }
           />
