@@ -8,12 +8,28 @@ import {
   Typography,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-export const FileInfoItem = () => {
+import { DocumentInfo } from "../types/api";
+
+type DocumentInfoItemProps = DocumentInfo;
+
+export const DocumentInfoItem = ({
+  id,
+  file_name,
+  last_edited_by,
+  max_questions,
+  number_of_questions,
+}: DocumentInfoItemProps) => {
   const navigate = useNavigate();
   return (
     <Card
-      sx={{ background: "#3b3b3b" }}
-      onClick={() => navigate("/annotate/1")}
+      data-testid={id}
+      sx={{
+        background: "#3b3b3b",
+        "&:hover": {
+          cursor: "pointer",
+        },
+      }}
+      onClick={() => navigate(`/annotate/${id}`)}
     >
       <CardContent
         sx={{
@@ -24,7 +40,7 @@ export const FileInfoItem = () => {
       >
         <Box sx={{ display: "flex", gap: "8px", alignItems: "center" }}>
           <TextSnippetIcon fontSize={"small"} />
-          <Typography>File Name</Typography>
+          <Typography noWrap>{file_name}</Typography>
         </Box>
         <Box
           sx={{
@@ -40,12 +56,14 @@ export const FileInfoItem = () => {
             gap: "16px",
           }}
         >
-          <Box sx={{ display: "flex", gap: "8px", alignItems: "center" }}>
-            <Typography>Last Edited by</Typography>
-            <Avatar sx={{ height: "24px", width: "24px", fontSize: "16px" }}>
-              N
-            </Avatar>
-          </Box>
+          {last_edited_by && (
+            <Box sx={{ display: "flex", gap: "8px", alignItems: "center" }}>
+              <Typography>Last Edited by</Typography>
+              <Avatar sx={{ height: "24px", width: "24px", fontSize: "16px" }}>
+                {last_edited_by.charAt(0)}
+              </Avatar>
+            </Box>
+          )}
           <Box
             sx={{
               flex: "1 0 auto",

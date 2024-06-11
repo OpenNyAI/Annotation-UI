@@ -40,7 +40,7 @@ const dummyResults = new Array(2).fill(result);
 
 const styles: Styles = {
   container: {
-    height: "calc(100vh - 80px)",
+    height: "100%",
     display: "flex",
     flexDirection: "row",
     overflow: "hidden",

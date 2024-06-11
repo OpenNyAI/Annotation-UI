@@ -1,8 +1,8 @@
 import { Router } from "./Router";
 import { render, screen } from "./utility/test-utils";
 
-vitest.mock("./pages/FilesList", () => ({
-  FilesList: () => <div>FilesList page</div>,
+vitest.mock("./pages/DocumentsList", () => ({
+  DocumentsList: () => <div>DocumentsList page</div>,
 }));
 
 vitest.mock("./pages/SignIn", () => ({
@@ -19,10 +19,10 @@ vitest.mock("./pages/ForgotPassword", () => ({
 }));
 
 describe("Router", () => {
-  it("should renders Files list page when route is /", () => {
+  it("should renders Documents list page when route is /", () => {
     render(<Router />, { initialEntries: ["/"] });
 
-    expect(screen.getByText("FilesList page")).toBeInTheDocument();
+    expect(screen.getByText("DocumentsList page")).toBeInTheDocument();
   });
 
   it("should render signin page", () => {
@@ -49,10 +49,10 @@ describe("Router", () => {
     expect(screen.getByText("Page Not Found")).toBeInTheDocument();
   });
 
-  it("should redirect users to files listing page when authState is having accessToken", () => {
+  it("should redirect users to documents listing page when authState is having accessToken", () => {
     render(<Router />, { initialEntries: ["/signin"] });
 
-    expect(screen.getByText("FilesList page")).toBeInTheDocument();
+    expect(screen.getByText("DocumentsList page")).toBeInTheDocument();
   });
 
   it("should redirect users to sign-in page when user is not logged in", () => {
