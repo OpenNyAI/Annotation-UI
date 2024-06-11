@@ -1,12 +1,17 @@
 import { Send } from "@mui/icons-material";
 import { Box, Button, Divider, IconButton, Typography } from "@mui/material";
 import { produce } from "immer";
-import { ChangeEvent, useState } from "react";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { toast } from "react-toastify";
 import { LabelledInput } from "../components/LabelledInput";
+import { LoadingSpinner } from "../components/LoadingSpinner";
 import { AnnotationSummarySidePanel } from "../components/annotation/AnnotationSummarySidePanel";
 import TextAnnotator, {
   TextAnnotation,
 } from "../components/annotation/TextAnnotator";
+import useAxios from "../hooks/useAxios";
+import { DocumentWithContent } from "../types/api";
 import { Styles } from "../types/styles";
 
 const dummyText = `Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of "de Finibus Bonorum et Malorum" (The Extremes of Good and Evil) by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular during the Renaissance. The first line of Lorem Ipsum, "Lorem ipsum dolor sit amet..", comes from a line in section 1.10.32.
@@ -51,13 +56,13 @@ const styles: Styles = {
     overflow: "scroll",
     flex: 1,
     boxSizing: "border-box",
-    p: 4,
-    gap: 4,
+    p: 3,
+    gap: 2,
   },
   mainEditorBox: {
     border: (theme) => `0.5px solid ${theme.palette.primary.light}`,
     borderRadius: "8px",
-    height: "40%",
+    height: "50%",
   },
   resultsContainer: {
     position: "relative",
@@ -77,25 +82,18 @@ const styles: Styles = {
   },
 };
 
-type QuestionAnswer = {
-  question: string;
-  answer: TextAnnotation | string[];
-};
-
-const MAX_QUESTIONS = 10;
-
 export const AnnotationPage = () => {
-  const [currentQuestion, setCurrentQuestion] = useState<number>(0);
+  const [question, setQuestion] = useState("");
   const [annotatedTexts, setAnnotatedTexts] = useState<TextAnnotation[]>([]);
 
-  const handleNext = () => {};
-  const handlePrev = () => {};
+  const { documentId } = useParams();
 
-  const handleQuestionChange = (event: ChangeEvent<HTMLInputElement>) => {
-    if (currentQuestion < MAX_QUESTIONS) {
-      const question = event.target.value;
-    }
-  };
+  const {
+    makeRequest,
+    data: fileContent,
+    error: fileContentError,
+    status: fileContentStatus,
+  } = useAxios<DocumentWithContent>();
 
   const handleTextAnnotation = (annotatedText: TextAnnotation) => {
     setAnnotatedTexts((prev) => [...prev, annotatedText]);
@@ -108,6 +106,7 @@ export const AnnotationPage = () => {
     });
     setAnnotatedTexts(updatedAnnotations);
   };
+
   const handleSelectTextAnnotation = (index: number) => {
     const updatedAnnotations = produce(annotatedTexts, (draft) => {
       const updatedAnnotatedTexts = draft.map((annotatedTex, idx) => {
@@ -121,13 +120,51 @@ export const AnnotationPage = () => {
     setAnnotatedTexts(updatedAnnotations);
   };
 
+  // TODO: handle question submission
+  const handleSubmitQuestion = () => {};
+
+  useEffect(() => {
+    async function getDocumentContents() {
+      try {
+        await makeRequest(`/user/documents/${documentId}`, "GET");
+      } catch (err: any) {
+        toast.error(err.message);
+      }
+    }
+
+    getDocumentContents();
+  }, []);
+
+  if (fileContentStatus === "pending") {
+    return <LoadingSpinner />;
+  }
+
+  if (fileContentStatus === "error") {
+    return (
+      <Box
+        sx={{
+          height: "100%",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <Typography variant="h6">Error while loading the document</Typography>
+        <Typography variant="subtitle1">
+          Error : {fileContentError?.message}
+        </Typography>
+      </Box>
+    );
+  }
+
   return (
     <Box sx={styles.container}>
       <Box sx={styles.mainEditor}>
         <Box sx={styles.mainEditorBox}>
           <TextAnnotator
             id="main-editor"
-            text={dummyText}
+            text={fileContent?.content ?? ""}
             annotatedTexts={annotatedTexts.filter(
               (item) => item.id === "main-editor"
             )}
@@ -174,8 +211,8 @@ export const AnnotationPage = () => {
           <Button
             variant="contained"
             sx={{ width: "120px", mx: "auto" }}
-            disabled={currentQuestion === MAX_QUESTIONS}
-            onClick={handleNext}
+            disabled={!question}
+            onClick={handleSubmitQuestion}
           >
             Submit
           </Button>

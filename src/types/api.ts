@@ -5,3 +5,9 @@ export type DocumentInfo = {
   max_questions: number;
   number_of_questions: number;
 };
+
+export type DocumentWithContent = {
+  id: string;
+  file_name: string;
+  content: string;
+};
