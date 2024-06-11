@@ -107,7 +107,7 @@ export default function AppLayout() {
             }
           />
           <Route
-            path="/annotate/:fileId"
+            path="/annotate/:documentId"
             element={
               <PrivateRoute>
                 <AnnotationPage />

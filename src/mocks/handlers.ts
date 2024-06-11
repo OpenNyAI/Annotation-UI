@@ -33,4 +33,12 @@ export const handlers = [
       ],
     });
   }),
+
+  http.get(`/user/documents/file-1`, () => {
+    return HttpResponse.json({
+      id: "1",
+      file_name: "File1.txt",
+      content: "this is file content information",
+    });
+  }),
 ];
