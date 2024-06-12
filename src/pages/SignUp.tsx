@@ -47,26 +47,26 @@ const styles: Styles = {
 export const PasswordSchema = zod
   .string()
   .regex(/[a-z]+/, {
-    message: "password should contain minimum of 1 lowercase character",
+    message: "Password should contain minimum of 1 lowercase character",
   })
   .regex(/[0-9]+/, {
-    message: "password should contain minimum of 1 number",
+    message: "Password should contain minimum of 1 number",
   })
   .regex(/[A-Z]+/, {
-    message: "password should contain minimum of 1 uppercase character",
+    message: "Password should contain minimum of 1 uppercase character",
   })
-  .min(8, { message: "password should be minimum of 8 characters" });
+  .min(8, { message: "Password should be minimum of 8 characters" });
 
 const SignUpSchema = zod
   .object({
-    name: zod.string().trim().min(1, { message: "name can't be empty" }),
+    name: zod.string().trim().min(1, { message: "Name can't be empty" }),
     username: zod
       .string()
       .trim()
-      .min(1, { message: "username can't be empty" }),
+      .min(1, { message: "Username can't be empty" }),
     email: zod
-      .string({ required_error: "email address can't be empty" })
-      .email({ message: "invalid email address" }),
+      .string({ required_error: "Email address can't be empty" })
+      .email({ message: "Invalid email address" }),
     password: PasswordSchema,
     confirm_password: zod.string(),
   })
@@ -74,7 +74,7 @@ const SignUpSchema = zod
     if (confirm_password !== password) {
       ctx.addIssue({
         code: "custom",
-        message: "passwords didn't match",
+        message: "Passwords are not matching",
         path: ["confirm_password"],
       });
     }

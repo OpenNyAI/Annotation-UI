@@ -47,10 +47,10 @@ const styles: Styles = {
 
 const SignInSchema = zod.object({
   username: zod
-    .string({ required_error: "username can't be empty" })
+    .string({ required_error: "Username can't be empty" })
     .trim()
-    .min(1, { message: "username can't be empty" }),
-  password: zod.string().min(1, { message: "password can't be empty" }),
+    .min(1, { message: "Username can't be empty" }),
+  password: zod.string().min(1, { message: "Password can't be empty" }),
 });
 type SignInFields = zod.infer<typeof SignInSchema>;
 

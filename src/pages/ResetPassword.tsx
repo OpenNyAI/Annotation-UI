@@ -49,7 +49,7 @@ const ResetPasswordSchema = zod
     if (confirm_password !== password) {
       ctx.addIssue({
         code: "custom",
-        message: "passwords didn't match",
+        message: "Passwords are not matching",
         path: ["confirm_password"],
       });
     }
