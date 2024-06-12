@@ -7,10 +7,11 @@ import {
   LinearProgress,
   Typography,
 } from "@mui/material";
-import { useNavigate } from "react-router-dom";
 import { DocumentInfo } from "../types/api";
 
-type DocumentInfoItemProps = DocumentInfo;
+type DocumentInfoItemProps = DocumentInfo & {
+  onClick(): void;
+};
 
 export const DocumentInfoItem = ({
   id,
@@ -18,8 +19,8 @@ export const DocumentInfoItem = ({
   last_edited_by,
   max_questions,
   number_of_questions,
+  onClick,
 }: DocumentInfoItemProps) => {
-  const navigate = useNavigate();
   return (
     <Card
       data-testid={id}
@@ -29,7 +30,7 @@ export const DocumentInfoItem = ({
           cursor: "pointer",
         },
       }}
-      onClick={() => navigate(`/annotate/${id}`)}
+      onClick={onClick}
     >
       <CardContent
         sx={{
@@ -79,10 +80,12 @@ export const DocumentInfoItem = ({
               sx={{ width: "200px", height: "8px", borderRadius: "48px" }}
               variant="determinate"
               color="success"
-              value={5}
-              valueBuffer={25}
+              value={22}
+              valueBuffer={max_questions}
             />
-            <Typography textAlign={"right"}>1/25</Typography>
+            <Typography
+              textAlign={"right"}
+            >{`${number_of_questions}/${max_questions}`}</Typography>
           </Box>
         </Box>
       </CardContent>

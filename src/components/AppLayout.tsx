@@ -13,8 +13,8 @@ import { useState } from "react";
 import { Route, Routes, useLocation } from "react-router-dom";
 import { AnnotationPage } from "../pages/AnnotationPage";
 import { DocumentsList } from "../pages/DocumentsList";
+import { MyAnswers } from "../pages/MyAnswers";
 import { NotFound } from "../pages/NotFound";
-import { QuestionAndAnswers } from "../pages/QuestionAndAnswers";
 import { AppBar } from "./AppBar";
 import { Drawer, DrawerHeader } from "./Drawer";
 import { NavigationItem } from "./NavigationItem";
@@ -118,7 +118,7 @@ export default function AppLayout() {
             path="/answers"
             element={
               <PrivateRoute>
-                <QuestionAndAnswers />
+                <MyAnswers />
               </PrivateRoute>
             }
           />
