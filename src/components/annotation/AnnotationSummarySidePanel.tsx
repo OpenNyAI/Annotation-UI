@@ -85,7 +85,7 @@ export const AnnotationSummarySidePanel = ({
   return (
     <Box sx={styles.container}>
       <Typography variant="h6" sx={{ textDecoration: "underline" }}>
-        Selection Summary
+        Annotation Summary
       </Typography>
       <Box data-testid="annotation-text-list" sx={styles.annotationsList}>
         {textAnnotations.map((annotatedText, index) => {
@@ -104,7 +104,7 @@ export const AnnotationSummarySidePanel = ({
       </Box>
       <Divider />
       <Typography variant="h6" sx={{ textDecoration: "underline" }}>
-        Answer
+        Annotated Answer
       </Typography>
       <Box sx={styles.answerBox}>
         <Typography data-testid="annotation-text-answer" sx={styles.answerText}>

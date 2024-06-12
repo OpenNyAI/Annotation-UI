@@ -4,14 +4,30 @@ import {
   Box,
   Card,
   CardContent,
-  LinearProgress,
   Typography,
+  styled,
 } from "@mui/material";
+import LinearProgress, {
+  linearProgressClasses,
+} from "@mui/material/LinearProgress";
 import { DocumentInfo } from "../types/api";
 
 type DocumentInfoItemProps = DocumentInfo & {
   onClick(): void;
 };
+
+const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
+  height: 10,
+  borderRadius: 5,
+  [`&.${linearProgressClasses.colorPrimary}`]: {
+    backgroundColor:
+      theme.palette.grey[theme.palette.mode === "light" ? 200 : 600],
+  },
+  [`& .${linearProgressClasses.bar}`]: {
+    borderRadius: 5,
+    backgroundColor: theme.palette.mode === "light" ? "#1a90ff" : "#308fe8",
+  },
+}));
 
 export const DocumentInfoItem = ({
   id,
@@ -76,12 +92,10 @@ export const DocumentInfoItem = ({
               gap: "16px",
             }}
           >
-            <LinearProgress
+            <BorderLinearProgress
               sx={{ width: "200px", height: "8px", borderRadius: "48px" }}
               variant="determinate"
-              color="success"
-              value={22}
-              valueBuffer={max_questions}
+              value={number_of_questions / max_questions}
             />
             <Typography
               textAlign={"right"}
