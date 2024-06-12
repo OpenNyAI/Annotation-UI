@@ -5,14 +5,17 @@ import { useEffect, useRef } from "react";
 export type TextAnnotation = {
   id: string;
   text: string;
-  startIndex: number;
-  endIndex: number;
+  file_name: string;
+  start_index: number;
+  end_index: number;
   isFocused?: boolean;
+  sourceText?: string;
 };
 
 type TextAnnotatorProps = {
   id: string;
   text: string;
+  file_name: string;
   annotatedTexts: TextAnnotation[];
   onTextAnnotation(text: TextAnnotation): void;
 };
@@ -20,6 +23,7 @@ type TextAnnotatorProps = {
 const TextAnnotator = ({
   id,
   text,
+  file_name,
   annotatedTexts,
   onTextAnnotation,
 }: TextAnnotatorProps) => {
@@ -47,8 +51,9 @@ const TextAnnotator = ({
         onTextAnnotation({
           id,
           text,
-          startIndex: index,
-          endIndex: index + length,
+          file_name,
+          start_index: index,
+          end_index: index + length,
         });
       }
     };
@@ -59,13 +64,13 @@ const TextAnnotator = ({
       quillInstance.off(Quill.events.SELECTION_CHANGE, handleTextSelection);
       quillInstance.setContents([]);
     };
-  }, [id, text]);
+  }, [id, text, file_name]);
 
   useEffect(() => {
     if (quillRef.current) {
       quillRef.current.formatText(0, text.length, { background: "inherit" });
       annotatedTexts.forEach((selectedText) => {
-        const { startIndex, text } = selectedText;
+        const { start_index: startIndex, text } = selectedText;
         if (selectedText.isFocused) {
           quillRef.current?.setSelection(startIndex, text.length, "api");
         }

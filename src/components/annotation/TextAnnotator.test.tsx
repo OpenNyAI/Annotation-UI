@@ -7,6 +7,12 @@ describe("Text Annotator", () => {
   let onTextAnnotation: Mock;
 
   beforeEach(() => {
+    Range.prototype.getBoundingClientRect = vi.fn();
+    Range.prototype.getClientRects = () => ({
+      item: vi.fn(),
+      length: 0,
+      [Symbol.iterator]: vi.fn(),
+    });
     onTextAnnotation = vitest.fn();
   });
 
@@ -15,6 +21,7 @@ describe("Text Annotator", () => {
       <TextAnnotator
         annotatedTexts={[]}
         id="editor"
+        file_name="file_1"
         text="default text"
         onTextAnnotation={onTextAnnotation}
       />
@@ -33,9 +40,23 @@ describe("Text Annotator", () => {
     render(
       <TextAnnotator
         annotatedTexts={[
-          { id: "editor", endIndex: 3, startIndex: 0, text: "def" },
-          { id: "editor", endIndex: 11, startIndex: 8, text: "text" },
+          {
+            id: "editor",
+            file_name: "file_1",
+            end_index: 3,
+            start_index: 0,
+            text: "def",
+            isFocused: true,
+          },
+          {
+            id: "editor",
+            file_name: "file_1",
+            end_index: 11,
+            start_index: 8,
+            text: "text",
+          },
         ]}
+        file_name="file_1"
         id="editor"
         text="default text"
         onTextAnnotation={onTextAnnotation}
@@ -57,8 +78,15 @@ describe("Text Annotator", () => {
     render(
       <TextAnnotator
         annotatedTexts={[
-          { id: "editor", endIndex: 19, startIndex: 14, text: "text" },
+          {
+            id: "editor",
+            file_name: "file_1",
+            end_index: 19,
+            start_index: 14,
+            text: "text",
+          },
         ]}
+        file_name="file_1"
         id="editor"
         text="this is a new text to select"
         onTextAnnotation={onTextAnnotation}
@@ -77,9 +105,10 @@ describe("Text Annotator", () => {
     ]);
 
     expect(onTextAnnotation).toHaveBeenNthCalledWith(1, {
-      endIndex: 5,
+      end_index: 5,
+      file_name: "file_1",
       id: "editor",
-      startIndex: 0,
+      start_index: 0,
       text: "this ",
     });
   });
@@ -88,6 +117,7 @@ describe("Text Annotator", () => {
       <TextAnnotator
         annotatedTexts={[]}
         id="editor"
+        file_name="file_1"
         text="this is a new text to select"
         onTextAnnotation={onTextAnnotation}
       />

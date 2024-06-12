@@ -1,7 +1,8 @@
 import { Send } from "@mui/icons-material";
-import { Box, Button, Divider, IconButton, Typography } from "@mui/material";
+import { LoadingButton } from "@mui/lab";
+import { Box, Button, Divider, Typography } from "@mui/material";
 import { produce } from "immer";
-import { useEffect, useState } from "react";
+import { ChangeEvent, KeyboardEventHandler, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { LabelledInput } from "../components/LabelledInput";
@@ -11,37 +12,8 @@ import TextAnnotator, {
   TextAnnotation,
 } from "../components/annotation/TextAnnotator";
 import useAxios from "../hooks/useAxios";
-import { DocumentWithContent } from "../types/api";
+import { DocumentWithContent, QueryResult } from "../types/api";
 import { Styles } from "../types/styles";
-
-const dummyText = `Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of "de Finibus Bonorum et Malorum" (The Extremes of Good and Evil) by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular during the Renaissance. The first line of Lorem Ipsum, "Lorem ipsum dolor sit amet..", comes from a line in section 1.10.32.
-
-The standard chunk of Lorem Ipsum used since the 1500s is reproduced below for those interested. Sections 1.10.32 and 1.10.33 from "de Finibus Bonorum et Malorum" by Cicero are also reproduced in their exact original form, accompanied by English versions from the 1914 translation by H. Rackham.\nContrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of "de Finibus Bonorum et Malorum" (The Extremes of Good and Evil) by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular during the Renaissance. The first line of Lorem Ipsum, "Lorem ipsum dolor sit amet..", comes from a line in section 1.10.32.
-
-The standard chunk of Lorem Ipsum used since the 1500s is reproduced below for those interested. Sections 1.10.32 and 1.10.33 from "de Finibus Bonorum et Malorum" by Cicero are also reproduced in their exact original form, accompanied by English versions from the 1914 translation by H. Rackham.\nContrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of "de Finibus Bonorum et Malorum" (The Extremes of Good and Evil) by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular during the Renaissance. The first line of Lorem Ipsum, "Lorem ipsum dolor sit amet..", comes from a line in section 1.10.32.
-
-The standard chunk of Lorem Ipsum used since the 1500s is reproduced below for those interested. Sections 1.10.32 and 1.10.33 from "de Finibus Bonorum et Malorum" by Cicero are also reproduced in their exact original form, accompanied by English versions from the 1914 translation by H. Rackham.\nContrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of "de Finibus Bonorum et Malorum" (The Extremes of Good and Evil) by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular during the Renaissance. The first line of Lorem Ipsum, "Lorem ipsum dolor sit amet..", comes from a line in section 1.10.32.
-
-The standard chunk of Lorem Ipsum used since the 1500s is reproduced below for those interested. Sections 1.10.32 and 1.10.33 from "de Finibus Bonorum et Malorum" by Cicero are also reproduced in their exact original form, accompanied by English versions from the 1914 translation by H. Rackham.\nContrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of "de Finibus Bonorum et Malorum" (The Extremes of Good and Evil) by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular during the Renaissance. The first line of Lorem Ipsum, "Lorem ipsum dolor sit amet..", comes from a line in section 1.10.32.
-
-The standard chunk of Lorem Ipsum used since the 1500s is reproduced below for those interested. Sections 1.10.32 and 1.10.33 from "de Finibus Bonorum et Malorum" by Cicero are also reproduced in their exact original form, accompanied by English versions from the 1914 translation by H. Rackham.\nContrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of "de Finibus Bonorum et Malorum" (The Extremes of Good and Evil) by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular during the Renaissance. The first line of Lorem Ipsum, "Lorem ipsum dolor sit amet..", comes from a line in section 1.10.32.
-
-The standard chunk of Lorem Ipsum used since the 1500s is reproduced below for those interested. Sections 1.10.32 and 1.10.33 from "de Finibus Bonorum et Malorum" by Cicero are also reproduced in their exact original form, accompanied by English versions from the 1914 translation by H. Rackham.\nContrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of "de Finibus Bonorum et Malorum" (The Extremes of Good and Evil) by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular during the Renaissance. The first line of Lorem Ipsum, "Lorem ipsum dolor sit amet..", comes from a line in section 1.10.32.
-
-The standard chunk of Lorem Ipsum used since the 1500s is reproduced below for those interested. Sections 1.10.32 and 1.10.33 from "de Finibus Bonorum et Malorum" by Cicero are also reproduced in their exact original form, accompanied by English versions from the 1914 translation by H. Rackham.\nContrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of "de Finibus Bonorum et Malorum" (The Extremes of Good and Evil) by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular during the Renaissance. The first line of Lorem Ipsum, "Lorem ipsum dolor sit amet..", comes from a line in section 1.10.32.
-
-The standard chunk of Lorem Ipsum used since the 1500s is reproduced below for those interested. Sections 1.10.32 and 1.10.33 from "de Finibus Bonorum et Malorum" by Cicero are also reproduced in their exact original form, accompanied by English versions from the 1914 translation by H. Rackham.\nContrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of "de Finibus Bonorum et Malorum" (The Extremes of Good and Evil) by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular during the Renaissance. The first line of Lorem Ipsum, "Lorem ipsum dolor sit amet..", comes from a line in section 1.10.32.
-
-The standard chunk of Lorem Ipsum used since the 1500s is reproduced below for those interested. Sections 1.10.32 and 1.10.33 from "de Finibus Bonorum et Malorum" by Cicero are also reproduced in their exact original form, accompanied by English versions from the 1914 translation by H. Rackham.\nContrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of "de Finibus Bonorum et Malorum" (The Extremes of Good and Evil) by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular during the Renaissance. The first line of Lorem Ipsum, "Lorem ipsum dolor sit amet..", comes from a line in section 1.10.32.
-
-The standard chunk of Lorem Ipsum used since the 1500s is reproduced below for those interested. Sections 1.10.32 and 1.10.33 from "de Finibus Bonorum et Malorum" by Cicero are also reproduced in their exact original form, accompanied by English versions from the 1914 translation by H. Rackham.\n`;
-
-const result = `The standard chunk of Lorem Ipsum used since the 1500s is reproduced below for those interested. Sections 1.10.32 and 1.10.33 from "de Finibus Bonorum et Malorum" by Cicero are also reproduced in their exact original form, accompanied by English versions from the 1914 translation by H. Rackham.\nContrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of "de Finibus Bonorum et Malorum" (The Extremes of Good and Evil) by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular during the Renaissance. The first line of Lorem Ipsum, "Lorem ipsum dolor sit amet..", comes from a line in section 1.10.32.
-
-The standard chunk of Lorem Ipsum used since the 1500s is reproduced below for those interested. Sections 1.10.32 and 1.10.33 from "de Finibus Bonorum et Malorum" by Cicero are also reproduced in their exact original form, accompanied by English versions from the 1914 translation by H. Rackham.\nContrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of "de Finibus Bonorum et Malorum" (The Extremes of Good and Evil) by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular during the Renaissance. The first line of Lorem Ipsum, "Lorem ipsum dolor sit amet..", comes from a line in section 1.10.32.
-`;
-
-const dummyResults = new Array(2).fill(result);
 
 const styles: Styles = {
   container: {
@@ -77,7 +49,7 @@ const styles: Styles = {
     flexDirection: "column",
     border: (theme) => `0.5px solid ${theme.palette.primary.light}`,
     borderRadius: "8px",
-    mb: "24px",
+    mb: "16px",
     maxHeight: "340px",
   },
 };
@@ -85,6 +57,8 @@ const styles: Styles = {
 export const AnnotationPage = () => {
   const [question, setQuestion] = useState("");
   const [annotatedTexts, setAnnotatedTexts] = useState<TextAnnotation[]>([]);
+  const [result, setResult] = useState<QueryResult>();
+  const [additionalInfo, setAdditionalInfo] = useState("");
 
   const { documentId } = useParams();
 
@@ -94,6 +68,9 @@ export const AnnotationPage = () => {
     error: fileContentError,
     status: fileContentStatus,
   } = useAxios<DocumentWithContent>();
+
+  const { makeRequest: queryQuestion, status: queryStatus } =
+    useAxios<QueryResult>();
 
   const handleTextAnnotation = (annotatedText: TextAnnotation) => {
     setAnnotatedTexts((prev) => [...prev, annotatedText]);
@@ -121,7 +98,39 @@ export const AnnotationPage = () => {
   };
 
   // TODO: handle question submission
-  const handleSubmitQuestion = () => {};
+  const handleSubmitAnswer = () => {};
+
+  const handleQueryQuestion = async () => {
+    if (!question) {
+      return;
+    }
+    try {
+      const response = await queryQuestion(
+        `/user/query?query=${question}`,
+        "GET"
+      );
+      setResult(response);
+      setAnnotatedTexts((prevState) =>
+        prevState.filter((text) => !text.sourceText)
+      );
+    } catch (err: any) {
+      toast.error(err.message);
+    }
+  };
+
+  const handleQuestionChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setQuestion(event.target.value);
+  };
+
+  const handleAdditionalInfoChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setAdditionalInfo(event.target.value);
+  };
+
+  const handleKeyDown: KeyboardEventHandler<HTMLInputElement> = (event) => {
+    if (event.key === "Enter") {
+      handleQueryQuestion();
+    }
+  };
 
   useEffect(() => {
     async function getDocumentContents() {
@@ -159,76 +168,102 @@ export const AnnotationPage = () => {
   }
 
   return (
-    <Box sx={styles.container}>
-      <Box sx={styles.mainEditor}>
-        <Box sx={styles.mainEditorBox}>
-          <TextAnnotator
-            id="main-editor"
-            text={fileContent?.content ?? ""}
-            annotatedTexts={annotatedTexts.filter(
-              (item) => item.id === "main-editor"
+    fileContentStatus === "resolved" && (
+      <Box sx={styles.container}>
+        <Box sx={styles.mainEditor}>
+          <Box sx={styles.mainEditorBox}>
+            <TextAnnotator
+              id="main-editor"
+              file_name={fileContent!.file_name}
+              text={fileContent!.content}
+              annotatedTexts={annotatedTexts.filter(
+                (item) => item.id === "main-editor"
+              )}
+              onTextAnnotation={handleTextAnnotation}
+            />
+          </Box>
+          <Box sx={styles.resultsContainer}>
+            <Box sx={{ display: "flex", gap: "16px" }}>
+              <LabelledInput
+                label={<Typography variant="subtitle1">Question</Typography>}
+                size="small"
+                fullWidth
+                type="text"
+                onChange={handleQuestionChange}
+                onKeyDown={handleKeyDown}
+              />
+              <LoadingButton
+                variant="contained"
+                loading={queryStatus === "pending"}
+                disabled={!question}
+                sx={{ textTransform: "none", alignSelf: "center", mt: "32px" }}
+                endIcon={<Send />}
+                onClick={handleQueryQuestion}
+              >
+                Query
+              </LoadingButton>
+            </Box>
+            {queryStatus === "resolved" && (
+              <Typography variant="subtitle1">Results</Typography>
             )}
-            onTextAnnotation={handleTextAnnotation}
-          />
+
+            {result?.chunks.map((result, index) => {
+              const id = "result_" + index;
+              const editorAnnotatedTexts = annotatedTexts.filter(
+                (item) => item.id == id
+              );
+              return (
+                <Box key={index} sx={styles.resultBox}>
+                  <TextAnnotator
+                    id={id}
+                    file_name={result.metadata.file_name}
+                    text={result.chunk}
+                    annotatedTexts={editorAnnotatedTexts}
+                    onTextAnnotation={(annotation) =>
+                      handleTextAnnotation({
+                        ...annotation,
+                        sourceText: result.chunk,
+                      })
+                    }
+                  />
+                </Box>
+              );
+            })}
+            <LabelledInput
+              label={
+                <Typography sx={{ mt: "auto" }} variant="subtitle1">
+                  Additional Info
+                </Typography>
+              }
+              size="small"
+              fullWidth
+              type="text"
+              onChange={handleAdditionalInfoChange}
+            />
+            <Button
+              variant="contained"
+              sx={{ width: "120px", mx: "auto" }}
+              disabled={
+                question ? annotatedTexts.length === 0 && !additionalInfo : true
+              }
+              onClick={handleSubmitAnswer}
+            >
+              Submit
+            </Button>
+          </Box>
         </Box>
-        <Box sx={styles.resultsContainer}>
-          <LabelledInput
-            label={<Typography variant="subtitle1">Question</Typography>}
-            size="small"
-            fullWidth
-            type="text"
-            InputProps={{
-              endAdornment: (
-                <IconButton size="small">
-                  <Send />
-                </IconButton>
-              ),
-            }}
-          />
-          <Typography variant="subtitle1">Results</Typography>
-          {dummyResults.map((result, index) => {
-            const id = "result_" + index;
-            const editorAnnotatedTexts = annotatedTexts.filter(
-              (item) => item.id == id
-            );
-            return (
-              <Box key={index} sx={styles.resultBox}>
-                <TextAnnotator
-                  id={id}
-                  text={result}
-                  annotatedTexts={editorAnnotatedTexts}
-                  onTextAnnotation={handleTextAnnotation}
-                />
-              </Box>
-            );
-          })}
-          <LabelledInput
-            label={<Typography variant="subtitle1">Additional Info</Typography>}
-            size="small"
-            fullWidth
-            type="text"
-          />
-          <Button
-            variant="contained"
-            sx={{ width: "120px", mx: "auto" }}
-            disabled={!question}
-            onClick={handleSubmitQuestion}
-          >
-            Submit
-          </Button>
-        </Box>
+        {annotatedTexts.length > 0 && (
+          <>
+            <Divider orientation="vertical" />
+            <AnnotationSummarySidePanel
+              textAnnotations={annotatedTexts}
+              onDelete={handleDeleteTextAnnotation}
+              onSelect={handleSelectTextAnnotation}
+              onUpdateSelections={setAnnotatedTexts}
+            />
+          </>
+        )}
       </Box>
-      {annotatedTexts.length > 0 && (
-        <>
-          <Divider orientation="vertical" />
-          <AnnotationSummarySidePanel
-            textAnnotations={annotatedTexts}
-            onDelete={handleDeleteTextAnnotation}
-            onSelect={handleSelectTextAnnotation}
-            onUpdateSelections={setAnnotatedTexts}
-          />
-        </>
-      )}
-    </Box>
+    )
   );
 };
