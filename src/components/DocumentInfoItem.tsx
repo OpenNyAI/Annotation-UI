@@ -95,7 +95,7 @@ export const DocumentInfoItem = ({
             <BorderLinearProgress
               sx={{ width: "200px", height: "8px", borderRadius: "48px" }}
               variant="determinate"
-              value={number_of_questions / max_questions}
+              value={(number_of_questions / max_questions) * 100}
             />
             <Typography
               textAlign={"right"}

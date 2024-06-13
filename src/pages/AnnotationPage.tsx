@@ -5,6 +5,7 @@ import { produce } from "immer";
 import { ChangeEvent, KeyboardEventHandler, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
+import { ErrorMessage } from "../components/ErrorMessage";
 import { LabelledInput } from "../components/LabelledInput";
 import { LoadingSpinner } from "../components/LoadingSpinner";
 import { AnnotationSummarySidePanel } from "../components/annotation/AnnotationSummarySidePanel";
@@ -12,7 +13,11 @@ import TextAnnotator, {
   TextAnnotation,
 } from "../components/annotation/TextAnnotator";
 import useAxios from "../hooks/useAxios";
-import { DocumentWithContent, QueryResult } from "../types/api";
+import {
+  DocumentWithContent,
+  QueryResult,
+  SubmitAnswerBody,
+} from "../types/api";
 import { Styles } from "../types/styles";
 
 const styles: Styles = {
@@ -69,6 +74,8 @@ export const AnnotationPage = () => {
     status: fileContentStatus,
   } = useAxios<DocumentWithContent>();
 
+  const { makeRequest: submitAnswer } = useAxios<DocumentWithContent>();
+
   const { makeRequest: queryQuestion, status: queryStatus } =
     useAxios<QueryResult>();
 
@@ -97,8 +104,36 @@ export const AnnotationPage = () => {
     setAnnotatedTexts(updatedAnnotations);
   };
 
-  // TODO: handle question submission
-  const handleSubmitAnswer = () => {};
+  const resetQuery = () => {
+    setQuestion("");
+    setAnnotatedTexts([]);
+    setAdditionalInfo("");
+    setResult(undefined);
+  };
+
+  const handleSubmitAnswer = async () => {
+    if (!question) {
+      return;
+    }
+    try {
+      const answerBody: SubmitAnswerBody = {
+        query: result?.query ?? question,
+        annotated_text: annotatedTexts,
+        additional_answer: additionalInfo,
+        document_id: documentId!,
+      };
+      const response = await submitAnswer(`/user/submit`, "POST", answerBody);
+      resetQuery();
+      toast.success(response);
+      try {
+        await makeRequest(`/user/documents/${documentId}`, "GET");
+      } catch (err: any) {
+        toast.error(err.message);
+      }
+    } catch (err: any) {
+      toast.error(err.message);
+    }
+  };
 
   const handleQueryQuestion = async () => {
     if (!question) {
@@ -150,20 +185,10 @@ export const AnnotationPage = () => {
 
   if (fileContentStatus === "error") {
     return (
-      <Box
-        sx={{
-          height: "100%",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <Typography variant="h6">Error while loading the document</Typography>
-        <Typography variant="subtitle1">
-          Error : {fileContentError?.message}
-        </Typography>
-      </Box>
+      <ErrorMessage
+        title="Error while loading the document"
+        subtitle={`Error : ${fileContentError?.message}`}
+      />
     );
   }
 
@@ -188,6 +213,7 @@ export const AnnotationPage = () => {
                 label={<Typography variant="subtitle1">Question</Typography>}
                 size="small"
                 fullWidth
+                placeholder="Enter your question"
                 type="text"
                 onChange={handleQuestionChange}
                 onKeyDown={handleKeyDown}
@@ -206,7 +232,6 @@ export const AnnotationPage = () => {
             {queryStatus === "resolved" && (
               <Typography variant="subtitle1">Results</Typography>
             )}
-
             {result?.chunks.map((result, index) => {
               const id = "result_" + index;
               const editorAnnotatedTexts = annotatedTexts.filter(
@@ -237,6 +262,8 @@ export const AnnotationPage = () => {
               }
               size="small"
               fullWidth
+              value={additionalInfo}
+              placeholder="Enter additional information"
               type="text"
               onChange={handleAdditionalInfoChange}
             />

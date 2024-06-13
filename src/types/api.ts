@@ -17,6 +17,19 @@ export type ResultChunk = {
   metadata: { chunk_id: number; file_name: string };
 };
 
+export type SubmitAnswerBody = {
+  document_id: string;
+  query: string;
+  annotated_text: {
+    file_name: string;
+    text: string;
+    start_index: number;
+    end_index: number;
+    source_text?: string;
+  }[];
+  additional_answer?: string;
+};
+
 export type QueryResult = {
   query: string;
   chunks: ResultChunk[];

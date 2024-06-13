@@ -1,8 +1,9 @@
-import { Box, Grid, Typography } from "@mui/material";
+import { Grid, Typography } from "@mui/material";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { DocumentInfoItem } from "../components/DocumentInfoItem";
+import { ErrorMessage } from "../components/ErrorMessage";
 import { LoadingSpinner } from "../components/LoadingSpinner";
 import useAxios from "../hooks/useAxios";
 import { DocumentInfo } from "../types/api";
@@ -31,20 +32,18 @@ export const DocumentsList = () => {
 
   if (status === "error") {
     return (
-      <Box
-        sx={{
-          height: "100%",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <Typography variant="h6">Error while fetching the documents</Typography>
-        <Typography variant="subtitle1">Error : {error?.message}</Typography>
-      </Box>
+      <ErrorMessage
+        title="Error while fetching the documents"
+        subtitle={`Error : ${error?.message}`}
+      />
     );
   }
+
+  const handleDocumentClick = (doc: DocumentInfo) => {
+    if (doc.number_of_questions < doc.max_questions) {
+      navigate(`/annotate/${doc.id}`);
+    }
+  };
 
   return (
     <Grid
@@ -61,7 +60,7 @@ export const DocumentsList = () => {
           <Grid item md={6} xs={12} key={doc.id}>
             <DocumentInfoItem
               {...doc}
-              onClick={() => navigate(`/annotate/${doc.id}`)}
+              onClick={() => handleDocumentClick(doc)}
             />
           </Grid>
         );

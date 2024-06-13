@@ -1,4 +1,10 @@
 import { HttpResponse, http } from "msw";
+import { QueryResult } from "../types/api";
+import {
+  documentsListResponse,
+  fileContent,
+  queryChunksResponse,
+} from "./documents";
 
 export const handlers = [
   http.post(`/auth/login`, () => {
@@ -22,23 +28,19 @@ export const handlers = [
 
   http.get(`/user/documents`, () => {
     return HttpResponse.json({
-      documents: [
-        {
-          id: "1",
-          file_name: "File1.txt",
-          last_edited_by: "user",
-          number_of_questions: 2,
-          max_questions: 24,
-        },
-      ],
+      documents: documentsListResponse,
     });
   }),
 
   http.get(`/user/documents/file-1`, () => {
-    return HttpResponse.json({
-      id: "1",
-      file_name: "File1.txt",
-      content: "this is file content information",
-    });
+    return HttpResponse.json(fileContent);
+  }),
+
+  http.get("/user/query", () => {
+    return HttpResponse.json<QueryResult>(queryChunksResponse);
+  }),
+
+  http.post("/user/submit", () => {
+    return HttpResponse.json("Submitted successfully");
   }),
 ];
