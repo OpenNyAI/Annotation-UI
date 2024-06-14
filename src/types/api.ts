@@ -39,6 +39,7 @@ export type QueryResult = {
 
 export type AnswersResult = {
   id: string;
+  file_name: string;
   query: string;
   answers: AnnotatedText[];
   additional_text?: string;

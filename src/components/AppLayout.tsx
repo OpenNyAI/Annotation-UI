@@ -12,8 +12,9 @@ import { useTheme } from "@mui/material/styles";
 import { useState } from "react";
 import { Route, Routes, useLocation } from "react-router-dom";
 import { AnnotationPage } from "../pages/AnnotationPage";
+import { DocumentAnswers } from "../pages/DocumentAnswers";
 import { DocumentsList } from "../pages/DocumentsList";
-import { MyAnswers } from "../pages/MyAnswers";
+import { MyAnswersList } from "../pages/MyAnswersList";
 import { NotFound } from "../pages/NotFound";
 import { AppBar } from "./AppBar";
 import { Drawer, DrawerHeader } from "./Drawer";
@@ -21,7 +22,7 @@ import { NavigationItem } from "./NavigationItem";
 import { PrivateRoute } from "./PrivateRoute";
 
 export const drawerWidth = 240;
-const APP_BAR_HEIGHT = 84;
+const APP_BAR_HEIGHT = 64;
 
 export default function AppLayout() {
   const theme = useTheme();
@@ -118,7 +119,15 @@ export default function AppLayout() {
             path="/answers"
             element={
               <PrivateRoute>
-                <MyAnswers />
+                <MyAnswersList />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/answers/:documentId"
+            element={
+              <PrivateRoute>
+                <DocumentAnswers />
               </PrivateRoute>
             }
           />

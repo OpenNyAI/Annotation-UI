@@ -4,6 +4,7 @@ import {
   documentsListResponse,
   fileContent,
   myDocumentsWithAnswers,
+  qnaResponse,
   queryChunksResponse,
 } from "./documents";
 
@@ -48,6 +49,12 @@ export const handlers = [
   http.get(`/user/users/documents`, () => {
     return HttpResponse.json({
       documents: myDocumentsWithAnswers,
+    });
+  }),
+
+  http.get(`/user/qna/doc-1`, () => {
+    return HttpResponse.json({
+      qna: qnaResponse,
     });
   }),
 ];
