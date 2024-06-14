@@ -1,13 +1,14 @@
-import { Box, Grid, Typography } from "@mui/material";
+import { Grid, Typography } from "@mui/material";
 import { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { DocumentInfoItem } from "../components/DocumentInfoItem";
+import { ErrorMessage } from "../components/ErrorMessage";
 import { LoadingSpinner } from "../components/LoadingSpinner";
 import useAxios from "../hooks/useAxios";
 import { DocumentInfo } from "../types/api";
 
-export const MyAnswers = () => {
+export const MyAnswersList = () => {
   const navigate = useNavigate();
 
   const { makeRequest, data, status, error } = useAxios<{
@@ -31,20 +32,10 @@ export const MyAnswers = () => {
 
   if (status === "error") {
     return (
-      <Box
-        sx={{
-          height: "100%",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <Typography variant="h6">
-          Error while fetching answered documents
-        </Typography>
-        <Typography variant="subtitle1">Error : {error?.message}</Typography>
-      </Box>
+      <ErrorMessage
+        title="Error while fetching answered documents"
+        subtitle={`Error : ${error?.message}`}
+      />
     );
   }
 

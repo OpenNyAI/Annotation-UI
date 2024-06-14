@@ -177,7 +177,7 @@ export const AnnotationPage = () => {
     }
 
     getDocumentContents();
-  }, []);
+  }, [documentId]);
 
   if (fileContentStatus === "pending") {
     return <LoadingSpinner />;

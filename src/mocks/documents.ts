@@ -8,6 +8,23 @@ export const documentsListResponse = [
   },
 ];
 
+export const myDocumentsWithAnswers = [
+  {
+    id: "1",
+    file_name: "File1 Answered.txt",
+    last_edited_by: "Tester",
+    number_of_questions: 8,
+    max_questions: 24,
+  },
+  {
+    id: "2",
+    file_name: "File2 Answered.txt",
+    last_edited_by: "Tester",
+    number_of_questions: 6,
+    max_questions: 25,
+  },
+];
+
 export const chunks = [
   {
     chunk: "chunk-1",

@@ -3,6 +3,7 @@ import { QueryResult } from "../types/api";
 import {
   documentsListResponse,
   fileContent,
+  myDocumentsWithAnswers,
   queryChunksResponse,
 } from "./documents";
 
@@ -42,5 +43,11 @@ export const handlers = [
 
   http.post("/user/submit", () => {
     return HttpResponse.json("Submitted successfully");
+  }),
+
+  http.get(`/user/users/documents`, () => {
+    return HttpResponse.json({
+      documents: myDocumentsWithAnswers,
+    });
   }),
 ];
