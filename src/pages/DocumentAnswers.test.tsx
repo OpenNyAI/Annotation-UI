@@ -50,8 +50,8 @@ describe("Document Answers", () => {
     const answerBox = screen.getByTestId("answer-box");
     const additionalInfoBox = screen.getByTestId("additional-info-box");
 
-    const prevBtn = screen.getByRole("button", { name: "Prev" });
-    const nextBtn = screen.getByRole("button", { name: "Next" });
+    const prevBtn = screen.getByTestId("prevBtn");
+    const nextBtn = screen.getByTestId("nextBtn");
 
     expect(screen.getByText("File-1.txt (1/2)")).toBeInTheDocument();
     expect(questionBox).toHaveTextContent("Question-1");

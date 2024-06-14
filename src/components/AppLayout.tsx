@@ -21,7 +21,7 @@ import { Drawer, DrawerHeader } from "./Drawer";
 import { NavigationItem } from "./NavigationItem";
 import { PrivateRoute } from "./PrivateRoute";
 
-export const drawerWidth = 240;
+export const DRAWER_WIDTH = 240;
 const APP_BAR_HEIGHT = 64;
 
 export default function AppLayout() {

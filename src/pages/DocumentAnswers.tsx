@@ -1,4 +1,5 @@
-import { Box, Button, Typography } from "@mui/material";
+import { ChevronLeft, ChevronRight } from "@mui/icons-material";
+import { Box, IconButton, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -84,10 +85,34 @@ export const DocumentAnswers = () => {
     data && (
       <Box sx={styles.container}>
         <Box sx={{ display: "flex", flexDirection: "column", height: "20%" }}>
-          <Typography
-            variant={"h6"}
-            textAlign={"center"}
-          >{`${question?.file_name} (${currentQuestion + 1}/${data.qna.length})`}</Typography>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              gap: "16px",
+              alignItems: "center",
+            }}
+          >
+            <IconButton
+              data-testid="prevBtn"
+              disabled={currentQuestion === 0}
+              onClick={handlePrevQuestion}
+            >
+              <ChevronLeft />
+            </IconButton>
+            <Typography
+              variant={"h6"}
+              textAlign={"center"}
+            >{`${question?.file_name} (${currentQuestion + 1}/${data.qna.length})`}</Typography>
+            <IconButton
+              data-testid="nextBtn"
+              disabled={currentQuestion === data!.qna.length - 1}
+              onClick={handleNextQuestion}
+            >
+              <ChevronRight />
+            </IconButton>
+          </Box>
+
           <Typography variant="h6">{`Question `}</Typography>
           <Typography
             data-testid="question-box"
@@ -97,7 +122,7 @@ export const DocumentAnswers = () => {
             {question?.query}
           </Typography>
         </Box>
-        <Box sx={{ display: "flex", flexDirection: "column", height: "60%" }}>
+        <Box sx={{ display: "flex", flexDirection: "column", height: "65%" }}>
           <Typography variant="h6">Answer</Typography>
           <Typography
             data-testid="answer-box"
@@ -115,22 +140,6 @@ export const DocumentAnswers = () => {
           >
             {question?.additional_text}
           </Typography>
-        </Box>
-        <Box sx={styles.actionsContainer}>
-          <Button
-            variant="contained"
-            disabled={currentQuestion === 0}
-            onClick={handlePrevQuestion}
-          >
-            Prev
-          </Button>
-          <Button
-            variant="contained"
-            disabled={currentQuestion === data!.qna.length - 1}
-            onClick={handleNextQuestion}
-          >
-            Next
-          </Button>
         </Box>
       </Box>
     )
