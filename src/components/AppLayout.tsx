@@ -1,4 +1,8 @@
-import { QuestionAnswerTwoTone, TextSnippetTwoTone } from "@mui/icons-material";
+import {
+  QuestionAnswerTwoTone,
+  ReviewsTwoTone,
+  TextSnippetTwoTone,
+} from "@mui/icons-material";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import MenuIcon from "@mui/icons-material/Menu";
@@ -16,6 +20,7 @@ import { DocumentAnswers } from "../pages/DocumentAnswers";
 import { DocumentsList } from "../pages/DocumentsList";
 import { MyAnswersList } from "../pages/MyAnswersList";
 import { NotFound } from "../pages/NotFound";
+import { ReviewAnswersPage } from "../pages/ReviewAnswersPage";
 import { AppBar } from "./AppBar";
 import { Drawer, DrawerHeader } from "./Drawer";
 import { NavigationItem } from "./NavigationItem";
@@ -91,6 +96,13 @@ export default function AppLayout() {
             isOpen={open}
             icon={<QuestionAnswerTwoTone />}
           />
+          <NavigationItem
+            title="Review Q&A"
+            to="/review"
+            isSelected={pathname.includes("/review")}
+            isOpen={open}
+            icon={<ReviewsTwoTone />}
+          />
         </List>
       </Drawer>
       <Box
@@ -128,6 +140,22 @@ export default function AppLayout() {
             element={
               <PrivateRoute>
                 <DocumentAnswers />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/review"
+            element={
+              <PrivateRoute>
+                <MyAnswersList />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/review/:documentId"
+            element={
+              <PrivateRoute>
+                <ReviewAnswersPage />
               </PrivateRoute>
             }
           />

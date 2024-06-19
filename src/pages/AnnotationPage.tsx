@@ -74,7 +74,7 @@ export const AnnotationPage = () => {
     status: fileContentStatus,
   } = useAxios<DocumentWithContent>();
 
-  const { makeRequest: submitAnswer } = useAxios<DocumentWithContent>();
+  const { makeRequest: submitAnswer } = useAxios<string>();
 
   const { makeRequest: queryQuestion, status: queryStatus } =
     useAxios<QueryResult>();
@@ -146,7 +146,7 @@ export const AnnotationPage = () => {
       );
       setResult(response);
       setAnnotatedTexts((prevState) =>
-        prevState.filter((text) => !text.sourceText)
+        prevState.filter((text) => !text.source_text)
       );
     } catch (err: any) {
       toast.error(err.message);
@@ -202,7 +202,7 @@ export const AnnotationPage = () => {
               file_name={fileContent!.file_name}
               text={fileContent!.content}
               annotatedTexts={annotatedTexts.filter(
-                (item) => item.id === "main-editor"
+                (item) => !item.source_text
               )}
               onTextAnnotation={handleTextAnnotation}
             />
@@ -235,7 +235,7 @@ export const AnnotationPage = () => {
             {result?.chunks.map((result, index) => {
               const id = "result_" + index;
               const editorAnnotatedTexts = annotatedTexts.filter(
-                (item) => item.id == id
+                (item) => item.source_text === result.chunk
               );
               return (
                 <Box key={index} sx={styles.resultBox}>
@@ -247,7 +247,7 @@ export const AnnotationPage = () => {
                     onTextAnnotation={(annotation) =>
                       handleTextAnnotation({
                         ...annotation,
-                        sourceText: result.chunk,
+                        source_text: result.chunk,
                       })
                     }
                   />

@@ -41,7 +41,6 @@ describe("Text Annotator", () => {
       <TextAnnotator
         annotatedTexts={[
           {
-            id: "editor",
             file_name: "file_1",
             end_index: 3,
             start_index: 0,
@@ -49,7 +48,6 @@ describe("Text Annotator", () => {
             isFocused: true,
           },
           {
-            id: "editor",
             file_name: "file_1",
             end_index: 11,
             start_index: 8,
@@ -79,7 +77,6 @@ describe("Text Annotator", () => {
       <TextAnnotator
         annotatedTexts={[
           {
-            id: "editor",
             file_name: "file_1",
             end_index: 19,
             start_index: 14,
@@ -107,7 +104,6 @@ describe("Text Annotator", () => {
     expect(onTextAnnotation).toHaveBeenNthCalledWith(1, {
       end_index: 5,
       file_name: "file_1",
-      id: "editor",
       start_index: 0,
       text: "this ",
     });

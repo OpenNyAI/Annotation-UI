@@ -6,21 +6,18 @@ import { TextAnnotation } from "./TextAnnotator";
 
 const textAnnotations: TextAnnotation[] = [
   {
-    id: "editor-1",
     end_index: 10,
     file_name: "file_1",
     start_index: 5,
     text: "text-1",
   },
   {
-    id: "editor-1",
     end_index: 10,
     file_name: "file_1",
     start_index: 5,
     text: "text-2",
   },
   {
-    id: "editor-1",
     end_index: 10,
     file_name: "file_1",
     start_index: 5,
@@ -30,21 +27,18 @@ const textAnnotations: TextAnnotation[] = [
 
 const updatedAnnotations = [
   {
-    id: "editor-1",
     file_name: "file_1",
     end_index: 10,
     start_index: 5,
     text: "text-2",
   },
   {
-    id: "editor-1",
     file_name: "file_1",
     end_index: 10,
     start_index: 5,
     text: "text-3",
   },
   {
-    id: "editor-1",
     file_name: "file_1",
     end_index: 10,
     start_index: 5,

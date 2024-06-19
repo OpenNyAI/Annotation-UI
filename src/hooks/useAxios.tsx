@@ -71,7 +71,7 @@ const useAxios = <T,>() => {
     url: string,
     method: "GET" | "POST" | "PUT" | "DELETE",
     body?: K
-  ) => {
+  ): Promise<T> => {
     dispatch({
       type: "pending",
     });

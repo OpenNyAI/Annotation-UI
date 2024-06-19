@@ -16,6 +16,7 @@ const styles: Styles = {
   container: {
     height: "100%",
     width: "30%",
+    minWidth: "30%",
     display: "flex",
     overflowY: "hidden",
     overflowX: "hidden",
@@ -36,12 +37,12 @@ const styles: Styles = {
     flexDirection: "column",
     gap: 1,
     overflow: "scroll",
+    border: "0.5px solid grey",
+    borderRadius: "8px",
   },
   answerText: {
     whiteSpace: "pre-wrap",
     height: "100%",
-    border: "0.5px solid grey",
-    borderRadius: "8px",
     padding: 1,
     fontSize: "16px",
   },

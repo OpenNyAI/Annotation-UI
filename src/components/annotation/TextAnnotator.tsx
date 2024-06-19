@@ -3,13 +3,12 @@ import "quill/dist/quill.snow.css";
 import { useEffect, useRef } from "react";
 
 export type TextAnnotation = {
-  id: string;
   text: string;
   file_name: string;
   start_index: number;
   end_index: number;
   isFocused?: boolean;
-  sourceText?: string;
+  source_text?: string;
 };
 
 type TextAnnotatorProps = {
@@ -49,7 +48,6 @@ const TextAnnotator = ({
         const text = quillInstance.getText(range);
         const { index, length } = range;
         onTextAnnotation({
-          id,
           text,
           file_name,
           start_index: index,
