@@ -317,7 +317,7 @@ export const ReviewAnswersPage = () => {
                 }
                 size="small"
                 fullWidth
-                value={additionalInfo}
+                value={additionalInfo ?? ""}
                 placeholder="Enter additional information"
                 type="text"
                 onChange={handleAdditionalInfoChange}

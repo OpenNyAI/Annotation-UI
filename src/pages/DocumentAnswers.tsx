@@ -45,7 +45,7 @@ export const DocumentAnswers = () => {
   useEffect(() => {
     async function getQnA() {
       try {
-        await makeRequest(`/user/qna/${documentId}`, "GET");
+        await makeRequest(`/user/qna/document/${documentId}`, "GET");
       } catch (err: any) {
         toast.error(err.message);
       }

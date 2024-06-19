@@ -52,7 +52,7 @@ export const handlers = [
     });
   }),
 
-  http.get(`/user/qna/doc-1`, () => {
+  http.get(`/user/qna/document/doc-1`, () => {
     return HttpResponse.json({
       qna: qnaResponse,
     });

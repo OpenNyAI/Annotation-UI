@@ -83,7 +83,7 @@ describe("Document Answers", () => {
 
   it("should show Error screen when the documents api fails", async () => {
     server.use(
-      http.get("/user/qna/doc-1", () => {
+      http.get("/user/qna/document/doc-1", () => {
         return HttpResponse.json(
           { message: "Something went wrong" },
           { status: 500 }

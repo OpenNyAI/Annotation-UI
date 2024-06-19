@@ -21,6 +21,7 @@ import { DocumentsList } from "../pages/DocumentsList";
 import { MyAnswersList } from "../pages/MyAnswersList";
 import { NotFound } from "../pages/NotFound";
 import { ReviewAnswersPage } from "../pages/ReviewAnswersPage";
+import { ReviewDocumentsList } from "../pages/ReviewDocumentsList";
 import { AppBar } from "./AppBar";
 import { Drawer, DrawerHeader } from "./Drawer";
 import { NavigationItem } from "./NavigationItem";
@@ -80,6 +81,7 @@ export default function AppLayout() {
             display: "flex",
             flexDirection: "column",
             gap: "8px",
+            flex: "1 0 auto",
           }}
         >
           <NavigationItem
@@ -147,7 +149,7 @@ export default function AppLayout() {
             path="/review"
             element={
               <PrivateRoute>
-                <MyAnswersList />
+                <ReviewDocumentsList />
               </PrivateRoute>
             }
           />
