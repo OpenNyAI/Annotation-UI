@@ -96,3 +96,20 @@ export const answer2 = {
 };
 
 export const qnaResponse = [answer1, answer2];
+
+export const finishedDocuments = [
+  {
+    id: "1",
+    file_name: "File1 Answered.txt",
+    last_edited_by: "Tester",
+    number_of_questions: 25,
+    max_questions: 25,
+  },
+  {
+    id: "2",
+    file_name: "File2 Answered.txt",
+    last_edited_by: "Tester",
+    number_of_questions: 25,
+    max_questions: 25,
+  },
+];

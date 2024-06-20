@@ -3,6 +3,7 @@ import { QueryResult } from "../types/api";
 import {
   documentsListResponse,
   fileContent,
+  finishedDocuments,
   myDocumentsWithAnswers,
   qnaResponse,
   queryChunksResponse,
@@ -55,6 +56,12 @@ export const handlers = [
   http.get(`/user/qna/document/doc-1`, () => {
     return HttpResponse.json({
       qna: qnaResponse,
+    });
+  }),
+
+  http.get(`/user/finished-documents`, () => {
+    return HttpResponse.json({
+      documents: finishedDocuments,
     });
   }),
 ];

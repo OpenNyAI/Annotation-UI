@@ -34,6 +34,7 @@ const styles: Styles = {
     flexDirection: "column",
     overflow: "scroll",
     height: "100%",
+    flex: 1,
     boxSizing: "border-box",
     p: 3,
     gap: 2,

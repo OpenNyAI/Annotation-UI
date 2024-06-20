@@ -18,8 +18,7 @@ export const ReviewDocumentsList = () => {
   useEffect(() => {
     async function getDocuments() {
       try {
-        //TODO: update with review documents api
-        await makeRequest("/user/users/documents", "GET");
+        await makeRequest("/user/finished-documents", "GET");
       } catch (err: any) {
         toast.error(err.message);
       }
@@ -34,7 +33,7 @@ export const ReviewDocumentsList = () => {
   if (status === "error") {
     return (
       <ErrorMessage
-        title="Error while fetching reviewable documents"
+        title="Error while fetching finished documents"
         subtitle={`Error : ${error?.message}`}
       />
     );
