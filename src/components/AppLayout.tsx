@@ -4,7 +4,7 @@ import IconButton from "@mui/material/IconButton";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import { useEffect, useState } from "react";
-import { Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 import useAxios from "../hooks/useAxios";
 import { AnnotationPage } from "../pages/AnnotationPage";
 import { DocumentAnswers } from "../pages/DocumentAnswers";
@@ -68,6 +68,19 @@ export function AppLayout() {
     );
   }
 
+  const homeRoute = (() => {
+    switch (app_state) {
+      case "annotation":
+        return "/";
+      case "review":
+        return "/review";
+      case "expert-review":
+        return "/expert-review";
+      case "none":
+        return "/";
+    }
+  })();
+
   return (
     <Box sx={{ height: "100vh", display: "flex" }}>
       <AppBar position="fixed" open={open}>
@@ -100,16 +113,20 @@ export function AppLayout() {
       >
         <DrawerHeader />
         <Routes>
+          <Route
+            path="/"
+            element={
+              <PrivateRoute>
+                {app_state === "annotation" ? (
+                  <DocumentsList />
+                ) : (
+                  <Navigate to={homeRoute} />
+                )}
+              </PrivateRoute>
+            }
+          />
           {app_state === "annotation" && (
             <>
-              <Route
-                path="/"
-                element={
-                  <PrivateRoute>
-                    <DocumentsList />
-                  </PrivateRoute>
-                }
-              />
               <Route
                 path="/annotate/:documentId"
                 element={
