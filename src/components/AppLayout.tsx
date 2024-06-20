@@ -1,20 +1,11 @@
-import {
-  QuestionAnswerTwoTone,
-  ReviewsTwoTone,
-  TextSnippetTwoTone,
-} from "@mui/icons-material";
-import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import MenuIcon from "@mui/icons-material/Menu";
 import Box from "@mui/material/Box";
-import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
-import List from "@mui/material/List";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
-import { useTheme } from "@mui/material/styles";
-import { useState } from "react";
-import { Route, Routes, useLocation } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Route, Routes } from "react-router-dom";
+import useAxios from "../hooks/useAxios";
 import { AnnotationPage } from "../pages/AnnotationPage";
 import { DocumentAnswers } from "../pages/DocumentAnswers";
 import { DocumentsList } from "../pages/DocumentsList";
@@ -23,17 +14,27 @@ import { NotFound } from "../pages/NotFound";
 import { ReviewAnswersPage } from "../pages/ReviewAnswersPage";
 import { ReviewDocumentsList } from "../pages/ReviewDocumentsList";
 import { AppBar } from "./AppBar";
-import { Drawer, DrawerHeader } from "./Drawer";
-import { NavigationItem } from "./NavigationItem";
+import { AppDrawer, DrawerHeader } from "./Drawer";
+import { ErrorMessage } from "./ErrorMessage";
+import { LoadingSpinner } from "./LoadingSpinner";
 import { PrivateRoute } from "./PrivateRoute";
 
 export const DRAWER_WIDTH = 240;
 const APP_BAR_HEIGHT = 64;
 
-export default function AppLayout() {
-  const theme = useTheme();
+export type AppConfig = {
+  app_state: "annotation" | "review" | "expert-review" | "none";
+};
+
+const defaultAppConfig: AppConfig = {
+  app_state: "none",
+};
+
+export function AppLayout() {
   const [open, setOpen] = useState(false);
-  const { pathname } = useLocation();
+
+  const [appConfig, setAppConfig] = useState<AppConfig>(defaultAppConfig);
+  const { makeRequest, status, error } = useAxios<AppConfig>();
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -42,6 +43,30 @@ export default function AppLayout() {
   const handleDrawerClose = () => {
     setOpen(false);
   };
+
+  useEffect(() => {
+    async function getApplicationConfig() {
+      const config = await makeRequest("/user/config", "GET");
+      setAppConfig(config);
+    }
+
+    getApplicationConfig();
+  }, []);
+
+  const { app_state } = appConfig;
+
+  if (status === "pending") {
+    return <LoadingSpinner />;
+  }
+
+  if (status === "error") {
+    return (
+      <ErrorMessage
+        title="Error while loading application config"
+        subtitle={`Error : ${error?.message}`}
+      />
+    );
+  }
 
   return (
     <Box sx={{ height: "100vh", display: "flex" }}>
@@ -64,103 +89,74 @@ export default function AppLayout() {
           </Typography>
         </Toolbar>
       </AppBar>
-      <Drawer variant="permanent" open={open}>
-        <DrawerHeader>
-          <IconButton onClick={handleDrawerClose}>
-            {theme.direction === "rtl" ? (
-              <ChevronRightIcon />
-            ) : (
-              <ChevronLeftIcon />
-            )}
-          </IconButton>
-        </DrawerHeader>
-        <Divider />
-        <List
-          sx={{
-            mx: "4px",
-            display: "flex",
-            flexDirection: "column",
-            gap: "8px",
-            flex: "1 0 auto",
-          }}
-        >
-          <NavigationItem
-            title="Annotate"
-            to="/"
-            isSelected={pathname === "/" || pathname.includes("annotate")}
-            isOpen={open}
-            icon={<TextSnippetTwoTone />}
-          />
-          <NavigationItem
-            title="Question&Answers"
-            to="/answers"
-            isSelected={pathname.includes("/answers")}
-            isOpen={open}
-            icon={<QuestionAnswerTwoTone />}
-          />
-          <NavigationItem
-            title="Review Q&A"
-            to="/review"
-            isSelected={pathname.includes("/review")}
-            isOpen={open}
-            icon={<ReviewsTwoTone />}
-          />
-        </List>
-      </Drawer>
+      <AppDrawer
+        open={open}
+        appState={app_state}
+        onDrawerClose={handleDrawerClose}
+      />
       <Box
         component="main"
         sx={{ flexGrow: 1, height: `calc(100vh - ${APP_BAR_HEIGHT}px)` }}
       >
         <DrawerHeader />
         <Routes>
-          <Route
-            path="/"
-            element={
-              <PrivateRoute>
-                <DocumentsList />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/annotate/:documentId"
-            element={
-              <PrivateRoute>
-                <AnnotationPage />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/answers"
-            element={
-              <PrivateRoute>
-                <MyAnswersList />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/answers/:documentId"
-            element={
-              <PrivateRoute>
-                <DocumentAnswers />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/review"
-            element={
-              <PrivateRoute>
-                <ReviewDocumentsList />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/review/:documentId"
-            element={
-              <PrivateRoute>
-                <ReviewAnswersPage />
-              </PrivateRoute>
-            }
-          />
+          {app_state === "annotation" && (
+            <>
+              <Route
+                path="/"
+                element={
+                  <PrivateRoute>
+                    <DocumentsList />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/annotate/:documentId"
+                element={
+                  <PrivateRoute>
+                    <AnnotationPage />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/answers"
+                element={
+                  <PrivateRoute>
+                    <MyAnswersList />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/answers/:documentId"
+                element={
+                  <PrivateRoute>
+                    <DocumentAnswers />
+                  </PrivateRoute>
+                }
+              />
+            </>
+          )}
+          {app_state === "review" && (
+            <>
+              <Route
+                path="/review"
+                element={
+                  <PrivateRoute>
+                    <ReviewDocumentsList />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/review/:documentId"
+                element={
+                  <PrivateRoute>
+                    <ReviewAnswersPage />
+                  </PrivateRoute>
+                }
+              />
+            </>
+          )}
+
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Box>

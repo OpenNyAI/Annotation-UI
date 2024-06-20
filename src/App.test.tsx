@@ -1,14 +1,14 @@
 import App from "./App";
 import { render, screen } from "./utility/test-utils";
 
-vitest.mock("./pages/DocumentsList", () => ({
-  DocumentsList: () => <div>DocumentsList page</div>,
+vitest.mock("./components/AppLayout", () => ({
+  AppLayout: () => <div>Application Layout page</div>,
 }));
 
 describe("App", () => {
-  it("should renders DocumentsList page when route is /", () => {
+  it("should renders Application layout page when route is /", () => {
     render(<App />, { initialEntries: ["/"] });
 
-    expect(screen.getByText("DocumentsList page")).toBeInTheDocument();
+    expect(screen.getByText("Application Layout page")).toBeInTheDocument();
   });
 });

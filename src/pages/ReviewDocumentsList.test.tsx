@@ -43,7 +43,7 @@ describe("Review Documents List", () => {
 
   it("Should show Error screen when the my documents api fails", async () => {
     server.use(
-      http.get("/user/finished-documents", () => {
+      http.get("/user/review-documents", () => {
         return HttpResponse.json(
           { message: "Something went wrong" },
           { status: 500 }
@@ -66,7 +66,7 @@ describe("Review Documents List", () => {
 
   it("should show empty documents message when documents are empty", async () => {
     server.use(
-      http.get("/user/finished-documents", () => {
+      http.get("/user/review-documents", () => {
         return HttpResponse.json({ documents: [] });
       })
     );

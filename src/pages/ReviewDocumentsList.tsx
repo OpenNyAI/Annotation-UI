@@ -18,7 +18,7 @@ export const ReviewDocumentsList = () => {
   useEffect(() => {
     async function getDocuments() {
       try {
-        await makeRequest("/user/finished-documents", "GET");
+        await makeRequest("/user/review-documents", "GET");
       } catch (err: any) {
         toast.error(err.message);
       }

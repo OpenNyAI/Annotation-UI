@@ -59,9 +59,13 @@ export const handlers = [
     });
   }),
 
-  http.get(`/user/finished-documents`, () => {
+  http.get(`/user/review-documents`, () => {
     return HttpResponse.json({
       documents: finishedDocuments,
     });
+  }),
+
+  http.get(`/user/config`, () => {
+    return HttpResponse.json({ app_state: "annotation" });
   }),
 ];

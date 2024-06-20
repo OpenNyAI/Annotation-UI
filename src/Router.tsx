@@ -1,5 +1,5 @@
 import { Route, Routes } from "react-router-dom";
-import AppLayout from "./components/AppLayout";
+import { AppLayout } from "./components/AppLayout";
 import { PublicRoute } from "./components/PublicRoute";
 import { ForgotPassword } from "./pages/ForgotPassword";
 import { NotFound } from "./pages/NotFound";
