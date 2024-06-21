@@ -5,6 +5,7 @@ export const documentsListResponse = [
     last_edited_by: "user",
     number_of_questions: 2,
     max_questions: 24,
+    status: "QueryInProgress",
   },
 ];
 
@@ -15,6 +16,7 @@ export const myDocumentsWithAnswers = [
     last_edited_by: "Tester",
     number_of_questions: 8,
     max_questions: 24,
+    status: "QueryInProgress",
   },
   {
     id: "2",
@@ -22,6 +24,7 @@ export const myDocumentsWithAnswers = [
     last_edited_by: "Tester",
     number_of_questions: 6,
     max_questions: 25,
+    status: "QueryInProgress",
   },
 ];
 
@@ -97,13 +100,14 @@ export const answer2 = {
 
 export const qnaResponse = [answer1, answer2];
 
-export const finishedDocuments = [
+export const reviewDocuments = [
   {
     id: "1",
     file_name: "File1 Answered.txt",
     last_edited_by: "Tester",
     number_of_questions: 25,
     max_questions: 25,
+    status: "OnReview",
   },
   {
     id: "2",
@@ -111,5 +115,6 @@ export const finishedDocuments = [
     last_edited_by: "Tester",
     number_of_questions: 25,
     max_questions: 25,
+    status: "QueryInProgress",
   },
 ];

@@ -84,4 +84,53 @@ describe("Review Documents List", () => {
       ).toBeInTheDocument();
     });
   });
+
+  it("should make request to change the document status to review on click of mark as reviewed", async () => {
+    server.use(
+      http.post("/user/document-status", () => {
+        return HttpResponse.json("Document status updated successfully");
+      })
+    );
+
+    render(<ReviewDocumentsList />);
+
+    expect(screen.getByTestId("page-loader")).toBeInTheDocument();
+
+    await waitFor(() => {
+      expect(screen.queryByTestId("page-loader")).not.toBeInTheDocument();
+      expect(screen.getByText("File1 Answered.txt")).toBeInTheDocument();
+    });
+
+    const document = screen.getByLabelText("Doc_Status_1");
+    await userEvent.click(document);
+
+    expect(
+      screen.getByText("Document status updated successfully")
+    ).toBeInTheDocument();
+  });
+
+  it("should show change document status api error when there is an error", async () => {
+    server.use(
+      http.post("/user/document-status", () => {
+        return HttpResponse.json(
+          { message: "Internal Server error" },
+          { status: 500 }
+        );
+      })
+    );
+
+    render(<ReviewDocumentsList />);
+
+    expect(screen.getByTestId("page-loader")).toBeInTheDocument();
+
+    await waitFor(() => {
+      expect(screen.queryByTestId("page-loader")).not.toBeInTheDocument();
+      expect(screen.getByText("File1 Answered.txt")).toBeInTheDocument();
+    });
+
+    const document = screen.getByLabelText("Doc_Status_1");
+    await userEvent.click(document);
+
+    expect(screen.getByText("Internal Server error")).toBeInTheDocument();
+  });
 });

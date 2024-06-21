@@ -3,10 +3,10 @@ import { QueryResult } from "../types/api";
 import {
   documentsListResponse,
   fileContent,
-  finishedDocuments,
   myDocumentsWithAnswers,
   qnaResponse,
   queryChunksResponse,
+  reviewDocuments,
 } from "./documents";
 
 export const handlers = [
@@ -61,7 +61,7 @@ export const handlers = [
 
   http.get(`/user/review-documents`, () => {
     return HttpResponse.json({
-      documents: finishedDocuments,
+      documents: reviewDocuments,
     });
   }),
 

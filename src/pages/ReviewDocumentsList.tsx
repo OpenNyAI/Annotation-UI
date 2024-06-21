@@ -2,9 +2,9 @@ import { Grid, Typography } from "@mui/material";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { DocumentInfoItem } from "../components/DocumentInfoItem";
 import { ErrorMessage } from "../components/ErrorMessage";
 import { LoadingSpinner } from "../components/LoadingSpinner";
+import { ReviewDocumentInfoItem } from "../components/ReviewDocumentInfoItem";
 import useAxios from "../hooks/useAxios";
 import { DocumentInfo } from "../types/api";
 
@@ -14,6 +14,28 @@ export const ReviewDocumentsList = () => {
   const { makeRequest, data, status, error } = useAxios<{
     documents: DocumentInfo[];
   }>();
+
+  const { makeRequest: updateDocumentStatus } = useAxios<string>();
+
+  const handleDocumentStatusUpdate = async (
+    id: string,
+    isReviewed: boolean
+  ) => {
+    try {
+      const response = await updateDocumentStatus(
+        "/user/document-status",
+        "POST",
+        {
+          document_id: id,
+          document_status: isReviewed ? "Reviewed" : "OnReview",
+        }
+      );
+      toast.success(response);
+      await makeRequest("/user/review-documents", "GET");
+    } catch (err: any) {
+      toast.error(err.message);
+    }
+  };
 
   useEffect(() => {
     async function getDocuments() {
@@ -51,10 +73,13 @@ export const ReviewDocumentsList = () => {
       </Grid>
       {data?.documents.map((doc) => {
         return (
-          <Grid item md={6} xs={12} key={doc.id}>
-            <DocumentInfoItem
+          <Grid item md={4} xs={6} key={doc.id}>
+            <ReviewDocumentInfoItem
               {...doc}
               onClick={() => navigate(`/review/${doc.id}`)}
+              onReviewChange={(isReviewed) => {
+                handleDocumentStatusUpdate(doc.id, isReviewed);
+              }}
             />
           </Grid>
         );
