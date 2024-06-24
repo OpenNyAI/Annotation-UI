@@ -50,6 +50,7 @@ export type AnswersResult = {
   id: string;
   file_name: string;
   query: string;
+  version_number: number;
   answers: AnnotatedText[];
   additional_text?: string;
 };

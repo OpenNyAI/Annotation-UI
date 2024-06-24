@@ -1,11 +1,11 @@
-import { ChevronLeft, ChevronRight } from "@mui/icons-material";
-import { Box, Button, Divider, IconButton, Typography } from "@mui/material";
+import { Box, Button, Divider, Typography } from "@mui/material";
 import { ChangeEvent, useEffect, useReducer } from "react";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { ErrorMessage } from "../components/ErrorMessage";
 import { LabelledInput } from "../components/LabelledInput";
 import { LoadingSpinner } from "../components/LoadingSpinner";
+import { ReviewAnswersHeader } from "../components/ReviewAnswersHeader";
 import { AnnotationSummarySidePanel } from "../components/annotation/AnnotationSummarySidePanel";
 import TextAnnotator, {
   TextAnnotation,
@@ -183,6 +183,10 @@ export const ReviewAnswersPage = () => {
     });
   };
 
+  const handleVersionUpdate = (answerText: AnswersResult) => {
+    dispatch({ type: "update-answer-version", payload: answerText });
+  };
+
   useEffect(() => {
     async function getDocumentContents() {
       try {
@@ -219,6 +223,7 @@ export const ReviewAnswersPage = () => {
       />
     );
   }
+  const questionId = qnaResponse?.qna[currentQuestion]?.id;
 
   return (
     fileContentStatus === "resolved" && (
@@ -230,34 +235,15 @@ export const ReviewAnswersPage = () => {
           overflow: "hidden",
         }}
       >
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            gap: "16px",
-            alignItems: "center",
-            height: "64px",
-          }}
-        >
-          <IconButton
-            data-testid="prevBtn"
-            disabled={currentQuestion === 0}
-            onClick={handlePrevQuestion}
-          >
-            <ChevronLeft />
-          </IconButton>
-          <Typography
-            variant={"h6"}
-            textAlign={"center"}
-          >{`${fileContent?.file_name} (${currentQuestion + 1}/${qnaResponse!.qna.length})`}</Typography>
-          <IconButton
-            data-testid="nextBtn"
-            disabled={currentQuestion === qnaResponse!.qna.length - 1}
-            onClick={handleNextQuestion}
-          >
-            <ChevronRight />
-          </IconButton>
-        </Box>
+        <ReviewAnswersHeader
+          currentQuestion={currentQuestion}
+          currenQuestionId={questionId!}
+          fileName={fileContent?.file_name || ""}
+          totalQuestions={qnaResponse?.qna.length || 0}
+          onNextQuestion={handleNextQuestion}
+          onPrevQuestion={handlePrevQuestion}
+          onVersionUpdate={handleVersionUpdate}
+        />
         <Box sx={styles.container}>
           <Box sx={styles.mainEditor}>
             <Box sx={styles.mainEditorBox}>

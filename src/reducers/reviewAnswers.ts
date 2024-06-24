@@ -69,6 +69,7 @@ type ReviewAnswersAction =
         questionIndex: number;
       };
     }
+  | { type: "update-answer-version"; payload: AnswersResult }
   | {
       type: "initialize-state";
       payload: { qna: AnswersResult[] };
@@ -78,6 +79,7 @@ export const reviewAnswersReducer = (
   state: ReviewAnswerState,
   action: ReviewAnswersAction
 ) => {
+  console.log("Action", action);
   const { type, payload } = action;
   switch (type) {
     case "add-annotated-text":
@@ -138,6 +140,15 @@ export const reviewAnswersReducer = (
         draft.additionalInfo =
           draft.qnaResponse?.qna[currentQuestion].additional_text ?? "";
         draft.question = draft.qnaResponse?.qna[currentQuestion].query ?? "";
+        return draft;
+      });
+    case "update-answer-version":
+      return produce(state, (draft) => {
+        const { results, answers } = getAnnotatedTextsAndResults([payload], 0);
+        draft.annotatedTexts = answers;
+        draft.resultChunks = results;
+        draft.additionalInfo = payload.additional_text;
+        draft.question = payload.query;
         return draft;
       });
     default:

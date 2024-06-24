@@ -9,8 +9,7 @@ import { Divider, IconButton, List } from "@mui/material";
 import MuiDrawer from "@mui/material/Drawer";
 import { CSSObject, Theme, styled, useTheme } from "@mui/material/styles";
 import { useLocation } from "react-router-dom";
-import { AppConfig } from "../providers/AppConfigProvider";
-import { DRAWER_WIDTH } from "./AppLayout";
+import { AppConfig, DRAWER_WIDTH } from "./AppLayout";
 import { NavigationItem } from "./NavigationItem";
 
 const openedMixin = (theme: Theme): CSSObject => ({
