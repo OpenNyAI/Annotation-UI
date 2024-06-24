@@ -87,7 +87,6 @@ export const ReviewDocumentInfoItem = ({
             textAlign={"right"}
           >{`${number_of_questions}/${max_questions}`}</Typography>
         </Box>
-
         <FormControlLabel
           sx={{ width: "280px" }}
           label={"Mark as Reviewed"}

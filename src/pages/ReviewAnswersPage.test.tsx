@@ -120,21 +120,20 @@ describe("Review Answers Page", () => {
 
     const nextBtn = screen.getByTestId("nextBtn");
     const prevBtn = screen.getByTestId("prevBtn");
-    const questionInp = screen.getByPlaceholderText("Enter your question");
 
     await userEvent.click(nextBtn);
 
     expect(screen.getByTestId("annotation-text-answer")).toHaveTextContent(
       "annotated_text1 annotated_text2"
     );
-    expect(questionInp).toHaveValue("Question-2");
+    expect(screen.getByText("Question-2")).toBeInTheDocument();
 
     await userEvent.click(prevBtn);
 
     expect(screen.getByTestId("annotation-text-answer")).toHaveTextContent(
       "annotated_text1"
     );
-    expect(questionInp).toHaveValue("Question-1");
+    expect(screen.getByText("Question-1")).toBeInTheDocument();
   });
 
   it("Should render Error information inside Annotation page", async () => {
@@ -180,12 +179,10 @@ describe("Review Answers Page", () => {
       ).toBeInTheDocument();
     });
 
-    const questionField = screen.getByPlaceholderText("Enter your question");
     let additionalInfoField = screen.getByPlaceholderText(
       "Enter additional information"
     );
 
-    await userEvent.type(questionField, "test-query");
     const updateButton = screen.getByRole("button", { name: "Update" });
 
     await userEvent.type(additionalInfoField, "answer");
@@ -225,12 +222,9 @@ describe("Review Answers Page", () => {
       ).toBeInTheDocument();
     });
 
-    const questionField = screen.getByPlaceholderText("Enter your question");
     let additionalInfoField = screen.getByPlaceholderText(
       "Enter additional information"
     );
-
-    await userEvent.type(questionField, "test-query");
 
     const updateBtn = screen.getByRole("button", { name: "Update" });
 
@@ -259,9 +253,6 @@ describe("Review Answers Page", () => {
         screen.getByText("this is file content information")
       ).toBeInTheDocument();
     });
-
-    const questionField = screen.getByPlaceholderText("Enter your question");
-    await userEvent.type(questionField, "test-query");
 
     const text1ToSelect = screen.getByText("annotated_text2");
     expect(text1ToSelect).toBeInTheDocument();

@@ -58,12 +58,6 @@ type ReviewAnswersAction =
       payload: { updatedAnnotations: TextAnnotation[] };
     }
   | {
-      type: "update-question";
-      payload: {
-        updatedQuestion: string;
-      };
-    }
-  | {
       type: "update-additional-info";
       payload: {
         updatedInfo: string;
@@ -104,11 +98,6 @@ export const reviewAnswersReducer = (
             isFocused: idx === payload.index,
           };
         });
-        return draft;
-      });
-    case "update-question":
-      return produce(state, (draft) => {
-        draft.question = payload.updatedQuestion;
         return draft;
       });
     case "update-additional-info":

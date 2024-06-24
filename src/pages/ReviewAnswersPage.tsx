@@ -60,6 +60,11 @@ const styles: Styles = {
     mb: "16px",
     maxHeight: "340px",
   },
+  questionBox: {
+    padding: "8px",
+    borderRadius: "8px",
+    border: (theme) => `0.5px solid ${theme.palette.primary.light}`,
+  },
 };
 
 const initialState: ReviewAnswerState = {
@@ -146,13 +151,6 @@ export const ReviewAnswersPage = () => {
     } catch (err: any) {
       toast.error(err.message);
     }
-  };
-
-  const handleQuestionChange = (event: ChangeEvent<HTMLInputElement>) => {
-    dispatch({
-      type: "update-question",
-      payload: { updatedQuestion: event.target.value },
-    });
   };
 
   const handleAdditionalInfoChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -274,16 +272,18 @@ export const ReviewAnswersPage = () => {
               />
             </Box>
             <Box sx={styles.resultsContainer}>
-              <Box sx={{ display: "flex", gap: "16px" }}>
-                <LabelledInput
-                  label={<Typography variant="subtitle1">Question</Typography>}
-                  size="small"
-                  fullWidth
-                  value={question}
-                  placeholder="Enter your question"
-                  type="text"
-                  onChange={handleQuestionChange}
-                />
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "8px",
+                  flex: 1,
+                }}
+              >
+                <Typography variant="subtitle1">Question</Typography>
+                <Typography variant="body1" sx={styles.questionBox}>
+                  {question}
+                </Typography>
               </Box>
               {resultChunks && resultChunks.length > 0 && (
                 <Typography variant="subtitle1">Results</Typography>

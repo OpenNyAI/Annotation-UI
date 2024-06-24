@@ -39,21 +39,6 @@ const qnaResponse: { qna: AnswersResult[] } = {
 };
 
 describe("review answers reducer", () => {
-  it("should update the question when action type is update-question", () => {
-    const updatedQuestion = "updated question";
-    const expectedState: ReviewAnswerState = {
-      ...initialState,
-      question: updatedQuestion,
-    };
-
-    const state = reviewAnswersReducer(initialState, {
-      type: "update-question",
-      payload: { updatedQuestion },
-    });
-
-    expect(state).toEqual(expectedState);
-  });
-
   it("should update the additional info when action type is update-additional-info", () => {
     const updatedInfo = "updated info";
     const expectedState: ReviewAnswerState = {
