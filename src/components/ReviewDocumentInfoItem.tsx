@@ -4,7 +4,6 @@ import {
   Card,
   CardContent,
   FormControlLabel,
-  Switch,
   Typography,
   styled,
 } from "@mui/material";
@@ -13,6 +12,7 @@ import LinearProgress, {
 } from "@mui/material/LinearProgress";
 import { useState } from "react";
 import { DocumentInfo } from "../types/api";
+import { IOSSwitch } from "./IosSwitch";
 
 type ReviewDocumentInfoItem = DocumentInfo & {
   onClick(): void;
@@ -92,8 +92,9 @@ export const ReviewDocumentInfoItem = ({
           label={"Mark as Reviewed"}
           onClick={(e) => e.stopPropagation()}
           control={
-            <Switch
+            <IOSSwitch
               value={"start"}
+              sx={{ mr: 1 }}
               checked={checked}
               color="info"
               onChange={handleChange}
