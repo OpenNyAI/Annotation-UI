@@ -51,7 +51,7 @@ export const MyAnswersList = () => {
       </Grid>
       {data?.documents.map((doc) => {
         return (
-          <Grid item md={6} xs={12} key={doc.id}>
+          <Grid item md={4} xs={6} key={doc.id}>
             <DocumentInfoItem
               {...doc}
               onClick={() => navigate(`/answers/${doc.id}`)}
