@@ -1,29 +1,6 @@
 import { produce } from "immer";
 import { TextAnnotation } from "../components/annotation/TextAnnotator";
-import { AnswersResult } from "../types/api";
-
-type ResultChunk = { chunk: string; metadata: { file_name: string } };
-
-function getAnnotatedTextsAndResults(
-  qnaResponse: AnswersResult[],
-  index: number
-) {
-  const results = qnaResponse[index].answers
-    .map((answer) => {
-      if (answer.source_text) {
-        return {
-          chunk: answer.source_text,
-          metadata: {
-            file_name: answer.file_name,
-          },
-        };
-      }
-    })
-    .filter((item) => item !== undefined) as ResultChunk[];
-  const answers = qnaResponse[index].answers;
-
-  return { results, answers };
-}
+import { AnswersResult, ResultChunk } from "../types/api";
 
 export type ReviewAnswerState = {
   question: string;
@@ -79,16 +56,27 @@ export const reviewAnswersReducer = (
   state: ReviewAnswerState,
   action: ReviewAnswersAction
 ) => {
-  console.log("Action", action);
   const { type, payload } = action;
   switch (type) {
     case "add-annotated-text":
       return produce(state, (draft) => {
+        draft.annotatedTexts = draft.annotatedTexts.map((annotatedTex) => {
+          return {
+            ...annotatedTex,
+            isFocused: false,
+          };
+        });
         draft.annotatedTexts = [...draft.annotatedTexts, payload.newAnnotation];
         return draft;
       });
     case "delete-annotated-text":
       return produce(state, (draft) => {
+        draft.annotatedTexts = draft.annotatedTexts.map((annotatedTex) => {
+          return {
+            ...annotatedTex,
+            isFocused: false,
+          };
+        });
         draft.annotatedTexts.splice(payload.index, 1);
         return draft;
       });
@@ -115,15 +103,12 @@ export const reviewAnswersReducer = (
     case "update-current-question":
       return produce(state, (draft) => {
         const { questionIndex } = payload;
-        const { results, answers } = getAnnotatedTextsAndResults(
-          draft.qnaResponse?.qna ?? [],
-          questionIndex
-        );
+        const currentQnA = draft.qnaResponse?.qna[questionIndex];
+        const { chunk_results, answers } = currentQnA!;
         draft.annotatedTexts = answers;
-        draft.resultChunks = results;
-        draft.additionalInfo =
-          draft.qnaResponse?.qna[questionIndex].additional_text ?? "";
-        draft.question = draft.qnaResponse?.qna[questionIndex].query ?? "";
+        draft.resultChunks = chunk_results;
+        draft.additionalInfo = currentQnA?.additional_text ?? "";
+        draft.question = currentQnA?.query ?? "";
         draft.currentQuestion = questionIndex;
         return draft;
       });
@@ -131,22 +116,19 @@ export const reviewAnswersReducer = (
       return produce(state, (draft) => {
         draft.qnaResponse = payload;
         const { currentQuestion } = draft;
-        const { results, answers } = getAnnotatedTextsAndResults(
-          payload.qna,
-          currentQuestion
-        );
+        const currentQnA = draft.qnaResponse?.qna[currentQuestion];
+        const { chunk_results, answers } = currentQnA!;
         draft.annotatedTexts = answers;
-        draft.resultChunks = results;
-        draft.additionalInfo =
-          draft.qnaResponse?.qna[currentQuestion].additional_text ?? "";
-        draft.question = draft.qnaResponse?.qna[currentQuestion].query ?? "";
+        draft.resultChunks = chunk_results;
+        draft.additionalInfo = currentQnA?.additional_text ?? "";
+        draft.question = currentQnA?.query ?? "";
         return draft;
       });
     case "update-answer-version":
       return produce(state, (draft) => {
-        const { results, answers } = getAnnotatedTextsAndResults([payload], 0);
+        const { chunk_results, answers } = payload;
         draft.annotatedTexts = answers;
-        draft.resultChunks = results;
+        draft.resultChunks = chunk_results;
         draft.additionalInfo = payload.additional_text;
         draft.question = payload.query;
         return draft;

@@ -121,6 +121,7 @@ export const AnnotationPage = () => {
         annotated_text: annotatedTexts,
         additional_answer: additionalInfo,
         document_id: documentId!,
+        chunk_result: result?.chunks ?? [],
       };
       const response = await submitAnswer(`/user/submit`, "POST", answerBody);
       resetQuery();
