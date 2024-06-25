@@ -1,14 +1,24 @@
 import {
+  Logout,
   QuestionAnswerTwoTone,
   ReviewsTwoTone,
   TextSnippetTwoTone,
 } from "@mui/icons-material";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import { Divider, IconButton, List } from "@mui/material";
+import {
+  Divider,
+  IconButton,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+} from "@mui/material";
 import MuiDrawer from "@mui/material/Drawer";
 import { CSSObject, Theme, styled, useTheme } from "@mui/material/styles";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth";
 import { AppConfig, DRAWER_WIDTH } from "./AppLayout";
 import { NavigationItem } from "./NavigationItem";
 
@@ -70,7 +80,14 @@ export const AppDrawer = ({
 }: AppDrawerProps) => {
   const theme = useTheme();
 
+  const { setAuth } = useAuth();
   const { pathname } = useLocation();
+  const navigate = useNavigate();
+
+  const handleLogOut = () => {
+    setAuth({});
+    navigate("/signin");
+  };
 
   return (
     <Drawer variant="permanent" open={open}>
@@ -120,6 +137,40 @@ export const AppDrawer = ({
             icon={<ReviewsTwoTone />}
           />
         )}
+        <ListItem
+          key={"logout"}
+          disablePadding
+          sx={{
+            mt: "auto",
+            mb: "auto",
+            display: "block",
+            borderRadius: "8px",
+            background: "inherit",
+            "&:hover": {
+              background: "#1B1B1B",
+            },
+          }}
+          onClick={handleLogOut}
+        >
+          <ListItemButton
+            sx={{
+              minHeight: 48,
+              justifyContent: open ? "initial" : "center",
+              px: 2.5,
+            }}
+          >
+            <ListItemIcon
+              sx={{
+                minWidth: 0,
+                mr: open ? 3 : "auto",
+                justifyContent: "center",
+              }}
+            >
+              <Logout />
+            </ListItemIcon>
+            <ListItemText primary={"Logout"} sx={{ opacity: open ? 1 : 0 }} />
+          </ListItemButton>
+        </ListItem>
       </List>
     </Drawer>
   );

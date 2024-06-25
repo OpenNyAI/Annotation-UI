@@ -1,4 +1,6 @@
+import userEvent from "@testing-library/user-event";
 import { HttpResponse, http } from "msw";
+import { Route, Routes } from "react-router-dom";
 import { server } from "../mocks/server";
 import { render, screen, waitFor } from "../utility/test-utils";
 import { AppLayout } from "./AppLayout";
@@ -131,5 +133,27 @@ describe("AppLayout", () => {
         expect(screen.getByText("Page Not Found")).toBeInTheDocument();
       });
     });
+  });
+
+  it("should logout the user when clicked on logout", async () => {
+    render(
+      <Routes>
+        <Route path="signin" element={<div>Signin Page</div>} />
+        <Route path="/*" element={<AppLayout />} />
+      </Routes>,
+      {}
+    );
+
+    expect(screen.getByTestId("page-loader")).toBeInTheDocument();
+
+    await waitFor(() => {
+      expect(screen.queryByTestId("page-loader")).not.toBeInTheDocument();
+      expect(screen.getByText("DocumentsList page")).toBeInTheDocument();
+    });
+
+    const logoutBtn = screen.getByRole("button", { name: "Logout" });
+    await userEvent.click(logoutBtn);
+
+    expect(screen.getByText("Signin Page")).toBeInTheDocument();
   });
 });
