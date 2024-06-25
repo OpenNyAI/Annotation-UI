@@ -15,6 +15,7 @@ import { DocumentInfo } from "../types/api";
 import { IOSSwitch } from "./IosSwitch";
 
 type ReviewDocumentInfoItem = DocumentInfo & {
+  isExpertReview: boolean;
   onClick(): void;
   onReviewChange(isReviewed: boolean): void;
 };
@@ -37,6 +38,7 @@ export const ReviewDocumentInfoItem = ({
   max_questions,
   status,
   number_of_questions,
+  isExpertReview,
   onClick,
   onReviewChange,
 }: ReviewDocumentInfoItem) => {
@@ -87,21 +89,23 @@ export const ReviewDocumentInfoItem = ({
             textAlign={"right"}
           >{`${number_of_questions}/${max_questions}`}</Typography>
         </Box>
-        <FormControlLabel
-          sx={{ width: "280px" }}
-          label={"Mark as Reviewed"}
-          onClick={(e) => e.stopPropagation()}
-          control={
-            <IOSSwitch
-              value={"start"}
-              sx={{ mr: 1 }}
-              checked={checked}
-              color="info"
-              onChange={handleChange}
-              inputProps={{ "aria-label": `Doc_Status_${id}` }}
-            />
-          }
-        />
+        {!isExpertReview && (
+          <FormControlLabel
+            sx={{ width: "280px" }}
+            label={"Mark as Reviewed"}
+            onClick={(e) => e.stopPropagation()}
+            control={
+              <IOSSwitch
+                value={"start"}
+                sx={{ mr: 1 }}
+                checked={checked}
+                color="info"
+                onChange={handleChange}
+                inputProps={{ "aria-label": `Doc_Status_${id}` }}
+              />
+            }
+          />
+        )}
       </CardContent>
     </Card>
   );

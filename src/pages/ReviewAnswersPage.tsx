@@ -135,6 +135,7 @@ export const ReviewAnswersPage = () => {
         annotated_text: annotatedTexts,
         additional_answer: additionalInfo,
         document_id: documentId!,
+        chunk_result: resultChunks,
       };
       const response = await submitAnswer(
         `/user/qna/${questionId}`,
@@ -142,12 +143,8 @@ export const ReviewAnswersPage = () => {
         answerBody
       );
       toast.success(response);
-      try {
-        const res = await queryQnA(`/user/qna/document/${documentId}`, "GET");
-        dispatch({ type: "initialize-state", payload: res });
-      } catch (err: any) {
-        toast.error(err.message);
-      }
+      const res = await queryQnA(`/user/qna/document/${documentId}`, "GET");
+      dispatch({ type: "initialize-state", payload: res });
     } catch (err: any) {
       toast.error(err.message);
     }
@@ -226,7 +223,9 @@ export const ReviewAnswersPage = () => {
   const questionId = qnaResponse?.qna[currentQuestion]?.id;
 
   return (
-    fileContentStatus === "resolved" && (
+    fileContentStatus === "resolved" &&
+    qnaResponse &&
+    qnaResponse.qna.length > 0 && (
       <Box
         sx={{
           display: "flex",

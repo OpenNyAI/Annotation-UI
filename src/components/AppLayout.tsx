@@ -73,9 +73,8 @@ export function AppLayout() {
       case "annotation":
         return "/";
       case "review":
-        return "/review";
       case "expert-review":
-        return "/expert-review";
+        return "/review";
       case "none":
         return "/";
     }
@@ -125,7 +124,7 @@ export function AppLayout() {
               </PrivateRoute>
             }
           />
-          {app_state === "annotation" && (
+          {homeRoute === "/" && (
             <>
               <Route
                 path="/annotate/:documentId"
@@ -153,13 +152,15 @@ export function AppLayout() {
               />
             </>
           )}
-          {app_state === "review" && (
+          {homeRoute === "/review" && (
             <>
               <Route
                 path="/review"
                 element={
                   <PrivateRoute>
-                    <ReviewDocumentsList />
+                    <ReviewDocumentsList
+                      isExpertReview={app_state === "expert-review"}
+                    />
                   </PrivateRoute>
                 }
               />

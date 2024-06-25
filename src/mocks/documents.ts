@@ -88,6 +88,7 @@ export const answer1 = {
   file_name: "File-1.txt",
   query: "Question-1",
   answers: answer1Annotations,
+  chunk_results: [],
   additional_text: "answer-1 additional text",
 };
 
@@ -95,6 +96,7 @@ export const answer2 = {
   id: "doc-1",
   file_name: "File-1.txt",
   query: "Question-2",
+  chunk_results: [],
   answers: answer2Annotations,
 };
 

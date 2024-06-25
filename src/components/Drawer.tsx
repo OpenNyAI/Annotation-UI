@@ -37,7 +37,6 @@ export const DrawerHeader = styled("div")(({ theme }) => ({
   alignItems: "center",
   justifyContent: "flex-end",
   padding: theme.spacing(0, 1),
-  // necessary for content to be below app bar
   ...theme.mixins.toolbar,
 }));
 
@@ -112,7 +111,7 @@ export const AppDrawer = ({
             />
           </>
         )}
-        {appState === "review" && (
+        {(appState === "review" || appState === "expert-review") && (
           <NavigationItem
             title="Review Q&A"
             to="/review"

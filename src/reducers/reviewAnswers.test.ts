@@ -9,6 +9,23 @@ const initialState: ReviewAnswerState = {
   currentQuestion: 0,
 };
 
+const updatedAnswerVersionResult = {
+  answers: [
+    { end_index: 4, start_index: 0, text: "hello", file_name: "file1.txt" },
+  ],
+  chunk_results: [
+    {
+      chunk: "chunk result v2",
+      metadata: { file_name: "file3.txt", chunk_id: 1 },
+    },
+  ],
+  file_name: "file1.txt",
+  id: "id-1",
+  version_number: 2,
+  query: "Greet me? Version 2",
+  additional_text: "additional-text version 2",
+};
+
 const qnaResponse: { qna: AnswersResult[] } = {
   qna: [
     {
@@ -19,11 +36,18 @@ const qnaResponse: { qna: AnswersResult[] } = {
           start_index: 0,
           text: "hello",
           file_name: "file3.txt",
-          source_text: "this is from source",
+          source_text: "hello this is from source",
+        },
+      ],
+      chunk_results: [
+        {
+          chunk: "hello this is from source",
+          metadata: { file_name: "file3.txt", chunk_id: 1 },
         },
       ],
       file_name: "file1.txt",
       id: "id-1",
+      version_number: 1,
       query: "Greet me?",
       additional_text: "additional-text",
     },
@@ -33,6 +57,13 @@ const qnaResponse: { qna: AnswersResult[] } = {
       ],
       file_name: "file1.txt",
       id: "id-2",
+      version_number: 1,
+      chunk_results: [
+        {
+          chunk: "chunk-result-2",
+          metadata: { file_name: "file1.txt", chunk_id: 1 },
+        },
+      ],
       query: "Where is the answer?",
     },
   ],
@@ -65,14 +96,14 @@ describe("review answers reducer", () => {
           start_index: 0,
           text: "hello",
           file_name: "file3.txt",
-          source_text: "this is from source",
+          source_text: "hello this is from source",
         },
       ],
       qnaResponse,
       resultChunks: [
         {
-          chunk: "this is from source",
-          metadata: { file_name: "file3.txt" },
+          chunk: "hello this is from source",
+          metadata: { file_name: "file3.txt", chunk_id: 1 },
         },
       ],
       currentQuestion: 0,
@@ -97,7 +128,15 @@ describe("review answers reducer", () => {
         { end_index: 4, start_index: 0, text: "there", file_name: "file1.txt" },
       ],
       qnaResponse,
-      resultChunks: [],
+      resultChunks: [
+        {
+          chunk: "chunk-result-2",
+          metadata: {
+            chunk_id: 1,
+            file_name: "file1.txt",
+          },
+        },
+      ],
       currentQuestion: 1,
     });
   });
@@ -260,6 +299,117 @@ describe("review answers reducer", () => {
         },
       }
     );
+
+    expect(state).toEqual(expectedState);
+  });
+
+  it("should un-mark already selected item when a new text annotated", () => {
+    const updatedAnnotations = [
+      {
+        end_index: 1,
+        start_index: 0,
+        text: "Hi",
+        file_name: "file2.txt",
+      },
+      {
+        end_index: 6,
+        start_index: 0,
+        text: "welcome",
+        file_name: "file3.txt",
+      },
+    ];
+    const expectedState: ReviewAnswerState = {
+      ...initialState,
+      annotatedTexts: [
+        {
+          end_index: 1,
+          start_index: 0,
+          text: "Hi",
+          file_name: "file2.txt",
+          isFocused: false,
+        },
+        {
+          end_index: 6,
+          start_index: 0,
+          text: "welcome",
+          file_name: "file3.txt",
+          isFocused: true,
+        },
+      ],
+    };
+
+    let state = reviewAnswersReducer(
+      { ...initialState, annotatedTexts: updatedAnnotations },
+      {
+        type: "select-annotated-text",
+        payload: {
+          index: 1,
+        },
+      }
+    );
+
+    expect(state).toEqual(expectedState);
+
+    state = reviewAnswersReducer(state, {
+      type: "add-annotated-text",
+      payload: {
+        newAnnotation: {
+          end_index: 4,
+          start_index: 0,
+          text: "hello",
+          file_name: "file1.txt",
+        },
+      },
+    });
+
+    expect(state).toEqual({
+      ...expectedState,
+      annotatedTexts: [
+        {
+          end_index: 1,
+          start_index: 0,
+          text: "Hi",
+          file_name: "file2.txt",
+          isFocused: false,
+        },
+        {
+          end_index: 6,
+          start_index: 0,
+          text: "welcome",
+          file_name: "file3.txt",
+          isFocused: false,
+        },
+        {
+          end_index: 4,
+          start_index: 0,
+          text: "hello",
+          file_name: "file1.txt",
+        },
+      ],
+    });
+  });
+
+  it("should update the answer to given version of answer result", () => {
+    const expectedState: ReviewAnswerState = {
+      question: "Greet me? Version 2",
+      additionalInfo: "additional-text version 2",
+      annotatedTexts: [
+        { end_index: 4, start_index: 0, text: "hello", file_name: "file1.txt" },
+      ],
+      qnaResponse: { qna: [] },
+      resultChunks: [
+        {
+          chunk: "chunk result v2",
+          metadata: { file_name: "file3.txt", chunk_id: 1 },
+        },
+      ],
+      currentQuestion: 0,
+    };
+
+    const state = reviewAnswersReducer(initialState, {
+      type: "update-answer-version",
+      payload: updatedAnswerVersionResult,
+    });
 
     expect(state).toEqual(expectedState);
   });

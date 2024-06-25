@@ -8,7 +8,13 @@ import { ReviewDocumentInfoItem } from "../components/ReviewDocumentInfoItem";
 import useAxios from "../hooks/useAxios";
 import { DocumentInfo } from "../types/api";
 
-export const ReviewDocumentsList = () => {
+type ReviewDocumentsListProps = {
+  isExpertReview: boolean;
+};
+
+export const ReviewDocumentsList = ({
+  isExpertReview,
+}: ReviewDocumentsListProps) => {
   const navigate = useNavigate();
 
   const { makeRequest, data, status, error } = useAxios<{
@@ -76,6 +82,7 @@ export const ReviewDocumentsList = () => {
           <Grid item md={4} xs={6} key={doc.id}>
             <ReviewDocumentInfoItem
               {...doc}
+              isExpertReview={isExpertReview}
               onClick={() => navigate(`/review/${doc.id}`)}
               onReviewChange={(isReviewed) => {
                 handleDocumentStatusUpdate(doc.id, isReviewed);

@@ -50,7 +50,6 @@ export const ReviewAnswersHeader = ({
         qnaId={currenQuestionId}
         onVersionChange={onVersionUpdate}
       />
-
       <Box sx={{ gap: "12px", display: "flex", ml: "auto" }}>
         <Button
           variant="contained"

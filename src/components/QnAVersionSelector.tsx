@@ -36,10 +36,11 @@ export const QnAVersionSelector = ({
 
   return (
     <FormControl sx={{ width: "180px" }}>
-      <InputLabel id="test-select-label">Version</InputLabel>
+      <InputLabel>Version</InputLabel>
       <Select
         label="Choose version"
         size="small"
+        data-testid="version-selector"
         onChange={(event) => {
           const version = event.target.value;
           const answer = versionedAnswers.find(

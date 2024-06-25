@@ -74,7 +74,7 @@ describe("AppLayout", () => {
     });
   });
 
-  describe("should render review routes when app is in review state", () => {
+  describe("should render review routes when app is in review or expert-review state", () => {
     beforeEach(() => {
       server.use(
         http.get("/user/config", () => {
@@ -95,6 +95,22 @@ describe("AppLayout", () => {
     });
 
     it("should render review qna  page", async () => {
+      render(<AppLayout />, { initialEntries: ["/review/doc-1"] });
+
+      expect(screen.getByTestId("page-loader")).toBeInTheDocument();
+
+      await waitFor(() => {
+        expect(screen.queryByTestId("page-loader")).not.toBeInTheDocument();
+        expect(screen.getByText("Review Answers page")).toBeInTheDocument();
+      });
+    });
+
+    it("should render review qna  page when app state is expert-review", async () => {
+      server.use(
+        http.get("/user/config", () => {
+          return HttpResponse.json({ app_state: "expert-review" });
+        })
+      );
       render(<AppLayout />, { initialEntries: ["/review/doc-1"] });
 
       expect(screen.getByTestId("page-loader")).toBeInTheDocument();

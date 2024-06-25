@@ -45,7 +45,14 @@ const answer1 = {
   id: "question-1",
   file_name: "File-1.txt",
   query: "Question-1",
+  version_number: 2,
   answers: answer1Annotations,
+  chunk_results: [
+    {
+      chunk: "query_text from query results",
+      metadata: { file_name: "file1.txt", id: 1 },
+    },
+  ],
   additional_text: "answer-1 additional text",
 };
 
@@ -53,7 +60,19 @@ const answer2 = {
   id: "question-2",
   file_name: "File-1.txt",
   query: "Question-2",
+  version_number: 1,
   answers: answer2Annotations,
+  chunk_results: [],
+};
+
+const answer1OldVersion = {
+  id: "question-1",
+  file_name: "File-1.txt",
+  query: "Question-1",
+  version_number: 1,
+  answers: answer1Annotations,
+  chunk_results: [],
+  additional_text: "",
 };
 
 const qnaResponse = [answer1, answer2];
@@ -63,16 +82,15 @@ describe("Review Answers Page", () => {
     server.use(
       http.get(`/user/documents/file-1`, () => {
         return HttpResponse.json(fileContent);
-      })
-    );
-    server.use(
+      }),
       http.get(`/user/qna/document/file-1`, () => {
         return HttpResponse.json({ qna: qnaResponse });
-      })
-    );
-    server.use(
+      }),
       http.post(`/user/qna/question-1`, () => {
         return HttpResponse.json("Submitted successfully");
+      }),
+      http.get(`/user/qna/question-1`, () => {
+        return HttpResponse.json({ qna: [answer1OldVersion, answer1] });
       })
     );
   });
@@ -276,5 +294,34 @@ describe("Review Answers Page", () => {
     expect(screen.getByTestId("annotation-text-answer")).toHaveTextContent(
       "query_text annotated_text2"
     );
+  });
+
+  it("should show the selected version as the answer", async () => {
+    render(
+      <Routes>
+        <Route path="/review/:documentId" element={<ReviewAnswersPage />} />
+      </Routes>,
+      { initialEntries: ["/review/file-1"] }
+    );
+
+    expect(screen.getByTestId("page-loader")).toBeInTheDocument();
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("this is file content information")
+      ).toBeInTheDocument();
+      expect(screen.getByText("Version 2")).toBeInTheDocument();
+    });
+
+    await waitFor(async () => {
+      await userEvent.click(screen.getByRole("combobox"));
+    });
+    await userEvent.click(screen.getByRole("option", { name: "Version 1" }));
+
+    expect(screen.getByText("Version 1")).toBeInTheDocument();
+    expect(screen.queryByText("Results")).not.toBeInTheDocument();
+    expect(
+      screen.getByPlaceholderText("Enter additional information")
+    ).toHaveValue("");
   });
 });

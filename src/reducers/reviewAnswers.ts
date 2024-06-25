@@ -108,7 +108,7 @@ export const reviewAnswersReducer = (
         draft.annotatedTexts = answers;
         draft.resultChunks = chunk_results;
         draft.additionalInfo = currentQnA?.additional_text ?? "";
-        draft.question = currentQnA?.query ?? "";
+        draft.question = currentQnA!.query;
         draft.currentQuestion = questionIndex;
         return draft;
       });
@@ -121,7 +121,7 @@ export const reviewAnswersReducer = (
         draft.annotatedTexts = answers;
         draft.resultChunks = chunk_results;
         draft.additionalInfo = currentQnA?.additional_text ?? "";
-        draft.question = currentQnA?.query ?? "";
+        draft.question = currentQnA!.query;
         return draft;
       });
     case "update-answer-version":
