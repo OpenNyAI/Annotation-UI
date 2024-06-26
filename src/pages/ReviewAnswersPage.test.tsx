@@ -91,7 +91,7 @@ const question1VersionsResponse: QuestionAnswerVersionListResponse = {
     },
   ],
   flag: false,
-  qna: [answer1OldVersion, answer1],
+  qna: [answer1, answer1OldVersion],
 };
 
 const qnaResponse = [answer1, answer2];

@@ -71,3 +71,8 @@ export type QuestionAnswerVersionListResponse = {
   chunk_results: ResultChunk[];
   qna: SingleQuestionAnswer[];
 };
+
+export type FlagQueryRequest = {
+  qna_id: string;
+  is_flagged: boolean;
+};

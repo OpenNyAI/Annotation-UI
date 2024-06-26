@@ -2,20 +2,25 @@ import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import useAxios from "../hooks/useAxios";
-import { AnswersResult } from "../types/api";
+import {
+  QuestionAnswerVersionListResponse,
+  SingleQuestionAnswer,
+} from "../types/api";
 
 type QnAVersionSelectorProps = {
   qnaId: string;
-  onVersionChange(answerResult: AnswersResult): void;
+  onVersionChange(answerResult: SingleQuestionAnswer): void;
 };
 
 export const QnAVersionSelector = ({
   qnaId,
   onVersionChange,
 }: QnAVersionSelectorProps) => {
-  const [selectedVersion, setSelectedVersion] = useState<number>();
-  const [versionedAnswers, setVersionedAnswers] = useState<AnswersResult[]>([]);
-  const { makeRequest } = useAxios<{ qna: AnswersResult[] }>();
+  const [version, setVersion] = useState<number>();
+  const [versionedAnswers, setVersionedAnswers] = useState<
+    SingleQuestionAnswer[]
+  >([]);
+  const { makeRequest } = useAxios<QuestionAnswerVersionListResponse>();
 
   useEffect(() => {
     async function getAllVersions() {
@@ -24,7 +29,7 @@ export const QnAVersionSelector = ({
         setVersionedAnswers(response.qna);
         const totalVersions = response.qna.length;
         if (totalVersions > 0) {
-          setSelectedVersion(response.qna[totalVersions - 1].version_number);
+          setVersion(response.qna[0].version_number);
         }
       } catch (err: any) {
         toast.error(err.message);
@@ -46,10 +51,10 @@ export const QnAVersionSelector = ({
           const answer = versionedAnswers.find(
             (v) => v.version_number === Number(version)
           );
-          setSelectedVersion(Number(version));
+          setVersion(Number(version));
           onVersionChange(answer!);
         }}
-        value={selectedVersion ?? ""}
+        value={version ?? ""}
       >
         {versionedAnswers.map((version) => {
           return (

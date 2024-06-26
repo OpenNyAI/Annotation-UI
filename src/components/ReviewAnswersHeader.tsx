@@ -1,17 +1,18 @@
+import { Flag } from "@mui/icons-material";
 import { Box, Button, Typography } from "@mui/material";
-import { AnswersResult } from "../types/api";
+import { QuestionAnswer, SingleQuestionAnswer } from "../types/api";
 import { Styles } from "../types/styles";
 import { QnAVersionSelector } from "./QnAVersionSelector";
 
 type ReviewAnswersHeaderProps = {
-  currentQuestion: number;
-  currenQuestionId: string;
+  question: QuestionAnswer;
+  questionIndex: number;
   fileName: string;
   totalQuestions: number;
-  reviewedUser?: string;
   onPrevQuestion(): void;
   onNextQuestion(): void;
-  onVersionUpdate(answerResult: AnswersResult): void;
+  onFlagQuestion(): void;
+  onVersionUpdate(answerResult: SingleQuestionAnswer): void;
 };
 
 const styles: Styles = {
@@ -25,11 +26,11 @@ const styles: Styles = {
 };
 
 export const ReviewAnswersHeader = ({
-  currentQuestion,
-  currenQuestionId,
+  question,
+  questionIndex,
   fileName,
   totalQuestions,
-  reviewedUser,
+  onFlagQuestion,
   onNextQuestion,
   onPrevQuestion,
   onVersionUpdate,
@@ -38,24 +39,27 @@ export const ReviewAnswersHeader = ({
     <Box sx={styles.headerBox}>
       <Box>
         <Typography variant={"h6"} textAlign={"center"}>
-          {`${fileName} (${currentQuestion + 1}/${totalQuestions})`}
+          {`${fileName} (${questionIndex + 1}/${totalQuestions})`}
         </Typography>
-        {reviewedUser && (
-          <Typography variant={"subtitle2"} textAlign={"center"}>
-            {`Last reviewed by ${reviewedUser}`}
-          </Typography>
-        )}
       </Box>
       <QnAVersionSelector
-        qnaId={currenQuestionId}
+        qnaId={question.id}
         onVersionChange={onVersionUpdate}
       />
+      <Button
+        size="small"
+        variant="contained"
+        startIcon={<Flag />}
+        onClick={onFlagQuestion}
+      >
+        {!question.flag ? "Flag answer" : "Unflag answer"}
+      </Button>
       <Box sx={{ gap: "12px", display: "flex", ml: "auto" }}>
         <Button
           variant="contained"
           size="small"
           data-testid="prevBtn"
-          disabled={currentQuestion === 0}
+          disabled={questionIndex === 0}
           onClick={onPrevQuestion}
         >
           Prev
@@ -64,7 +68,7 @@ export const ReviewAnswersHeader = ({
           variant="contained"
           size="small"
           data-testid="nextBtn"
-          disabled={currentQuestion === totalQuestions - 1}
+          disabled={questionIndex === totalQuestions - 1}
           onClick={onNextQuestion}
         >
           Next

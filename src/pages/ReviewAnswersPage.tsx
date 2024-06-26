@@ -18,6 +18,7 @@ import {
 import {
   DocumentQuestionAnswer,
   DocumentWithContent,
+  FlagQueryRequest,
   SingleQuestionAnswer,
   SubmitAnswerBody,
 } from "../types/api";
@@ -99,6 +100,7 @@ export const ReviewAnswersPage = () => {
   } = useAxios<DocumentWithContent>();
 
   const { makeRequest: submitAnswer } = useAxios<string>();
+  const { makeRequest: flagQuery } = useAxios<string>();
 
   const { makeRequest: queryQnA, status: qnaStatus } =
     useAxios<DocumentQuestionAnswer>();
@@ -141,6 +143,29 @@ export const ReviewAnswersPage = () => {
         `/user/qna/${questionId}`,
         "POST",
         answerBody
+      );
+      toast.success(response);
+      const res = await queryQnA(`/user/qna/document/${documentId}`, "GET");
+      dispatch({ type: "initialize-state", payload: res });
+    } catch (err: any) {
+      toast.error(err.message);
+    }
+  };
+
+  const handleFlagQuestion = async () => {
+    const qna = qnaResponse?.qna[currentQuestion];
+    if (!qna) {
+      return;
+    }
+    try {
+      const flagQueryBody: FlagQueryRequest = {
+        qna_id: qna.id,
+        is_flagged: !qna.flag,
+      };
+      const response = await flagQuery(
+        `/user/flag-query`,
+        "POST",
+        flagQueryBody
       );
       toast.success(response);
       const res = await queryQnA(`/user/qna/document/${documentId}`, "GET");
@@ -220,12 +245,15 @@ export const ReviewAnswersPage = () => {
       />
     );
   }
-  const questionId = qnaResponse?.qna[currentQuestion]?.id;
+  const selectedQuestion = qnaResponse?.qna[currentQuestion];
+  const isFlagged = !!selectedQuestion?.flag;
+  const isDisabled =
+    isFlagged ||
+    (question ? annotatedTexts.length === 0 && !additionalInfo : true);
 
   return (
     fileContentStatus === "resolved" &&
-    qnaResponse &&
-    qnaResponse.qna.length > 0 && (
+    selectedQuestion && (
       <Box
         sx={{
           display: "flex",
@@ -235,10 +263,11 @@ export const ReviewAnswersPage = () => {
         }}
       >
         <ReviewAnswersHeader
-          currentQuestion={currentQuestion}
-          currenQuestionId={questionId!}
+          question={selectedQuestion}
+          questionIndex={currentQuestion}
           fileName={fileContent?.file_name || ""}
           totalQuestions={qnaResponse?.qna.length || 0}
+          onFlagQuestion={handleFlagQuestion}
           onNextQuestion={handleNextQuestion}
           onPrevQuestion={handlePrevQuestion}
           onVersionUpdate={handleVersionUpdate}
@@ -311,11 +340,7 @@ export const ReviewAnswersPage = () => {
               <Button
                 variant="contained"
                 sx={{ width: "120px", mx: "auto" }}
-                disabled={
-                  question
-                    ? annotatedTexts.length === 0 && !additionalInfo
-                    : true
-                }
+                disabled={isDisabled}
                 onClick={handleUpdateAnswer}
               >
                 Update
