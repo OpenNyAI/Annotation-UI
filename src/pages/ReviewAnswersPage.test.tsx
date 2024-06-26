@@ -2,16 +2,23 @@ import userEvent from "@testing-library/user-event";
 import { HttpResponse, http } from "msw";
 import { Route, Routes } from "react-router-dom";
 import { server } from "../mocks/server";
+import {
+  AnnotatedText,
+  DocumentWithContent,
+  QuestionAnswer,
+  QuestionAnswerVersionListResponse,
+  SingleQuestionAnswer,
+} from "../types/api";
 import { render, screen, waitFor } from "../utility/test-utils";
 import { ReviewAnswersPage } from "./ReviewAnswersPage";
 
-const fileContent = {
+const fileContent: DocumentWithContent = {
   id: "file-1",
   file_name: "File1.txt",
   content: "this is file content information annotated_text1 annotated_text2",
 };
 
-const answer1Annotations = [
+const answer1Annotations: AnnotatedText[] = [
   {
     file_name: "File-1.tx",
     text: "annotated_text1",
@@ -27,7 +34,7 @@ const answer1Annotations = [
   },
 ];
 
-const answer2Annotations = [
+const answer2Annotations: AnnotatedText[] = [
   {
     file_name: "File-2.tx",
     text: "annotated_text1",
@@ -41,8 +48,9 @@ const answer2Annotations = [
     end_index: 64,
   },
 ];
-const answer1 = {
+const answer1: QuestionAnswer = {
   id: "question-1",
+  flag: false,
   file_name: "File-1.txt",
   query: "Question-1",
   version_number: 2,
@@ -50,14 +58,15 @@ const answer1 = {
   chunk_results: [
     {
       chunk: "query_text from query results",
-      metadata: { file_name: "file1.txt", id: 1 },
+      metadata: { file_name: "file1.txt", chunk_id: 1 },
     },
   ],
   additional_text: "answer-1 additional text",
 };
 
-const answer2 = {
+const answer2: QuestionAnswer = {
   id: "question-2",
+  flag: false,
   file_name: "File-1.txt",
   query: "Question-2",
   version_number: 1,
@@ -65,14 +74,24 @@ const answer2 = {
   chunk_results: [],
 };
 
-const answer1OldVersion = {
-  id: "question-1",
+const answer1OldVersion: SingleQuestionAnswer = {
   file_name: "File-1.txt",
   query: "Question-1",
   version_number: 1,
   answers: answer1Annotations,
-  chunk_results: [],
   additional_text: "",
+};
+
+const question1VersionsResponse: QuestionAnswerVersionListResponse = {
+  id: "question-1",
+  chunk_results: [
+    {
+      chunk: "query_text from query results",
+      metadata: { file_name: "file1.txt", chunk_id: 1 },
+    },
+  ],
+  flag: false,
+  qna: [answer1OldVersion, answer1],
 };
 
 const qnaResponse = [answer1, answer2];
@@ -90,7 +109,7 @@ describe("Review Answers Page", () => {
         return HttpResponse.json("Submitted successfully");
       }),
       http.get(`/user/qna/question-1`, () => {
-        return HttpResponse.json({ qna: [answer1OldVersion, answer1] });
+        return HttpResponse.json(question1VersionsResponse);
       })
     );
   });
@@ -319,7 +338,6 @@ describe("Review Answers Page", () => {
     await userEvent.click(screen.getByRole("option", { name: "Version 1" }));
 
     expect(screen.getByText("Version 1")).toBeInTheDocument();
-    expect(screen.queryByText("Results")).not.toBeInTheDocument();
     expect(
       screen.getByPlaceholderText("Enter additional information")
     ).toHaveValue("");

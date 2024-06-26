@@ -92,7 +92,7 @@ export const AppDrawer = ({
   return (
     <Drawer variant="permanent" open={open}>
       <DrawerHeader>
-        <IconButton onClick={onDrawerClose}>
+        <IconButton data-testid="drawer-close-icon" onClick={onDrawerClose}>
           {theme.direction === "rtl" ? (
             <ChevronRightIcon />
           ) : (

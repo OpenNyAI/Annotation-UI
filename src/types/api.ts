@@ -26,7 +26,7 @@ export type ResultChunk = {
   metadata: { chunk_id: number; file_name: string };
 };
 
-type AnnotatedText = {
+export type AnnotatedText = {
   file_name: string;
   text: string;
   start_index: number;
@@ -47,12 +47,27 @@ export type QueryResult = {
   chunks: ResultChunk[];
 };
 
-export type AnswersResult = {
-  id: string;
-  file_name: string;
+export type SingleQuestionAnswer = {
   query: string;
+  file_name: string;
   version_number: number;
   answers: AnnotatedText[];
-  chunk_results: ResultChunk[];
   additional_text?: string;
+};
+
+export type QuestionAnswer = SingleQuestionAnswer & {
+  id: string;
+  flag: boolean;
+  chunk_results: ResultChunk[];
+};
+
+export type DocumentQuestionAnswer = {
+  qna: QuestionAnswer[];
+};
+
+export type QuestionAnswerVersionListResponse = {
+  id: string;
+  flag: boolean;
+  chunk_results: ResultChunk[];
+  qna: SingleQuestionAnswer[];
 };

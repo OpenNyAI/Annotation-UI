@@ -1,4 +1,14 @@
-export const documentsListResponse = [
+import {
+  AnnotatedText,
+  DocumentInfo,
+  DocumentQuestionAnswer,
+  DocumentWithContent,
+  QueryResult,
+  QuestionAnswer,
+  ResultChunk,
+} from "../types/api";
+
+export const documentsListResponse: DocumentInfo[] = [
   {
     id: "1",
     file_name: "File1.txt",
@@ -9,7 +19,7 @@ export const documentsListResponse = [
   },
 ];
 
-export const myDocumentsWithAnswers = [
+export const myDocumentsWithAnswers: DocumentInfo[] = [
   {
     id: "1",
     file_name: "File1 Answered.txt",
@@ -28,7 +38,7 @@ export const myDocumentsWithAnswers = [
   },
 ];
 
-export const chunks = [
+export const chunks: ResultChunk[] = [
   {
     chunk: "chunk-1",
     metadata: { chunk_id: 1, file_name: "file-1" },
@@ -43,18 +53,18 @@ export const chunks = [
   },
 ];
 
-export const queryChunksResponse = {
+export const queryChunksResponse: QueryResult = {
   query: "test-query",
   chunks,
 };
 
-export const fileContent = {
+export const fileContent: DocumentWithContent = {
   id: "1",
   file_name: "File1.txt",
   content: "this is file content information",
 };
 
-export const answer1Annotations = [
+export const answer1Annotations: AnnotatedText[] = [
   {
     file_name: "File-1.tx",
     text: "annotated answer 1",
@@ -69,7 +79,7 @@ export const answer1Annotations = [
   },
 ];
 
-export const answer2Annotations = [
+export const answer2Annotations: AnnotatedText[] = [
   {
     file_name: "File-2.tx",
     text: "annotated answer 3",
@@ -83,26 +93,31 @@ export const answer2Annotations = [
     end_index: 10,
   },
 ];
-export const answer1 = {
+export const answer1: QuestionAnswer = {
   id: "doc-1",
+  flag: false,
   file_name: "File-1.txt",
   query: "Question-1",
+  version_number: 1,
   answers: answer1Annotations,
   chunk_results: [],
   additional_text: "answer-1 additional text",
 };
 
-export const answer2 = {
+export const answer2: QuestionAnswer = {
   id: "doc-1",
+  flag: false,
   file_name: "File-1.txt",
   query: "Question-2",
+  version_number: 1,
+
   chunk_results: [],
   answers: answer2Annotations,
 };
 
-export const qnaResponse = [answer1, answer2];
+export const qnaResponse: DocumentQuestionAnswer = { qna: [answer1, answer2] };
 
-export const reviewDocuments = [
+export const reviewDocuments: DocumentInfo[] = [
   {
     id: "1",
     file_name: "File1 Answered.txt",

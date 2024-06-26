@@ -1,4 +1,4 @@
-import { AnswersResult } from "../types/api";
+import { DocumentQuestionAnswer, SingleQuestionAnswer } from "../types/api";
 import { ReviewAnswerState, reviewAnswersReducer } from "./reviewAnswers";
 
 const initialState: ReviewAnswerState = {
@@ -9,24 +9,17 @@ const initialState: ReviewAnswerState = {
   currentQuestion: 0,
 };
 
-const updatedAnswerVersionResult = {
+const updatedAnswerVersionResult: SingleQuestionAnswer = {
   answers: [
     { end_index: 4, start_index: 0, text: "hello", file_name: "file1.txt" },
   ],
-  chunk_results: [
-    {
-      chunk: "chunk result v2",
-      metadata: { file_name: "file3.txt", chunk_id: 1 },
-    },
-  ],
   file_name: "file1.txt",
-  id: "id-1",
   version_number: 2,
   query: "Greet me? Version 2",
   additional_text: "additional-text version 2",
 };
 
-const qnaResponse: { qna: AnswersResult[] } = {
+const qnaResponse: DocumentQuestionAnswer = {
   qna: [
     {
       answers: [
@@ -47,11 +40,13 @@ const qnaResponse: { qna: AnswersResult[] } = {
       ],
       file_name: "file1.txt",
       id: "id-1",
+      flag: false,
       version_number: 1,
       query: "Greet me?",
       additional_text: "additional-text",
     },
     {
+      flag: false,
       answers: [
         { end_index: 4, start_index: 0, text: "there", file_name: "file1.txt" },
       ],
@@ -397,12 +392,7 @@ describe("review answers reducer", () => {
         { end_index: 4, start_index: 0, text: "hello", file_name: "file1.txt" },
       ],
       qnaResponse: { qna: [] },
-      resultChunks: [
-        {
-          chunk: "chunk result v2",
-          metadata: { file_name: "file3.txt", chunk_id: 1 },
-        },
-      ],
+      resultChunks: [],
       currentQuestion: 0,
     };
 

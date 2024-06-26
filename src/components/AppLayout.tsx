@@ -5,6 +5,7 @@ import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import { useEffect, useState } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
+import { toast } from "react-toastify";
 import useAxios from "../hooks/useAxios";
 import { AnnotationPage } from "../pages/AnnotationPage";
 import { DocumentAnswers } from "../pages/DocumentAnswers";
@@ -46,8 +47,12 @@ export function AppLayout() {
 
   useEffect(() => {
     async function getApplicationConfig() {
-      const config = await makeRequest("/user/config", "GET");
-      setAppConfig(config);
+      try {
+        const config = await makeRequest("/user/config", "GET");
+        setAppConfig(config);
+      } catch (err: any) {
+        toast.error(err.message);
+      }
     }
 
     getApplicationConfig();
@@ -57,15 +62,6 @@ export function AppLayout() {
 
   if (status === "pending") {
     return <LoadingSpinner />;
-  }
-
-  if (status === "error") {
-    return (
-      <ErrorMessage
-        title="Error while loading application config"
-        subtitle={`Error : ${error?.message}`}
-      />
-    );
   }
 
   const homeRoute = (() => {
@@ -86,6 +82,7 @@ export function AppLayout() {
         <Toolbar>
           <IconButton
             color="inherit"
+            data-testid="drawer-open-icon"
             aria-label="open drawer"
             onClick={handleDrawerOpen}
             edge="start"
@@ -111,72 +108,78 @@ export function AppLayout() {
         sx={{ flexGrow: 1, height: `calc(100vh - ${APP_BAR_HEIGHT}px)` }}
       >
         <DrawerHeader />
-        <Routes>
-          <Route
-            path="/"
-            element={
-              <PrivateRoute>
-                {app_state === "annotation" ? (
-                  <DocumentsList />
-                ) : (
-                  <Navigate to={homeRoute} />
-                )}
-              </PrivateRoute>
-            }
+        {status === "error" ? (
+          <ErrorMessage
+            title="Error while loading application config"
+            subtitle={`Error : ${error?.message}`}
           />
-          {homeRoute === "/" && (
-            <>
-              <Route
-                path="/annotate/:documentId"
-                element={
-                  <PrivateRoute>
-                    <AnnotationPage />
-                  </PrivateRoute>
-                }
-              />
-              <Route
-                path="/answers"
-                element={
-                  <PrivateRoute>
-                    <MyAnswersList />
-                  </PrivateRoute>
-                }
-              />
-              <Route
-                path="/answers/:documentId"
-                element={
-                  <PrivateRoute>
-                    <DocumentAnswers />
-                  </PrivateRoute>
-                }
-              />
-            </>
-          )}
-          {homeRoute === "/review" && (
-            <>
-              <Route
-                path="/review"
-                element={
-                  <PrivateRoute>
-                    <ReviewDocumentsList
-                      isExpertReview={app_state === "expert-review"}
-                    />
-                  </PrivateRoute>
-                }
-              />
-              <Route
-                path="/review/:documentId"
-                element={
-                  <PrivateRoute>
-                    <ReviewAnswersPage />
-                  </PrivateRoute>
-                }
-              />
-            </>
-          )}
-
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        ) : (
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <PrivateRoute>
+                  {app_state === "annotation" ? (
+                    <DocumentsList />
+                  ) : (
+                    <Navigate to={homeRoute} />
+                  )}
+                </PrivateRoute>
+              }
+            />
+            {homeRoute === "/" && (
+              <>
+                <Route
+                  path="/annotate/:documentId"
+                  element={
+                    <PrivateRoute>
+                      <AnnotationPage />
+                    </PrivateRoute>
+                  }
+                />
+                <Route
+                  path="/answers"
+                  element={
+                    <PrivateRoute>
+                      <MyAnswersList />
+                    </PrivateRoute>
+                  }
+                />
+                <Route
+                  path="/answers/:documentId"
+                  element={
+                    <PrivateRoute>
+                      <DocumentAnswers />
+                    </PrivateRoute>
+                  }
+                />
+              </>
+            )}
+            {homeRoute === "/review" && (
+              <>
+                <Route
+                  path="/review"
+                  element={
+                    <PrivateRoute>
+                      <ReviewDocumentsList
+                        isExpertReview={app_state === "expert-review"}
+                      />
+                    </PrivateRoute>
+                  }
+                />
+                <Route
+                  path="/review/:documentId"
+                  element={
+                    <PrivateRoute>
+                      <ReviewAnswersPage />
+                    </PrivateRoute>
+                  }
+                />
+              </>
+            )}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        )}
       </Box>
     </Box>
   );

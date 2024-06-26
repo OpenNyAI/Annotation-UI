@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
 import { ErrorMessage } from "../components/ErrorMessage";
 import { LoadingSpinner } from "../components/LoadingSpinner";
 import useAxios from "../hooks/useAxios";
-import { AnswersResult } from "../types/api";
+import { DocumentQuestionAnswer } from "../types/api";
 import { Styles } from "../types/styles";
 
 const styles: Styles = {
@@ -36,9 +36,8 @@ const styles: Styles = {
 };
 
 export const DocumentAnswers = () => {
-  const { makeRequest, data, error, status } = useAxios<{
-    qna: AnswersResult[];
-  }>();
+  const { makeRequest, data, error, status } =
+    useAxios<DocumentQuestionAnswer>();
   const { documentId } = useParams();
   const [currentQuestion, setCurrentQuestion] = useState(0);
 

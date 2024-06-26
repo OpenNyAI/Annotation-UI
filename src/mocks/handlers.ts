@@ -54,9 +54,7 @@ export const handlers = [
   }),
 
   http.get(`/user/qna/document/doc-1`, () => {
-    return HttpResponse.json({
-      qna: qnaResponse,
-    });
+    return HttpResponse.json(qnaResponse);
   }),
 
   http.get(`/user/review-documents`, () => {

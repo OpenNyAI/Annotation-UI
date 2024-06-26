@@ -64,6 +64,23 @@ describe("AppLayout", () => {
       });
     });
 
+    it("Should expand drawer to show the name of navigation item", async () => {
+      render(<AppLayout />, { initialEntries: ["/annotate/file-1"] });
+
+      expect(screen.getByTestId("page-loader")).toBeInTheDocument();
+
+      await waitFor(() => {
+        expect(screen.queryByTestId("page-loader")).not.toBeInTheDocument();
+        expect(screen.getByText("Annotation page")).toBeInTheDocument();
+      });
+
+      const drawerOpenIcon = screen.getByTestId("drawer-open-icon");
+      await userEvent.click(drawerOpenIcon);
+
+      const drawerCloseIcon = screen.getByTestId("drawer-close-icon");
+      await userEvent.click(drawerCloseIcon);
+    });
+
     it("Should render DocumentAnswers page when route is answers/id", async () => {
       render(<AppLayout />, { initialEntries: ["/answers/file-1"] });
 
@@ -155,5 +172,31 @@ describe("AppLayout", () => {
     await userEvent.click(logoutBtn);
 
     expect(screen.getByText("Signin Page")).toBeInTheDocument();
+  });
+
+  it("should show  app layout api error on failure", async () => {
+    server.use(
+      http.get("/user/config", () => {
+        return HttpResponse.json(
+          { message: "Something went wrong" },
+          { status: 500 }
+        );
+      })
+    );
+
+    render(
+      <Routes>
+        <Route path="signin" element={<div>Signin Page</div>} />
+        <Route path="/*" element={<AppLayout />} />
+      </Routes>,
+      {}
+    );
+
+    expect(screen.getByTestId("page-loader")).toBeInTheDocument();
+
+    await waitFor(() => {
+      expect(screen.queryByTestId("page-loader")).not.toBeInTheDocument();
+      expect(screen.getByText("Something went wrong")).toBeInTheDocument();
+    });
   });
 });

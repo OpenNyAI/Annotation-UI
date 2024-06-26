@@ -16,8 +16,9 @@ import {
   reviewAnswersReducer,
 } from "../reducers/reviewAnswers";
 import {
-  AnswersResult,
+  DocumentQuestionAnswer,
   DocumentWithContent,
+  SingleQuestionAnswer,
   SubmitAnswerBody,
 } from "../types/api";
 import { Styles } from "../types/styles";
@@ -99,9 +100,8 @@ export const ReviewAnswersPage = () => {
 
   const { makeRequest: submitAnswer } = useAxios<string>();
 
-  const { makeRequest: queryQnA, status: qnaStatus } = useAxios<{
-    qna: AnswersResult[];
-  }>();
+  const { makeRequest: queryQnA, status: qnaStatus } =
+    useAxios<DocumentQuestionAnswer>();
 
   const handleTextAnnotation = (annotatedText: TextAnnotation) => {
     dispatch({
@@ -180,7 +180,7 @@ export const ReviewAnswersPage = () => {
     });
   };
 
-  const handleVersionUpdate = (answerText: AnswersResult) => {
+  const handleVersionUpdate = (answerText: SingleQuestionAnswer) => {
     dispatch({ type: "update-answer-version", payload: answerText });
   };
 

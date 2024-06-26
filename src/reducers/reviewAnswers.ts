@@ -1,12 +1,16 @@
 import { produce } from "immer";
 import { TextAnnotation } from "../components/annotation/TextAnnotator";
-import { AnswersResult, ResultChunk } from "../types/api";
+import {
+  DocumentQuestionAnswer,
+  ResultChunk,
+  SingleQuestionAnswer,
+} from "../types/api";
 
 export type ReviewAnswerState = {
   question: string;
   annotatedTexts: TextAnnotation[];
   resultChunks: ResultChunk[];
-  qnaResponse?: { qna: AnswersResult[] };
+  qnaResponse?: DocumentQuestionAnswer;
   currentQuestion: number;
   additionalInfo?: string;
 };
@@ -46,10 +50,10 @@ type ReviewAnswersAction =
         questionIndex: number;
       };
     }
-  | { type: "update-answer-version"; payload: AnswersResult }
+  | { type: "update-answer-version"; payload: SingleQuestionAnswer }
   | {
       type: "initialize-state";
-      payload: { qna: AnswersResult[] };
+      payload: DocumentQuestionAnswer;
     };
 
 export const reviewAnswersReducer = (
@@ -126,9 +130,8 @@ export const reviewAnswersReducer = (
       });
     case "update-answer-version":
       return produce(state, (draft) => {
-        const { chunk_results, answers } = payload;
+        const { answers } = payload;
         draft.annotatedTexts = answers;
-        draft.resultChunks = chunk_results;
         draft.additionalInfo = payload.additional_text;
         draft.question = payload.query;
         return draft;
