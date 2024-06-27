@@ -11,6 +11,7 @@ import OpennyAILogo from "../assets/OpennyaiLogo.svg";
 import { LabelledInput } from "../components/LabelledInput";
 import { useAuth } from "../hooks/useAuth";
 import useAxios from "../hooks/useAxios";
+import { SignInResponse } from "../types/api";
 import { Styles } from "../types/styles";
 
 const styles: Styles = {
@@ -58,7 +59,7 @@ export const SignIn = () => {
   const [showPassword, setShowPassword] = useState(false);
   const { setAuth } = useAuth();
 
-  const { makeRequest, status } = useAxios();
+  const { makeRequest, status } = useAxios<SignInResponse>();
 
   const {
     control,

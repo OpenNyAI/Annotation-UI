@@ -76,3 +76,7 @@ export type FlagQueryRequest = {
   qna_id: string;
   is_flagged: boolean;
 };
+
+export type SignInResponse = {
+  access_token: string;
+};
