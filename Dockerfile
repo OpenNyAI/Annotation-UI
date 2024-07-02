@@ -6,7 +6,7 @@ RUN npm install
 COPY . .
 
 ENV NODE_ENV production
-ENV VITE_API_URL "http://localhost:8080"
+ENV VITE_API_URL "https://annotation-service.orangecoast-1b8d6c1e.centralindia.azurecontainerapps.io"
 
 RUN npm run build
 
