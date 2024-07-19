@@ -57,6 +57,7 @@ const styles: Styles = {
     mb: "16px",
     maxHeight: "340px",
   },
+  optionalText: { fontSize: { xs: "12px", md: "14px" } },
 };
 
 export const AnnotationPage = () => {
@@ -258,7 +259,10 @@ export const AnnotationPage = () => {
             <LabelledInput
               label={
                 <Typography sx={{ mt: "auto" }} variant="subtitle1">
-                  Additional Info
+                  Additional Info{" "}
+                  <Typography
+                    sx={styles.optionalText}
+                  >{`(Optional)`}</Typography>
                 </Typography>
               }
               size="small"
