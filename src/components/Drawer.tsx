@@ -19,7 +19,8 @@ import MuiDrawer from "@mui/material/Drawer";
 import { CSSObject, Theme, styled, useTheme } from "@mui/material/styles";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
-import { AppConfig, DRAWER_WIDTH } from "./AppLayout";
+import { AppConfig } from "../Router";
+import { DRAWER_WIDTH } from "./AppLayout";
 import { NavigationItem } from "./NavigationItem";
 
 const openedMixin = (theme: Theme): CSSObject => ({

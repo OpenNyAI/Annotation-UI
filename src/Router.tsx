@@ -1,13 +1,66 @@
-import { Route, Routes } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Navigate, Route, Routes } from "react-router-dom";
+import { toast } from "react-toastify";
 import { AppLayout } from "./components/AppLayout";
+import { LoadingSpinner } from "./components/LoadingSpinner";
+import { PrivateRoute } from "./components/PrivateRoute";
 import { PublicRoute } from "./components/PublicRoute";
+import useAxios from "./hooks/useAxios";
+import { AnnotationPage } from "./pages/AnnotationPage";
+import { DocumentAnswers } from "./pages/DocumentAnswers";
+import { DocumentsList } from "./pages/DocumentsList";
 import { ForgotPassword } from "./pages/ForgotPassword";
+import { MyAnswersList } from "./pages/MyAnswersList";
 import { NotFound } from "./pages/NotFound";
 import { ResetPassword } from "./pages/ResetPassword";
+import { ReviewAnswersPage } from "./pages/ReviewAnswersPage";
+import { ReviewDocumentsList } from "./pages/ReviewDocumentsList";
 import { SignIn } from "./pages/SignIn";
 import { SignUp } from "./pages/SignUp";
 
+export type AppConfig = {
+  app_state: "annotation" | "review" | "expert-review" | "none";
+};
+
+const defaultAppConfig: AppConfig = {
+  app_state: "none",
+};
+
 export const Router = () => {
+  const [appConfig, setAppConfig] = useState<AppConfig>(defaultAppConfig);
+  const { makeRequest, status, error } = useAxios<AppConfig>();
+
+  useEffect(() => {
+    async function getApplicationConfig() {
+      try {
+        const config = await makeRequest("/user/config", "GET");
+        setAppConfig(config);
+      } catch (err: any) {
+        toast.error(err.message);
+      }
+    }
+
+    getApplicationConfig();
+  }, []);
+
+  const { app_state } = appConfig;
+
+  if (status === "pending") {
+    return <LoadingSpinner />;
+  }
+
+  const homeRoute = (() => {
+    switch (app_state) {
+      case "annotation":
+        return "/";
+      case "review":
+      case "expert-review":
+        return "/review";
+      case "none":
+        return "/";
+    }
+  })();
+
   return (
     <Routes>
       <Route
@@ -42,7 +95,70 @@ export const Router = () => {
           </PublicRoute>
         }
       />
-      <Route path="/*" element={<AppLayout />} />
+      <Route element={<AppLayout app_state={appConfig.app_state} />}>
+        <Route
+          path="/"
+          element={
+            <PrivateRoute>
+              {app_state === "annotation" ? (
+                <DocumentsList />
+              ) : (
+                <Navigate to={homeRoute} />
+              )}
+            </PrivateRoute>
+          }
+        />
+        {homeRoute === "/" && (
+          <>
+            <Route
+              path="/annotate/:documentId"
+              element={
+                <PrivateRoute>
+                  <AnnotationPage />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/answers"
+              element={
+                <PrivateRoute>
+                  <MyAnswersList />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/answers/:documentId"
+              element={
+                <PrivateRoute>
+                  <DocumentAnswers />
+                </PrivateRoute>
+              }
+            />
+          </>
+        )}
+        {homeRoute === "/review" && (
+          <>
+            <Route
+              path="/review"
+              element={
+                <PrivateRoute>
+                  <ReviewDocumentsList
+                    isExpertReview={app_state === "expert-review"}
+                  />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/review/:documentId"
+              element={
+                <PrivateRoute>
+                  <ReviewAnswersPage />
+                </PrivateRoute>
+              }
+            />
+          </>
+        )}
+      </Route>
       <Route path="*" element={<NotFound />} />
     </Routes>
   );
