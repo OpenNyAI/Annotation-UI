@@ -1,6 +1,7 @@
 import { produce } from "immer";
 import { TextAnnotation } from "../components/annotation/TextAnnotator";
 import {
+  AdditionalInfo,
   DocumentQuestionAnswer,
   ResultChunk,
   SingleQuestionAnswer,
@@ -12,7 +13,7 @@ export type ReviewAnswerState = {
   resultChunks: ResultChunk[];
   qnaResponse?: DocumentQuestionAnswer;
   currentQuestion: number;
-  additionalInfo?: string;
+  additionalInfoList: AdditionalInfo[];
 };
 
 type ReviewAnswersAction =
@@ -39,9 +40,9 @@ type ReviewAnswersAction =
       payload: { updatedAnnotations: TextAnnotation[] };
     }
   | {
-      type: "update-additional-info";
+      type: "update-additional-info-list";
       payload: {
-        updatedInfo: string;
+        updatedInfo: AdditionalInfo[];
       };
     }
   | {
@@ -94,9 +95,9 @@ export const reviewAnswersReducer = (
         });
         return draft;
       });
-    case "update-additional-info":
+    case "update-additional-info-list":
       return produce(state, (draft) => {
-        draft.additionalInfo = payload.updatedInfo;
+        draft.additionalInfoList = payload.updatedInfo;
         return draft;
       });
     case "update-annotations":
@@ -111,7 +112,7 @@ export const reviewAnswersReducer = (
         const { chunk_results, answers } = currentQnA!;
         draft.annotatedTexts = answers;
         draft.resultChunks = chunk_results;
-        draft.additionalInfo = currentQnA?.additional_text ?? "";
+        draft.additionalInfoList = currentQnA?.additional_text ?? [];
         draft.question = currentQnA!.query;
         draft.currentQuestion = questionIndex;
         return draft;
@@ -124,16 +125,16 @@ export const reviewAnswersReducer = (
         const { chunk_results, answers } = currentQnA!;
         draft.annotatedTexts = answers;
         draft.resultChunks = chunk_results;
-        draft.additionalInfo = currentQnA?.additional_text ?? "";
+        draft.additionalInfoList = currentQnA?.additional_text ?? [];
         draft.question = currentQnA!.query;
         return draft;
       });
     case "update-answer-version":
       return produce(state, (draft) => {
-        const { answers } = payload;
+        const { answers, additional_text, query } = payload;
         draft.annotatedTexts = answers;
-        draft.additionalInfo = payload.additional_text;
-        draft.question = payload.query;
+        draft.additionalInfoList = additional_text ?? [];
+        draft.question = query;
         return draft;
       });
     default:

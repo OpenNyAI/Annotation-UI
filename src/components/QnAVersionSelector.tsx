@@ -37,7 +37,7 @@ export const QnAVersionSelector = ({
     }
 
     getAllVersions();
-  }, []);
+  }, [qnaId]);
 
   return (
     <FormControl sx={{ width: "180px" }}>

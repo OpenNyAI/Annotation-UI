@@ -2,9 +2,16 @@ import { Send } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
 import { Box, Button, Divider, Typography } from "@mui/material";
 import { produce } from "immer";
-import { ChangeEvent, KeyboardEventHandler, useEffect, useState } from "react";
+import {
+  ChangeEvent,
+  KeyboardEventHandler,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
+import { AdditionalInfoContainer } from "../components/AdditionalInfoContainer";
 import { ErrorMessage } from "../components/ErrorMessage";
 import { LabelledInput } from "../components/LabelledInput";
 import { LoadingSpinner } from "../components/LoadingSpinner";
@@ -14,6 +21,8 @@ import TextAnnotator, {
 } from "../components/annotation/TextAnnotator";
 import useAxios from "../hooks/useAxios";
 import {
+  AdditionalInfo,
+  DocumentBaseInfoResponse,
   DocumentWithContent,
   QueryResult,
   SubmitAnswerBody,
@@ -64,7 +73,9 @@ export const AnnotationPage = () => {
   const [question, setQuestion] = useState("");
   const [annotatedTexts, setAnnotatedTexts] = useState<TextAnnotation[]>([]);
   const [result, setResult] = useState<QueryResult>();
-  const [additionalInfo, setAdditionalInfo] = useState("");
+  const [additionalInfoList, setAdditionalInfoList] = useState<
+    AdditionalInfo[]
+  >([]);
 
   const { documentId } = useParams();
 
@@ -80,9 +91,20 @@ export const AnnotationPage = () => {
   const { makeRequest: queryQuestion, status: queryStatus } =
     useAxios<QueryResult>();
 
+  const {
+    makeRequest: getDocumentsListApi,
+    status: documentsListStatus,
+    data: documentsList,
+  } = useAxios<DocumentBaseInfoResponse>();
   const handleTextAnnotation = (annotatedText: TextAnnotation) => {
     setAnnotatedTexts((prev) => [...prev, annotatedText]);
   };
+
+  const isValidAdditionalInfo = useMemo(() => {
+    return additionalInfoList.some(
+      (info) => info.id === "" || info.file_name === "" || info.text === ""
+    );
+  }, [additionalInfoList]);
 
   const handleDeleteTextAnnotation = (index: number) => {
     const updatedAnnotations = produce(annotatedTexts, (draft) => {
@@ -108,7 +130,7 @@ export const AnnotationPage = () => {
   const resetQuery = () => {
     setQuestion("");
     setAnnotatedTexts([]);
-    setAdditionalInfo("");
+    setAdditionalInfoList([]);
     setResult(undefined);
   };
 
@@ -120,7 +142,7 @@ export const AnnotationPage = () => {
       const answerBody: SubmitAnswerBody = {
         query: result?.query ?? question,
         annotated_text: annotatedTexts,
-        additional_answer: additionalInfo,
+        additional_answer: additionalInfoList,
         document_id: documentId!,
         chunk_result: result?.chunks ?? [],
       };
@@ -159,10 +181,6 @@ export const AnnotationPage = () => {
     setQuestion(event.target.value);
   };
 
-  const handleAdditionalInfoChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setAdditionalInfo(event.target.value);
-  };
-
   const handleKeyDown: KeyboardEventHandler<HTMLInputElement> = (event) => {
     if (event.key === "Enter") {
       handleQueryQuestion();
@@ -180,6 +198,18 @@ export const AnnotationPage = () => {
 
     getDocumentContents();
   }, [documentId]);
+
+  useEffect(() => {
+    async function getDocumentsList() {
+      try {
+        await getDocumentsListApi(`/user/document-titles`, "GET");
+      } catch (err: any) {
+        toast.error(err.message);
+      }
+    }
+
+    getDocumentsList();
+  }, []);
 
   if (fileContentStatus === "pending") {
     return <LoadingSpinner />;
@@ -256,27 +286,19 @@ export const AnnotationPage = () => {
                 </Box>
               );
             })}
-            <LabelledInput
-              label={
-                <Typography sx={{ mt: "auto" }} variant="subtitle1">
-                  Additional Info{" "}
-                  <Typography
-                    sx={styles.optionalText}
-                  >{`(Optional)`}</Typography>
-                </Typography>
-              }
-              size="small"
-              fullWidth
-              value={additionalInfo}
-              placeholder="Enter additional information"
-              type="text"
-              onChange={handleAdditionalInfoChange}
+            <AdditionalInfoContainer
+              additionalInfoList={additionalInfoList}
+              status={documentsListStatus}
+              filesList={documentsList?.documents ?? []}
+              onAdditionalInfoChange={setAdditionalInfoList}
             />
             <Button
               variant="contained"
               sx={{ width: "120px", mx: "auto" }}
               disabled={
-                question ? annotatedTexts.length === 0 && !additionalInfo : true
+                question
+                  ? annotatedTexts.length === 0 && isValidAdditionalInfo
+                  : true
               }
               onClick={handleSubmitAnswer}
             >

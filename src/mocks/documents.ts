@@ -1,5 +1,6 @@
 import {
   AnnotatedText,
+  DocumentBaseInfo,
   DocumentInfo,
   DocumentQuestionAnswer,
   DocumentWithContent,
@@ -101,7 +102,13 @@ export const answer1: QuestionAnswer = {
   version_number: 1,
   answers: answer1Annotations,
   chunk_results: [],
-  additional_text: "answer-1 additional text",
+  additional_text: [
+    {
+      id: "id-1",
+      file_name: "file_1",
+      text: "answer-1 additional text",
+    },
+  ],
 };
 
 export const answer2: QuestionAnswer = {
@@ -133,5 +140,20 @@ export const reviewDocuments: DocumentInfo[] = [
     number_of_questions: 25,
     max_questions: 25,
     status: "QueryInProgress",
+  },
+];
+
+export const titleDocuments: DocumentBaseInfo[] = [
+  {
+    id: "1",
+    file_name: "file-1.txt",
+  },
+  {
+    id: "2",
+    file_name: "file-2.txt",
+  },
+  {
+    id: "3",
+    file_name: "file-3.txt",
   },
 ];

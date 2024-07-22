@@ -34,11 +34,17 @@ export type AnnotatedText = {
   source_text?: string;
 };
 
+export type AdditionalInfo = {
+  id: string;
+  file_name: string;
+  text: string;
+};
+
 export type SubmitAnswerBody = {
   document_id: string;
   query: string;
   annotated_text: AnnotatedText[];
-  additional_answer?: string;
+  additional_answer?: AdditionalInfo[];
   chunk_result: ResultChunk[];
 };
 
@@ -52,7 +58,7 @@ export type SingleQuestionAnswer = {
   file_name: string;
   version_number: number;
   answers: AnnotatedText[];
-  additional_text?: string;
+  additional_text?: AdditionalInfo[];
 };
 
 export type QuestionAnswer = SingleQuestionAnswer & {
@@ -79,4 +85,13 @@ export type FlagQueryRequest = {
 
 export type SignInResponse = {
   access_token: string;
+};
+
+export type DocumentBaseInfo = {
+  id: string;
+  file_name: string;
+};
+
+export type DocumentBaseInfoResponse = {
+  documents: DocumentBaseInfo[];
 };

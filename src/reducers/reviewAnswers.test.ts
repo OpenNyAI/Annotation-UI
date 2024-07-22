@@ -1,4 +1,8 @@
-import { DocumentQuestionAnswer, SingleQuestionAnswer } from "../types/api";
+import {
+  AdditionalInfo,
+  DocumentQuestionAnswer,
+  SingleQuestionAnswer,
+} from "../types/api";
 import { ReviewAnswerState, reviewAnswersReducer } from "./reviewAnswers";
 
 const initialState: ReviewAnswerState = {
@@ -7,6 +11,7 @@ const initialState: ReviewAnswerState = {
   resultChunks: [],
   qnaResponse: { qna: [] },
   currentQuestion: 0,
+  additionalInfoList: [],
 };
 
 const updatedAnswerVersionResult: SingleQuestionAnswer = {
@@ -16,7 +21,13 @@ const updatedAnswerVersionResult: SingleQuestionAnswer = {
   file_name: "file1.txt",
   version_number: 2,
   query: "Greet me? Version 2",
-  additional_text: "additional-text version 2",
+  additional_text: [
+    {
+      id: "1",
+      file_name: "file-1",
+      text: "additional-text version 2",
+    },
+  ],
 };
 
 const qnaResponse: DocumentQuestionAnswer = {
@@ -43,7 +54,13 @@ const qnaResponse: DocumentQuestionAnswer = {
       flag: false,
       version_number: 1,
       query: "Greet me?",
-      additional_text: "additional-text",
+      additional_text: [
+        {
+          id: "1",
+          file_name: "file-1",
+          text: "additional-text",
+        },
+      ],
     },
     {
       flag: false,
@@ -66,14 +83,20 @@ const qnaResponse: DocumentQuestionAnswer = {
 
 describe("review answers reducer", () => {
   it("should update the additional info when action type is update-additional-info", () => {
-    const updatedInfo = "updated info";
+    const updatedInfo: AdditionalInfo[] = [
+      {
+        id: "1",
+        file_name: "file-1",
+        text: "updated info",
+      },
+    ];
     const expectedState: ReviewAnswerState = {
       ...initialState,
-      additionalInfo: updatedInfo,
+      additionalInfoList: updatedInfo,
     };
 
     const state = reviewAnswersReducer(initialState, {
-      type: "update-additional-info",
+      type: "update-additional-info-list",
       payload: { updatedInfo },
     });
 
@@ -83,7 +106,13 @@ describe("review answers reducer", () => {
   it("should initialize annotated texts and result texts for the current question when action type is initialize-state", () => {
     const expectedState: ReviewAnswerState = {
       question: "Greet me?",
-      additionalInfo: "additional-text",
+      additionalInfoList: [
+        {
+          id: "1",
+          file_name: "file-1",
+          text: "additional-text",
+        },
+      ],
       annotatedTexts: [
         { end_index: 4, start_index: 0, text: "hello", file_name: "file1.txt" },
         {
@@ -118,7 +147,7 @@ describe("review answers reducer", () => {
 
     expect(state).toEqual({
       question: "Where is the answer?",
-      additionalInfo: "",
+      additionalInfoList: [],
       annotatedTexts: [
         { end_index: 4, start_index: 0, text: "there", file_name: "file1.txt" },
       ],
@@ -387,7 +416,13 @@ describe("review answers reducer", () => {
   it("should update the answer to given version of answer result", () => {
     const expectedState: ReviewAnswerState = {
       question: "Greet me? Version 2",
-      additionalInfo: "additional-text version 2",
+      additionalInfoList: [
+        {
+          id: "1",
+          file_name: "file-1",
+          text: "additional-text version 2",
+        },
+      ],
       annotatedTexts: [
         { end_index: 4, start_index: 0, text: "hello", file_name: "file1.txt" },
       ],

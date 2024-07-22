@@ -3,6 +3,7 @@ import { Box, IconButton, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
+import { AdditionalInfoItem } from "../components/AdditionalInfoItem";
 import { ErrorMessage } from "../components/ErrorMessage";
 import { LoadingSpinner } from "../components/LoadingSpinner";
 import useAxios from "../hooks/useAxios";
@@ -32,6 +33,18 @@ const styles: Styles = {
     justifyContent: "space-between",
     alignItems: "center",
     height: "10%",
+  },
+  additionalInfoContainer: {
+    display: "flex",
+    flexDirection: "column",
+    flex: 1,
+    gap: "16px",
+  },
+  prevBtn: {
+    display: "flex",
+    justifyContent: "center",
+    gap: "16px",
+    alignItems: "center",
   },
 };
 
@@ -84,14 +97,7 @@ export const DocumentAnswers = () => {
     data && (
       <Box sx={styles.container}>
         <Box sx={{ display: "flex", flexDirection: "column", height: "20%" }}>
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "center",
-              gap: "16px",
-              alignItems: "center",
-            }}
-          >
+          <Box sx={styles.prevBtn}>
             <IconButton
               data-testid="prevBtn"
               disabled={currentQuestion === 0}
@@ -131,14 +137,22 @@ export const DocumentAnswers = () => {
             {question!.answers.map((q) => q.text).join("\n\n")}
           </Typography>
         </Box>
-        <Box sx={{ display: "flex", flexDirection: "column", height: "15%" }}>
+        <Box sx={styles.additionalInfoContainer}>
           <Typography variant="h6">Additional Info</Typography>
-          <Typography
+          <Box
             data-testid="additional-info-box"
-            sx={styles.textContainer}
+            sx={{ display: "flex", flexDirection: "column", gap: "16px" }}
           >
-            {question?.additional_text}
-          </Typography>
+            {question?.additional_text?.map((info, index) => {
+              return (
+                <AdditionalInfoItem
+                  key={info.id + index}
+                  additionalInfo={info}
+                  index={index + 1}
+                />
+              );
+            })}
+          </Box>
         </Box>
       </Box>
     )

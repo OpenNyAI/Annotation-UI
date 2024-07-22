@@ -1,9 +1,9 @@
 import { Box, Button, Divider, Typography } from "@mui/material";
-import { ChangeEvent, useEffect, useReducer } from "react";
+import { useEffect, useMemo, useReducer } from "react";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
+import { AdditionalInfoContainer } from "../components/AdditionalInfoContainer";
 import { ErrorMessage } from "../components/ErrorMessage";
-import { LabelledInput } from "../components/LabelledInput";
 import { LoadingSpinner } from "../components/LoadingSpinner";
 import { ReviewAnswersHeader } from "../components/ReviewAnswersHeader";
 import { AnnotationSummarySidePanel } from "../components/annotation/AnnotationSummarySidePanel";
@@ -16,6 +16,8 @@ import {
   reviewAnswersReducer,
 } from "../reducers/reviewAnswers";
 import {
+  AdditionalInfo,
+  DocumentBaseInfoResponse,
   DocumentQuestionAnswer,
   DocumentWithContent,
   FlagQueryRequest,
@@ -75,6 +77,7 @@ const initialState: ReviewAnswerState = {
   resultChunks: [],
   qnaResponse: { qna: [] },
   currentQuestion: 0,
+  additionalInfoList: [],
 };
 
 export const ReviewAnswersPage = () => {
@@ -84,7 +87,7 @@ export const ReviewAnswersPage = () => {
       currentQuestion,
       annotatedTexts,
       resultChunks,
-      additionalInfo,
+      additionalInfoList,
       qnaResponse,
     },
     dispatch,
@@ -104,6 +107,18 @@ export const ReviewAnswersPage = () => {
 
   const { makeRequest: queryQnA, status: qnaStatus } =
     useAxios<DocumentQuestionAnswer>();
+
+  const {
+    makeRequest: getDocumentsListApi,
+    status: documentsListStatus,
+    data: documentsList,
+  } = useAxios<DocumentBaseInfoResponse>();
+
+  const isValidAdditionalInfo = useMemo(() => {
+    return additionalInfoList?.some(
+      (info) => info.id === "" || info.file_name === "" || info.text === ""
+    );
+  }, [additionalInfoList]);
 
   const handleTextAnnotation = (annotatedText: TextAnnotation) => {
     dispatch({
@@ -135,7 +150,7 @@ export const ReviewAnswersPage = () => {
       const answerBody: SubmitAnswerBody = {
         query: question,
         annotated_text: annotatedTexts,
-        additional_answer: additionalInfo,
+        additional_answer: additionalInfoList,
         document_id: documentId!,
         chunk_result: resultChunks,
       };
@@ -175,10 +190,10 @@ export const ReviewAnswersPage = () => {
     }
   };
 
-  const handleAdditionalInfoChange = (event: ChangeEvent<HTMLInputElement>) => {
+  const handleAdditionalInfoChange = (updatedList: AdditionalInfo[]) => {
     dispatch({
-      type: "update-additional-info",
-      payload: { updatedInfo: event.target.value },
+      type: "update-additional-info-list",
+      payload: { updatedInfo: updatedList },
     });
   };
 
@@ -233,6 +248,18 @@ export const ReviewAnswersPage = () => {
     getQnA();
   }, [documentId]);
 
+  useEffect(() => {
+    async function getDocumentsList() {
+      try {
+        await getDocumentsListApi(`/user/document-titles`, "GET");
+      } catch (err: any) {
+        toast.error(err.message);
+      }
+    }
+
+    getDocumentsList();
+  }, []);
+
   if (fileContentStatus === "pending" || qnaStatus === "pending") {
     return <LoadingSpinner />;
   }
@@ -249,7 +276,7 @@ export const ReviewAnswersPage = () => {
   const isFlagged = !!selectedQuestion?.flag;
   const isDisabled =
     isFlagged ||
-    (question ? annotatedTexts.length === 0 && !additionalInfo : true);
+    (question ? annotatedTexts.length === 0 && isValidAdditionalInfo : true);
 
   return (
     fileContentStatus === "resolved" &&
@@ -324,18 +351,11 @@ export const ReviewAnswersPage = () => {
                   </Box>
                 );
               })}
-              <LabelledInput
-                label={
-                  <Typography sx={{ mt: "auto" }} variant="subtitle1">
-                    Additional Info
-                  </Typography>
-                }
-                size="small"
-                fullWidth
-                value={additionalInfo ?? ""}
-                placeholder="Enter additional information"
-                type="text"
-                onChange={handleAdditionalInfoChange}
+              <AdditionalInfoContainer
+                additionalInfoList={additionalInfoList ?? []}
+                status={documentsListStatus}
+                filesList={documentsList?.documents ?? []}
+                onAdditionalInfoChange={handleAdditionalInfoChange}
               />
               <Button
                 variant="contained"

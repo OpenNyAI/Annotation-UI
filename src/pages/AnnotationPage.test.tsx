@@ -132,9 +132,21 @@ describe("Annotation Page", () => {
 
     const questionField = screen.getByPlaceholderText("Enter your question");
     const queryBtn = screen.getByRole("button", { name: "Query" });
-    let additionalInfoField = screen.getByPlaceholderText(
-      "Enter additional information"
+    const addNewBtn = screen.getByRole("button", { name: "Add New" });
+
+    await userEvent.click(addNewBtn);
+
+    const chooseDocument = screen.getByPlaceholderText("Choose Document");
+    const additionalInfoField = screen.getByPlaceholderText(
+      "Enter Additional Info"
     );
+    await userEvent.type(additionalInfoField, "answer");
+
+    await userEvent.click(chooseDocument);
+    const documentOption = screen.getByRole("option", {
+      name: "file-1.txt",
+    });
+    await userEvent.click(documentOption);
 
     await userEvent.type(questionField, "test-query");
     await userEvent.click(queryBtn);
@@ -144,12 +156,10 @@ describe("Annotation Page", () => {
     await userEvent.type(additionalInfoField, "anwer");
     await userEvent.click(submitBtn);
 
-    additionalInfoField = screen.getByPlaceholderText(
-      "Enter additional information"
-    );
-
     expect(screen.getByText("Submitted successfully")).toBeInTheDocument();
-    expect(additionalInfoField).toHaveValue("");
+    expect(
+      screen.queryByPlaceholderText("Enter Additional Info")
+    ).not.toBeInTheDocument();
   });
 
   it("should show submit answer api error message", async () => {
@@ -181,21 +191,28 @@ describe("Annotation Page", () => {
 
     const questionField = screen.getByPlaceholderText("Enter your question");
     const queryBtn = screen.getByRole("button", { name: "Query" });
-    let additionalInfoField = screen.getByPlaceholderText(
-      "Enter additional information"
+    const addNewBtn = screen.getByRole("button", { name: "Add New" });
+
+    await userEvent.click(addNewBtn);
+
+    const chooseDocument = screen.getByPlaceholderText("Choose Document");
+    const additionalInfoField = screen.getByPlaceholderText(
+      "Enter Additional Info"
     );
+    await userEvent.type(additionalInfoField, "answer");
+
+    await userEvent.click(chooseDocument);
+    const documentOption = screen.getByRole("option", {
+      name: "file-1.txt",
+    });
+    await userEvent.click(documentOption);
 
     await userEvent.type(questionField, "test-query");
     await userEvent.click(queryBtn);
 
     const submitBtn = screen.getByRole("button", { name: "Submit" });
 
-    await userEvent.type(additionalInfoField, "anwer");
     await userEvent.click(submitBtn);
-
-    additionalInfoField = screen.getByPlaceholderText(
-      "Enter additional information"
-    );
 
     expect(screen.getByText("Results")).toBeInTheDocument();
     expect(

@@ -7,6 +7,7 @@ import {
   qnaResponse,
   queryChunksResponse,
   reviewDocuments,
+  titleDocuments,
 } from "./documents";
 
 export const handlers = [
@@ -65,5 +66,9 @@ export const handlers = [
 
   http.get(`/user/config`, () => {
     return HttpResponse.json({ app_state: "annotation" });
+  }),
+
+  http.get("/user/document-titles", () => {
+    return HttpResponse.json({ documents: titleDocuments });
   }),
 ];

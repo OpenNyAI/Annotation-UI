@@ -49,10 +49,11 @@ export const ReviewAnswersHeader = ({
       <Button
         size="small"
         variant="contained"
+        sx={{ textTransform: "none" }}
         startIcon={<Flag />}
         onClick={onFlagQuestion}
       >
-        {!question.flag ? "Flag answer" : "Unflag answer"}
+        {!question.flag ? "Flag Answer" : "Unflag Answer"}
       </Button>
       <Box sx={{ gap: "12px", display: "flex", ml: "auto" }}>
         <Button

@@ -61,7 +61,9 @@ const answer1: QuestionAnswer = {
       metadata: { file_name: "file1.txt", chunk_id: 1 },
     },
   ],
-  additional_text: "answer-1 additional text",
+  additional_text: [
+    { id: "1", file_name: "file-1", text: "answer-1 additional text" },
+  ],
 };
 
 const answer2: QuestionAnswer = {
@@ -79,7 +81,7 @@ const answer1OldVersion: SingleQuestionAnswer = {
   query: "Question-1",
   version_number: 1,
   answers: answer1Annotations,
-  additional_text: "",
+  additional_text: [],
 };
 
 const question1VersionsResponse: QuestionAnswerVersionListResponse = {
@@ -92,6 +94,12 @@ const question1VersionsResponse: QuestionAnswerVersionListResponse = {
   ],
   flag: false,
   qna: [answer1, answer1OldVersion],
+};
+const question2VersionsResponse: QuestionAnswerVersionListResponse = {
+  id: "question-2",
+  chunk_results: [],
+  flag: false,
+  qna: [answer2],
 };
 
 const qnaResponse = [answer1, answer2];
@@ -110,6 +118,9 @@ describe("Review Answers Page", () => {
       }),
       http.get(`/user/qna/question-1`, () => {
         return HttpResponse.json(question1VersionsResponse);
+      }),
+      http.get(`/user/qna/question-2`, () => {
+        return HttpResponse.json(question2VersionsResponse);
       })
     );
   });
@@ -216,20 +227,15 @@ describe("Review Answers Page", () => {
       ).toBeInTheDocument();
     });
 
-    let additionalInfoField = screen.getByPlaceholderText(
-      "Enter additional information"
-    );
-
     const updateButton = screen.getByRole("button", { name: "Update" });
 
-    await userEvent.type(additionalInfoField, "answer");
-    await userEvent.click(updateButton);
+    const infoTextField = screen.getByPlaceholderText("Enter Additional Info");
 
-    additionalInfoField = screen.getByPlaceholderText(
-      "Enter additional information"
-    );
-
-    expect(screen.getByText("Submitted successfully")).toBeInTheDocument();
+    userEvent.type(infoTextField, "update additional info");
+    userEvent.click(updateButton);
+    await waitFor(() => {
+      expect(screen.getByText("Submitted successfully")).toBeInTheDocument();
+    });
   });
 
   it("should show update answer api error message", async () => {
@@ -259,20 +265,16 @@ describe("Review Answers Page", () => {
       ).toBeInTheDocument();
     });
 
-    let additionalInfoField = screen.getByPlaceholderText(
-      "Enter additional information"
-    );
+    const updateButton = screen.getByRole("button", { name: "Update" });
 
-    const updateBtn = screen.getByRole("button", { name: "Update" });
+    const infoTextField = screen.getByPlaceholderText("Enter Additional Info");
 
-    await userEvent.type(additionalInfoField, "answer");
-    await userEvent.click(updateBtn);
+    userEvent.type(infoTextField, "update additional info");
+    userEvent.click(updateButton);
 
-    additionalInfoField = screen.getByPlaceholderText(
-      "Enter additional information"
-    );
-
-    expect(screen.getByText("Invalid document id")).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText("Invalid document id")).toBeInTheDocument();
+    });
   });
 
   it("should show the annotation summary with annotated text and update when user deletes the annotated text", async () => {
@@ -332,14 +334,20 @@ describe("Review Answers Page", () => {
       expect(screen.getByText("Version 2")).toBeInTheDocument();
     });
 
-    await waitFor(async () => {
-      await userEvent.click(screen.getByRole("combobox"));
-    });
-    await userEvent.click(screen.getByRole("option", { name: "Version 1" }));
+    expect(screen.getByPlaceholderText("Enter Additional Info")).toHaveValue(
+      "answer-1 additional text"
+    );
 
+    const versionSelector = screen.getByTestId("version-selector");
+    await userEvent.click(versionSelector);
+
+    await waitFor(async () => {
+      await userEvent.click(screen.getByRole("option", { name: "Version 1" }));
+    });
+    screen.debug(undefined, Infinity);
     expect(screen.getByText("Version 1")).toBeInTheDocument();
     expect(
-      screen.getByPlaceholderText("Enter additional information")
-    ).toHaveValue("");
+      screen.queryByPlaceholderText("Enter Additional Info")
+    ).not.toBeInTheDocument();
   });
 });

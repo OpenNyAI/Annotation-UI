@@ -68,7 +68,7 @@ describe("Document Answers", () => {
     expect(answerBox).toHaveTextContent(
       "annotated answer 3 annotated answer 4"
     );
-    expect(additionalInfoBox).toHaveTextContent("");
+    expect(additionalInfoBox).toBeEmptyDOMElement();
 
     //simulate prev click
     await userEvent.click(prevBtn);
