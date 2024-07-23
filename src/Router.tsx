@@ -19,7 +19,7 @@ import { SignIn } from "./pages/SignIn";
 import { SignUp } from "./pages/SignUp";
 
 export type AppConfig = {
-  app_state: "annotation" | "review" | "expert-review" | "none";
+  app_state: "annotation" | "review" | "expert-review" | "onboarding" | "none";
 };
 
 const defaultAppConfig: AppConfig = {
@@ -52,6 +52,7 @@ export const Router = () => {
   const homeRoute = (() => {
     switch (app_state) {
       case "annotation":
+      case "onboarding":
         return "/";
       case "review":
       case "expert-review":
@@ -100,8 +101,8 @@ export const Router = () => {
           path="/"
           element={
             <PrivateRoute>
-              {app_state === "annotation" ? (
-                <DocumentsList />
+              {["annotation", "onboarding"].includes(app_state) ? (
+                <DocumentsList app_state={app_state} />
               ) : (
                 <Navigate to={homeRoute} />
               )}
@@ -122,7 +123,7 @@ export const Router = () => {
               path="/answers"
               element={
                 <PrivateRoute>
-                  <MyAnswersList />
+                  <MyAnswersList app_state={app_state} />
                 </PrivateRoute>
               }
             />

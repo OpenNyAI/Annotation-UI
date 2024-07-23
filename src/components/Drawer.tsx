@@ -111,7 +111,7 @@ export const AppDrawer = ({
           flex: "1 0 auto",
         }}
       >
-        {appState === "annotation" && (
+        {["annotation", "onboarding"].includes(appState) && (
           <>
             <NavigationItem
               title="Annotate"

@@ -6,9 +6,14 @@ import { DocumentInfoItem } from "../components/DocumentInfoItem";
 import { ErrorMessage } from "../components/ErrorMessage";
 import { LoadingSpinner } from "../components/LoadingSpinner";
 import useAxios from "../hooks/useAxios";
+import { AppConfig } from "../Router";
 import { DocumentInfo } from "../types/api";
 
-export const MyAnswersList = () => {
+export type MyAnswersListProps = {
+  app_state: AppConfig["app_state"];
+};
+
+export const MyAnswersList = ({ app_state }: MyAnswersListProps) => {
   const navigate = useNavigate();
 
   const { makeRequest, data, status, error } = useAxios<{
@@ -53,9 +58,24 @@ export const MyAnswersList = () => {
         return (
           <Grid item md={4} xs={6} key={doc.id}>
             <DocumentInfoItem
-              {...doc}
+              id={doc.id}
               onClick={() => navigate(`/answers/${doc.id}`)}
-            />
+            >
+              <DocumentInfoItem.Title file_name={doc.file_name} />
+              {app_state !== "onboarding" && (
+                <DocumentInfoItem.Actions>
+                  {doc.last_edited_by && (
+                    <DocumentInfoItem.LastEditedBy
+                      last_edited_by={doc.last_edited_by}
+                    />
+                  )}
+                  <DocumentInfoItem.ProgressBar
+                    number_of_questions={doc.number_of_questions}
+                    max_questions={doc.max_questions}
+                  />
+                </DocumentInfoItem.Actions>
+              )}
+            </DocumentInfoItem>
           </Grid>
         );
       })}
