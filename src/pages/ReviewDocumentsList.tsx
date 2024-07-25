@@ -2,46 +2,18 @@ import { Grid, Typography } from "@mui/material";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { DocumentInfoItem } from "../components/DocumentInfoItem";
 import { ErrorMessage } from "../components/ErrorMessage";
 import { LoadingSpinner } from "../components/LoadingSpinner";
-import { ReviewDocumentInfoItem } from "../components/ReviewDocumentInfoItem";
 import useAxios from "../hooks/useAxios";
 import { DocumentInfo } from "../types/api";
 
-type ReviewDocumentsListProps = {
-  isExpertReview: boolean;
-};
-
-export const ReviewDocumentsList = ({
-  isExpertReview,
-}: ReviewDocumentsListProps) => {
+export const ReviewDocumentsList = () => {
   const navigate = useNavigate();
 
   const { makeRequest, data, status, error } = useAxios<{
     documents: DocumentInfo[];
   }>();
-
-  const { makeRequest: updateDocumentStatus } = useAxios<string>();
-
-  const handleDocumentStatusUpdate = async (
-    id: string,
-    isReviewed: boolean
-  ) => {
-    try {
-      const response = await updateDocumentStatus(
-        "/user/document-status",
-        "POST",
-        {
-          document_id: id,
-          document_status: isReviewed ? "Reviewed" : "OnReview",
-        }
-      );
-      toast.success(response);
-      await makeRequest("/user/review-documents", "GET");
-    } catch (err: any) {
-      toast.error(err.message);
-    }
-  };
 
   useEffect(() => {
     async function getDocuments() {
@@ -80,14 +52,23 @@ export const ReviewDocumentsList = ({
       {data?.documents.map((doc) => {
         return (
           <Grid item md={4} xs={6} key={doc.id}>
-            <ReviewDocumentInfoItem
-              {...doc}
-              isExpertReview={isExpertReview}
+            <DocumentInfoItem
+              id={doc.id}
               onClick={() => navigate(`/review/${doc.id}`)}
-              onReviewChange={(isReviewed) => {
-                handleDocumentStatusUpdate(doc.id, isReviewed);
-              }}
-            />
+            >
+              <DocumentInfoItem.Title file_name={doc.file_name} />
+              <DocumentInfoItem.Actions>
+                {doc.last_edited_by && (
+                  <DocumentInfoItem.LastEditedBy
+                    last_edited_by={doc.last_edited_by}
+                  />
+                )}
+                <DocumentInfoItem.ProgressBar
+                  number_of_questions={doc.number_of_questions}
+                  max_questions={doc.max_questions}
+                />
+              </DocumentInfoItem.Actions>
+            </DocumentInfoItem>
           </Grid>
         );
       })}

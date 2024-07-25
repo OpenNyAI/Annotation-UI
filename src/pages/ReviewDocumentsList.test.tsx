@@ -7,7 +7,7 @@ import { ReviewDocumentsList } from "./ReviewDocumentsList";
 
 describe("Review Documents List", () => {
   it("Should make an api to call to get the finished documents", async () => {
-    render(<ReviewDocumentsList isExpertReview={false} />);
+    render(<ReviewDocumentsList />);
 
     expect(screen.getByTestId("page-loader")).toBeInTheDocument();
 
@@ -20,10 +20,7 @@ describe("Review Documents List", () => {
   it("Should redirect to Review Q&A page on click of Document", async () => {
     render(
       <Routes>
-        <Route
-          path="/review"
-          element={<ReviewDocumentsList isExpertReview={false} />}
-        />
+        <Route path="/review" element={<ReviewDocumentsList />} />
         <Route
           path="/review/:documentId"
           element={<div>Review Q&A page</div>}
@@ -54,7 +51,7 @@ describe("Review Documents List", () => {
       })
     );
 
-    render(<ReviewDocumentsList isExpertReview={false} />);
+    render(<ReviewDocumentsList />);
 
     expect(screen.getByTestId("page-loader")).toBeInTheDocument();
 
@@ -74,7 +71,7 @@ describe("Review Documents List", () => {
       })
     );
 
-    render(<ReviewDocumentsList isExpertReview={false} />);
+    render(<ReviewDocumentsList />);
 
     expect(screen.getByTestId("page-loader")).toBeInTheDocument();
 
@@ -86,73 +83,5 @@ describe("Review Documents List", () => {
         )
       ).toBeInTheDocument();
     });
-  });
-
-  it("should make request to change the document status to review on click of mark as reviewed", async () => {
-    server.use(
-      http.post("/user/document-status", () => {
-        return HttpResponse.json("Document status updated successfully");
-      })
-    );
-
-    render(<ReviewDocumentsList isExpertReview={false} />);
-
-    expect(screen.getByTestId("page-loader")).toBeInTheDocument();
-
-    await waitFor(() => {
-      expect(screen.queryByTestId("page-loader")).not.toBeInTheDocument();
-      expect(screen.getByText("File1 Answered.txt")).toBeInTheDocument();
-    });
-
-    const document = screen.getByLabelText("Doc_Status_1");
-    await userEvent.click(document);
-
-    expect(
-      screen.getByText("Document status updated successfully")
-    ).toBeInTheDocument();
-  });
-
-  it("should not show option to mark as reviewed", async () => {
-    server.use(
-      http.post("/user/document-status", () => {
-        return HttpResponse.json("Document status updated successfully");
-      })
-    );
-
-    render(<ReviewDocumentsList isExpertReview={true} />);
-
-    expect(screen.getByTestId("page-loader")).toBeInTheDocument();
-
-    await waitFor(() => {
-      expect(screen.queryByTestId("page-loader")).not.toBeInTheDocument();
-      expect(screen.getByText("File1 Answered.txt")).toBeInTheDocument();
-    });
-
-    expect(screen.queryByLabelText("Doc_Status_1")).not.toBeInTheDocument();
-  });
-
-  it("should show change document status api error when there is an error", async () => {
-    server.use(
-      http.post("/user/document-status", () => {
-        return HttpResponse.json(
-          { message: "Internal Server error" },
-          { status: 500 }
-        );
-      })
-    );
-
-    render(<ReviewDocumentsList isExpertReview={false} />);
-
-    expect(screen.getByTestId("page-loader")).toBeInTheDocument();
-
-    await waitFor(() => {
-      expect(screen.queryByTestId("page-loader")).not.toBeInTheDocument();
-      expect(screen.getByText("File1 Answered.txt")).toBeInTheDocument();
-    });
-
-    const document = screen.getByLabelText("Doc_Status_1");
-    await userEvent.click(document);
-
-    expect(screen.getByText("Internal Server error")).toBeInTheDocument();
   });
 });

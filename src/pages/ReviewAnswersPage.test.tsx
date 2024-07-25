@@ -344,7 +344,6 @@ describe("Review Answers Page", () => {
     await waitFor(async () => {
       await userEvent.click(screen.getByRole("option", { name: "Version 1" }));
     });
-    screen.debug(undefined, Infinity);
     expect(screen.getByText("Version 1")).toBeInTheDocument();
     expect(
       screen.queryByPlaceholderText("Enter Additional Info")
