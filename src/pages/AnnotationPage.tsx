@@ -245,6 +245,7 @@ export const AnnotationPage = () => {
                 label={<Typography variant="subtitle1">Question</Typography>}
                 size="small"
                 fullWidth
+                spellCheck
                 placeholder="Enter your question"
                 type="text"
                 onChange={handleQuestionChange}

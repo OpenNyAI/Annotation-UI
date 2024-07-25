@@ -143,9 +143,7 @@ export const Router = () => {
               path="/review"
               element={
                 <PrivateRoute>
-                  <ReviewDocumentsList
-                    isExpertReview={app_state === "expert-review"}
-                  />
+                  <ReviewDocumentsList />
                 </PrivateRoute>
               }
             />

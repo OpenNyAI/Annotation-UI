@@ -227,12 +227,12 @@ describe("Review Answers Page", () => {
       ).toBeInTheDocument();
     });
 
-    const updateButton = screen.getByRole("button", { name: "Update" });
+    const submitBtn = screen.getByRole("button", { name: "Submit" });
 
     const infoTextField = screen.getByPlaceholderText("Enter Additional Info");
 
     userEvent.type(infoTextField, "update additional info");
-    userEvent.click(updateButton);
+    userEvent.click(submitBtn);
     await waitFor(() => {
       expect(screen.getByText("Submitted successfully")).toBeInTheDocument();
     });
@@ -265,12 +265,12 @@ describe("Review Answers Page", () => {
       ).toBeInTheDocument();
     });
 
-    const updateButton = screen.getByRole("button", { name: "Update" });
+    const submitBtn = screen.getByRole("button", { name: "Submit" });
 
     const infoTextField = screen.getByPlaceholderText("Enter Additional Info");
 
     userEvent.type(infoTextField, "update additional info");
-    userEvent.click(updateButton);
+    userEvent.click(submitBtn);
 
     await waitFor(() => {
       expect(screen.getByText("Invalid document id")).toBeInTheDocument();

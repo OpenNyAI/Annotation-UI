@@ -363,7 +363,7 @@ export const ReviewAnswersPage = () => {
                 disabled={isDisabled}
                 onClick={handleUpdateAnswer}
               >
-                Update
+                Submit
               </Button>
             </Box>
           </Box>

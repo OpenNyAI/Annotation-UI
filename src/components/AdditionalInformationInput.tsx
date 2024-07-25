@@ -103,6 +103,7 @@ export const AdditionalInformationInput = ({
         minRows={3}
         maxRows={5}
         multiline={true}
+        spellCheck
         value={additionalInfo?.text}
         placeholder="Enter Additional Info"
         label={<Typography>Enter Info</Typography>}
