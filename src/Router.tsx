@@ -1,11 +1,8 @@
-import { useEffect, useState } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
-import { toast } from "react-toastify";
 import { AppLayout } from "./components/AppLayout";
-import { LoadingSpinner } from "./components/LoadingSpinner";
 import { PrivateRoute } from "./components/PrivateRoute";
 import { PublicRoute } from "./components/PublicRoute";
-import useAxios from "./hooks/useAxios";
+import { useAppConfig } from "./hooks/useAppConfig";
 import { AnnotationPage } from "./pages/AnnotationPage";
 import { DocumentAnswers } from "./pages/DocumentAnswers";
 import { DocumentsList } from "./pages/DocumentsList";
@@ -18,36 +15,8 @@ import { ReviewDocumentsList } from "./pages/ReviewDocumentsList";
 import { SignIn } from "./pages/SignIn";
 import { SignUp } from "./pages/SignUp";
 
-export type AppConfig = {
-  app_state: "annotation" | "review" | "expert-review" | "onboarding" | "none";
-};
-
-const defaultAppConfig: AppConfig = {
-  app_state: "none",
-};
-
 export const Router = () => {
-  const [appConfig, setAppConfig] = useState<AppConfig>(defaultAppConfig);
-  const { makeRequest, status, error } = useAxios<AppConfig>();
-
-  useEffect(() => {
-    async function getApplicationConfig() {
-      try {
-        const config = await makeRequest("/user/config", "GET");
-        setAppConfig(config);
-      } catch (err: any) {
-        toast.error(err.message);
-      }
-    }
-
-    getApplicationConfig();
-  }, []);
-
-  const { app_state } = appConfig;
-
-  if (status === "pending") {
-    return <LoadingSpinner />;
-  }
+  const { app_state } = useAppConfig();
 
   const homeRoute = (() => {
     switch (app_state) {
@@ -96,13 +65,13 @@ export const Router = () => {
           </PublicRoute>
         }
       />
-      <Route element={<AppLayout app_state={appConfig.app_state} />}>
+      <Route element={<AppLayout />}>
         <Route
           path="/"
           element={
             <PrivateRoute>
               {["annotation", "onboarding"].includes(app_state) ? (
-                <DocumentsList app_state={app_state} />
+                <DocumentsList />
               ) : (
                 <Navigate to={homeRoute} />
               )}
@@ -123,7 +92,7 @@ export const Router = () => {
               path="/answers"
               element={
                 <PrivateRoute>
-                  <MyAnswersList app_state={app_state} />
+                  <MyAnswersList />
                 </PrivateRoute>
               }
             />

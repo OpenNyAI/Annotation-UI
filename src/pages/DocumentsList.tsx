@@ -6,15 +6,12 @@ import { DocumentInfoItem } from "../components/DocumentInfoItem";
 import { ErrorMessage } from "../components/ErrorMessage";
 import { LoadingSpinner } from "../components/LoadingSpinner";
 import useAxios from "../hooks/useAxios";
-import { AppConfig } from "../Router";
 import { DocumentInfo } from "../types/api";
+import { useAppConfig } from "../hooks/useAppConfig";
 
-export type DocumentsListProps = {
-  app_state: AppConfig["app_state"];
-};
-
-export const DocumentsList = ({ app_state }: DocumentsListProps) => {
+export const DocumentsList = () => {
   const navigate = useNavigate();
+  const { app_state } = useAppConfig();
 
   const { makeRequest, data, status, error } = useAxios<{
     documents: DocumentInfo[];

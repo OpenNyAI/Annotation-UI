@@ -10,26 +10,37 @@ import { MemoryRouter, MemoryRouterProps } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import { AuthContextProvider, AuthState } from "../providers/AuthProvider";
 import { theme } from "../theming/theme";
+import {
+  AppConfigProvider,
+  AppConfigState,
+} from "../providers/AppConfigProvider";
 
 interface ProvidersWrapperProps extends MemoryRouterProps {
+  appConfig?: AppConfigState;
   authState?: AuthState;
 }
 
 interface CustomRenderOptions extends RenderOptions {
   initialEntries?: string[];
   authState?: AuthState;
+  appConfig?: AppConfigState;
 }
 
 const ProvidersWrapper = ({
   children,
   initialEntries,
   authState = { accessToken: "dummy-token" },
+  appConfig = { app_state: "annotation" },
 }: ProvidersWrapperProps) => {
   return (
     <ThemeProvider theme={theme}>
       <ToastContainer />
       <AuthContextProvider authState={authState}>
-        <MemoryRouter initialEntries={initialEntries}>{children}</MemoryRouter>
+        <AppConfigProvider appConfig={appConfig}>
+          <MemoryRouter initialEntries={initialEntries}>
+            {children}
+          </MemoryRouter>
+        </AppConfigProvider>
       </AuthContextProvider>
     </ThemeProvider>
   );
@@ -42,6 +53,7 @@ const customRender = (ui: ReactNode, options?: CustomRenderOptions) =>
         {...rest}
         initialEntries={options?.initialEntries}
         authState={options?.authState}
+        appConfig={options?.appConfig}
       >
         {children}
       </ProvidersWrapper>
@@ -51,6 +63,7 @@ const customRender = (ui: ReactNode, options?: CustomRenderOptions) =>
 
 type CustomRenderHookOptions<T> = RenderHookOptions<T> & {
   authState?: AuthState;
+  appConfig?: AppConfigState;
 };
 
 const renderHookWithProvider = <TResult, TProps>(
@@ -59,7 +72,11 @@ const renderHookWithProvider = <TResult, TProps>(
 ) =>
   renderHook<TResult, TProps>(render, {
     wrapper: ({ children, ...props }) => (
-      <ProvidersWrapper {...props} authState={options?.authState}>
+      <ProvidersWrapper
+        {...props}
+        authState={options?.authState}
+        appConfig={options?.appConfig}
+      >
         {children}
       </ProvidersWrapper>
     ),

@@ -19,9 +19,9 @@ import MuiDrawer from "@mui/material/Drawer";
 import { CSSObject, Theme, styled, useTheme } from "@mui/material/styles";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
-import { AppConfig } from "../Router";
 import { DRAWER_WIDTH } from "./AppLayout";
 import { NavigationItem } from "./NavigationItem";
+import { AppConfigState } from "../providers/AppConfigProvider";
 
 const openedMixin = (theme: Theme): CSSObject => ({
   width: DRAWER_WIDTH,
@@ -70,7 +70,7 @@ export const Drawer = styled(MuiDrawer, {
 
 type AppDrawerProps = {
   open: boolean;
-  appState: AppConfig["app_state"];
+  appState: AppConfigState["app_state"];
   onDrawerClose(): void;
 };
 

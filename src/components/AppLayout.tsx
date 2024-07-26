@@ -3,21 +3,33 @@ import Box from "@mui/material/Box";
 import IconButton from "@mui/material/IconButton";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
-import { PropsWithChildren, useState } from "react";
+import { useState } from "react";
 import { Outlet } from "react-router-dom";
-import { AppConfig } from "../Router";
 import { AppBar } from "./AppBar";
 import { AppDrawer, DrawerHeader } from "./Drawer";
+import { useAppConfig } from "../hooks/useAppConfig";
+import { AppConfigState } from "../providers/AppConfigProvider";
+
+function getApplicationPhase(appState: AppConfigState["app_state"]) {
+  switch (appState) {
+    case "annotation":
+      return "Annotate";
+    case "onboarding":
+      return "Onboard";
+    case "review":
+      return "Review";
+    case "expert-review":
+      return "Expert Review";
+    case "none":
+  }
+}
 
 export const DRAWER_WIDTH = 240;
 const APP_BAR_HEIGHT = 64;
 
-export type AppLayoutProps = PropsWithChildren & {
-  app_state: AppConfig["app_state"];
-};
-
-export function AppLayout({ app_state }: AppLayoutProps) {
+export function AppLayout() {
   const [open, setOpen] = useState(false);
+  const { app_state } = useAppConfig();
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -46,6 +58,24 @@ export function AppLayout({ app_state }: AppLayoutProps) {
           </IconButton>
           <Typography variant="h6" noWrap component="div">
             Annotation UI
+          </Typography>
+          <Typography
+            noWrap
+            component="div"
+            sx={{
+              ml: "auto",
+            }}
+          >
+            <span
+              style={{ fontSize: "16px", textDecoration: "none !important" }}
+            >
+              Phase:{" "}
+            </span>
+            <span
+              style={{ fontSize: "20px", textDecoration: "wavy underline" }}
+            >
+              {getApplicationPhase(app_state)}
+            </span>
           </Typography>
         </Toolbar>
       </AppBar>
