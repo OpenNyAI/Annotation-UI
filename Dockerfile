@@ -8,6 +8,8 @@ COPY . .
 ENV NODE_ENV production
 ARG API_URL="http://localhost:8080"
 ENV VITE_API_URL=${API_URL}
+ARG TALLY_FORM_URL="#tally-open=form_id"
+ENV VITE_TALLY_FORM_URL=${TALLY_FORM_URL}
 
 RUN npm run build
 
