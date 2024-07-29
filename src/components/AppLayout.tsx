@@ -5,10 +5,11 @@ import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import { useState } from "react";
 import { Outlet } from "react-router-dom";
-import { AppBar } from "./AppBar";
-import { AppDrawer, DrawerHeader } from "./Drawer";
 import { useAppConfig } from "../hooks/useAppConfig";
 import { AppConfigState } from "../providers/AppConfigProvider";
+import { AppBar } from "./AppBar";
+import { AppDrawer, DrawerHeader } from "./Drawer";
+import { TallyFeedbackDialog } from "./TallyFeedbackDialog";
 
 function getApplicationPhase(appState: AppConfigState["app_state"]) {
   switch (appState) {
@@ -29,6 +30,7 @@ const APP_BAR_HEIGHT = 64;
 
 export function AppLayout() {
   const [open, setOpen] = useState(false);
+  const [isFeedbackFormOpen, setIsFeedbackFormOpen] = useState<boolean>(false);
   const { app_state } = useAppConfig();
 
   const handleDrawerOpen = () => {
@@ -88,6 +90,7 @@ export function AppLayout() {
         component="main"
         sx={{ flexGrow: 1, height: `calc(100vh - ${APP_BAR_HEIGHT}px)` }}
       >
+        <TallyFeedbackDialog />
         <DrawerHeader />
         <Outlet />
       </Box>
