@@ -14,6 +14,7 @@ export type ReviewAnswerState = {
   qnaResponse?: DocumentQuestionAnswer;
   currentQuestion: number;
   additionalInfoList: AdditionalInfo[];
+  idealAnswer?: string;
 };
 
 type ReviewAnswersAction =
@@ -52,6 +53,7 @@ type ReviewAnswersAction =
       };
     }
   | { type: "update-answer-version"; payload: SingleQuestionAnswer }
+  | { type: "update-ideal-answer"; payload: { updatedValue: string } }
   | {
       type: "initialize-state";
       payload: DocumentQuestionAnswer;
@@ -115,6 +117,7 @@ export const reviewAnswersReducer = (
         draft.additionalInfoList = currentQnA?.additional_text ?? [];
         draft.question = currentQnA!.query;
         draft.currentQuestion = questionIndex;
+        draft.idealAnswer = currentQnA?.generation_response ?? "";
         return draft;
       });
     case "initialize-state":
@@ -127,14 +130,22 @@ export const reviewAnswersReducer = (
         draft.resultChunks = chunk_results;
         draft.additionalInfoList = currentQnA?.additional_text ?? [];
         draft.question = currentQnA!.query;
+        draft.idealAnswer = currentQnA.generation_response ?? "";
         return draft;
       });
     case "update-answer-version":
       return produce(state, (draft) => {
-        const { answers, additional_text, query } = payload;
+        const { answers, additional_text, query, generation_response } =
+          payload;
         draft.annotatedTexts = answers;
         draft.additionalInfoList = additional_text ?? [];
         draft.question = query;
+        draft.idealAnswer = generation_response ?? "";
+        return draft;
+      });
+    case "update-ideal-answer":
+      return produce(state, (draft) => {
+        draft.idealAnswer = payload.updatedValue;
         return draft;
       });
     default:

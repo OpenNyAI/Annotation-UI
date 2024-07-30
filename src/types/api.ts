@@ -46,6 +46,7 @@ export type SubmitAnswerBody = {
   annotated_text: AnnotatedText[];
   additional_answer?: AdditionalInfo[];
   chunk_result: ResultChunk[];
+  generation_response?: string;
 };
 
 export type QueryResult = {
@@ -59,6 +60,7 @@ export type SingleQuestionAnswer = {
   version_number: number;
   answers: AnnotatedText[];
   additional_text?: AdditionalInfo[];
+  generation_response?: string;
 };
 
 export type QuestionAnswer = SingleQuestionAnswer & {

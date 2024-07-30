@@ -64,6 +64,7 @@ const answer1: QuestionAnswer = {
   additional_text: [
     { id: "1", file_name: "file-1", text: "answer-1 additional text" },
   ],
+  generation_response: "generated response 1",
 };
 
 const answer2: QuestionAnswer = {
@@ -144,6 +145,9 @@ describe("Review Answers Page", () => {
     expect(screen.getByTestId("annotation-text-answer")).toHaveTextContent(
       "annotated_text1"
     );
+    expect(screen.getByPlaceholderText("Enter ideal answer")).toHaveValue(
+      "generated response 1"
+    );
   });
 
   it("Should render Review page with next and previous question onClick of next or previous", async () => {
@@ -175,6 +179,7 @@ describe("Review Answers Page", () => {
       "annotated_text1 annotated_text2"
     );
     expect(screen.getByText("Question-2")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("Enter ideal answer")).toHaveValue("");
 
     await userEvent.click(prevBtn);
 
@@ -182,6 +187,9 @@ describe("Review Answers Page", () => {
       "annotated_text1"
     );
     expect(screen.getByText("Question-1")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("Enter ideal answer")).toHaveValue(
+      "generated response 1"
+    );
   });
 
   it("Should render Error information inside Annotation page", async () => {

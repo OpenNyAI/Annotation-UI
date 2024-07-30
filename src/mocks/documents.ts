@@ -109,6 +109,7 @@ export const answer1: QuestionAnswer = {
       text: "answer-1 additional text",
     },
   ],
+  generation_response: "generated response",
 };
 
 export const answer2: QuestionAnswer = {

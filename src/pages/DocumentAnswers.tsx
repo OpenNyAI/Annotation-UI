@@ -138,21 +138,37 @@ export const DocumentAnswers = () => {
           </Typography>
         </Box>
         <Box sx={styles.additionalInfoContainer}>
-          <Typography variant="h6">Additional Info</Typography>
+          <Typography variant="h6">Referenced Acts</Typography>
           <Box
             data-testid="additional-info-box"
             sx={{ display: "flex", flexDirection: "column", gap: "16px" }}
           >
-            {question?.additional_text?.map((info, index) => {
-              return (
-                <AdditionalInfoItem
-                  key={info.id + index}
-                  additionalInfo={info}
-                  index={index + 1}
-                />
-              );
-            })}
+            {question?.additional_text?.length != 0 ? (
+              question?.additional_text?.map((info, index) => {
+                return (
+                  <AdditionalInfoItem
+                    key={info.id + index}
+                    additionalInfo={info}
+                    index={index + 1}
+                  />
+                );
+              })
+            ) : (
+              <Typography variant="subtitle1" sx={{ pl: "24px" }}>
+                No additional info
+              </Typography>
+            )}
           </Box>
+        </Box>
+        <Box>
+          <Typography variant="h6">Ideal Answer</Typography>
+          <Typography
+            data-testid="ideal-answer-box"
+            variant="subtitle1"
+            sx={styles.textContainer}
+          >
+            {question!.generation_response}
+          </Typography>
         </Box>
       </Box>
     )

@@ -13,6 +13,7 @@ import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { AdditionalInfoContainer } from "../components/AdditionalInfoContainer";
 import { ErrorMessage } from "../components/ErrorMessage";
+import { IdeaAnswerInput } from "../components/IdealAnswerInput";
 import { LabelledInput } from "../components/LabelledInput";
 import { LoadingSpinner } from "../components/LoadingSpinner";
 import { AnnotationSummarySidePanel } from "../components/annotation/AnnotationSummarySidePanel";
@@ -76,6 +77,7 @@ export const AnnotationPage = () => {
   const [additionalInfoList, setAdditionalInfoList] = useState<
     AdditionalInfo[]
   >([]);
+  const [idealAnswer, setIdealAnswer] = useState<string>();
 
   const { documentId } = useParams();
 
@@ -132,6 +134,7 @@ export const AnnotationPage = () => {
     setAnnotatedTexts([]);
     setAdditionalInfoList([]);
     setResult(undefined);
+    setIdealAnswer("");
   };
 
   const handleSubmitAnswer = async () => {
@@ -145,6 +148,7 @@ export const AnnotationPage = () => {
         additional_answer: additionalInfoList,
         document_id: documentId!,
         chunk_result: result?.chunks ?? [],
+        generation_response: idealAnswer,
       };
       const response = await submitAnswer(`/user/submit`, "POST", answerBody);
       resetQuery();
@@ -293,6 +297,7 @@ export const AnnotationPage = () => {
               filesList={documentsList?.documents ?? []}
               onAdditionalInfoChange={setAdditionalInfoList}
             />
+            <IdeaAnswerInput value={idealAnswer} onChange={setIdealAnswer} />
             <Button
               variant="contained"
               sx={{ width: "120px", mx: "auto" }}

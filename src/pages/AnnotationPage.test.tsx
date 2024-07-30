@@ -192,6 +192,7 @@ describe("Annotation Page", () => {
     const questionField = screen.getByPlaceholderText("Enter your question");
     const queryBtn = screen.getByRole("button", { name: "Query" });
     const addNewBtn = screen.getByRole("button", { name: "Add New" });
+    const idealAnswerField = screen.getByPlaceholderText("Enter ideal answer");
 
     await userEvent.click(addNewBtn);
 
@@ -208,6 +209,7 @@ describe("Annotation Page", () => {
     await userEvent.click(documentOption);
 
     await userEvent.type(questionField, "test-query");
+    await userEvent.type(idealAnswerField, "ideal answer");
     await userEvent.click(queryBtn);
 
     const submitBtn = screen.getByRole("button", { name: "Submit" });

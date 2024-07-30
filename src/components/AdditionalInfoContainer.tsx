@@ -1,5 +1,5 @@
-import { Add } from "@mui/icons-material";
-import { Box, Button, Divider, Typography } from "@mui/material";
+import { Add, Info } from "@mui/icons-material";
+import { Box, Button, Divider, Tooltip, Typography } from "@mui/material";
 import { produce } from "immer";
 import { AsyncState } from "../reducers/asyncState";
 import { AdditionalInfo, DocumentBaseInfo } from "../types/api";
@@ -66,7 +66,15 @@ export const AdditionalInfoContainer = ({
   return (
     <Box sx={styles.container}>
       <Box sx={styles.headerBox}>
-        <Typography variant="h6">Additional Info</Typography>
+        <Box sx={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          <Typography variant="h6">Reference Other Acts</Typography>
+          <Tooltip
+            describeChild
+            title="Use this option to reference the related infromation from other acts."
+          >
+            <Info fontSize="small" />
+          </Tooltip>
+        </Box>
         <Button
           onClick={handleAddAdditionalInfo}
           variant="contained"

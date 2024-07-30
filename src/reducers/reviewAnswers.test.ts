@@ -28,6 +28,7 @@ const updatedAnswerVersionResult: SingleQuestionAnswer = {
       text: "additional-text version 2",
     },
   ],
+  generation_response: "Generated answer",
 };
 
 const qnaResponse: DocumentQuestionAnswer = {
@@ -131,6 +132,7 @@ describe("review answers reducer", () => {
         },
       ],
       currentQuestion: 0,
+      idealAnswer: "",
     };
 
     let state = reviewAnswersReducer(initialState, {
@@ -162,6 +164,7 @@ describe("review answers reducer", () => {
         },
       ],
       currentQuestion: 1,
+      idealAnswer: "",
     });
   });
 
@@ -429,11 +432,26 @@ describe("review answers reducer", () => {
       qnaResponse: { qna: [] },
       resultChunks: [],
       currentQuestion: 0,
+      idealAnswer: "Generated answer",
     };
 
     const state = reviewAnswersReducer(initialState, {
       type: "update-answer-version",
       payload: updatedAnswerVersionResult,
+    });
+
+    expect(state).toEqual(expectedState);
+  });
+
+  it("should update the ideal answer to given text value", () => {
+    const expectedState: ReviewAnswerState = {
+      ...initialState,
+      idealAnswer: "updated answer",
+    };
+
+    const state = reviewAnswersReducer(initialState, {
+      type: "update-ideal-answer",
+      payload: { updatedValue: "updated answer" },
     });
 
     expect(state).toEqual(expectedState);

@@ -1,4 +1,12 @@
-import { Box, Button, Divider, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  Divider,
+  FormControl,
+  FormControlLabel,
+  TextField,
+  Typography,
+} from "@mui/material";
 import { useEffect, useMemo, useReducer } from "react";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -25,6 +33,8 @@ import {
   SubmitAnswerBody,
 } from "../types/api";
 import { Styles } from "../types/styles";
+import { LabelledInput } from "../components/LabelledInput";
+import { IdeaAnswerInput } from "../components/IdealAnswerInput";
 
 const styles: Styles = {
   container: {
@@ -78,6 +88,7 @@ const initialState: ReviewAnswerState = {
   qnaResponse: { qna: [] },
   currentQuestion: 0,
   additionalInfoList: [],
+  idealAnswer: "",
 };
 
 export const ReviewAnswersPage = () => {
@@ -89,6 +100,7 @@ export const ReviewAnswersPage = () => {
       resultChunks,
       additionalInfoList,
       qnaResponse,
+      idealAnswer,
     },
     dispatch,
   ] = useReducer(reviewAnswersReducer, initialState);
@@ -153,6 +165,7 @@ export const ReviewAnswersPage = () => {
         additional_answer: additionalInfoList,
         document_id: documentId!,
         chunk_result: resultChunks,
+        generation_response: idealAnswer,
       };
       const response = await submitAnswer(
         `/user/qna/${questionId}`,
@@ -222,6 +235,13 @@ export const ReviewAnswersPage = () => {
 
   const handleVersionUpdate = (answerText: SingleQuestionAnswer) => {
     dispatch({ type: "update-answer-version", payload: answerText });
+  };
+
+  const handleIdealAnswerChange = (updatedAnswer: string) => {
+    dispatch({
+      type: "update-ideal-answer",
+      payload: { updatedValue: updatedAnswer },
+    });
   };
 
   useEffect(() => {
@@ -356,6 +376,10 @@ export const ReviewAnswersPage = () => {
                 status={documentsListStatus}
                 filesList={documentsList?.documents ?? []}
                 onAdditionalInfoChange={handleAdditionalInfoChange}
+              />
+              <IdeaAnswerInput
+                value={idealAnswer}
+                onChange={handleIdealAnswerChange}
               />
               <Button
                 variant="contained"

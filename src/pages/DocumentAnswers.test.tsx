@@ -23,6 +23,7 @@ describe("Document Answers", () => {
     const questionBox = screen.getByTestId("question-box");
     const answerBox = screen.getByTestId("answer-box");
     const additionalInfoBox = screen.getByTestId("additional-info-box");
+    const idealAnswerBox = screen.getByTestId("ideal-answer-box");
 
     expect(screen.getByText("File-1.txt (1/2)")).toBeInTheDocument();
     expect(questionBox).toHaveTextContent("Question-1");
@@ -30,6 +31,7 @@ describe("Document Answers", () => {
       "annotated answer 1 annotated answer 2"
     );
     expect(additionalInfoBox).toHaveTextContent("answer-1 additional text");
+    expect(idealAnswerBox).toHaveTextContent("generated response");
   });
 
   it("should show next question answer on click of next and show prev on click of prev", async () => {
