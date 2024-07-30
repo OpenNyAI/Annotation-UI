@@ -59,6 +59,7 @@ const answer1: QuestionAnswer = {
     {
       chunk: "query_text from query results",
       metadata: { file_name: "file1.txt", chunk_id: 1 },
+      retriever_name: "retriever-1",
     },
   ],
   additional_text: [
@@ -91,6 +92,7 @@ const question1VersionsResponse: QuestionAnswerVersionListResponse = {
     {
       chunk: "query_text from query results",
       metadata: { file_name: "file1.txt", chunk_id: 1 },
+      retriever_name: "retriever-1",
     },
   ],
   flag: false,

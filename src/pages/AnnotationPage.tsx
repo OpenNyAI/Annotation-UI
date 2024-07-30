@@ -26,6 +26,7 @@ import {
   DocumentBaseInfoResponse,
   DocumentWithContent,
   QueryResult,
+  ResultChunk,
   SubmitAnswerBody,
 } from "../types/api";
 import { Styles } from "../types/styles";
@@ -65,6 +66,7 @@ const styles: Styles = {
     border: (theme) => `0.5px solid ${theme.palette.primary.light}`,
     borderRadius: "8px",
     mb: "16px",
+    minHeight: "240px",
     maxHeight: "340px",
   },
   optionalText: { fontSize: { xs: "12px", md: "14px" } },
@@ -98,8 +100,12 @@ export const AnnotationPage = () => {
     status: documentsListStatus,
     data: documentsList,
   } = useAxios<DocumentBaseInfoResponse>();
+
   const handleTextAnnotation = (annotatedText: TextAnnotation) => {
-    setAnnotatedTexts((prev) => [...prev, annotatedText]);
+    setAnnotatedTexts((prev) => [
+      ...prev.map((annotation) => ({ ...annotation, isFocused: false })),
+      annotatedText,
+    ]);
   };
 
   const isValidAdditionalInfo = useMemo(() => {
@@ -110,6 +116,9 @@ export const AnnotationPage = () => {
 
   const handleDeleteTextAnnotation = (index: number) => {
     const updatedAnnotations = produce(annotatedTexts, (draft) => {
+      draft.forEach((item) => {
+        item.isFocused = false;
+      });
       draft.splice(index, 1);
       return draft;
     });
@@ -215,6 +224,20 @@ export const AnnotationPage = () => {
     getDocumentsList();
   }, []);
 
+  const groupedQueryResults = useMemo(
+    () =>
+      result?.chunks.reduce<Map<string, ResultChunk[]>>((prev, current) => {
+        const val = prev.get(current.retriever_name);
+        if (!val) {
+          prev.set(current.retriever_name, [current]);
+        } else {
+          prev.set(current.retriever_name, [...val, current]);
+        }
+        return prev;
+      }, new Map()),
+    [result]
+  );
+
   if (fileContentStatus === "pending") {
     return <LoadingSpinner />;
   }
@@ -269,28 +292,40 @@ export const AnnotationPage = () => {
             {queryStatus === "resolved" && (
               <Typography variant="subtitle1">Results</Typography>
             )}
-            {result?.chunks.map((result, index) => {
-              const id = "result_" + index;
-              const editorAnnotatedTexts = annotatedTexts.filter(
-                (item) => item.source_text === result.chunk
-              );
-              return (
-                <Box key={index} sx={styles.resultBox}>
-                  <TextAnnotator
-                    id={id}
-                    file_name={result.metadata.file_name}
-                    text={result.chunk}
-                    annotatedTexts={editorAnnotatedTexts}
-                    onTextAnnotation={(annotation) =>
-                      handleTextAnnotation({
-                        ...annotation,
-                        source_text: result.chunk,
-                      })
-                    }
-                  />
-                </Box>
-              );
-            })}
+            {[...(groupedQueryResults?.entries() ?? [])].map(
+              ([key, queryResults]) => {
+                return (
+                  <Box key={key}>
+                    <Typography
+                      sx={{ mb: "16px" }}
+                      variant="subtitle1"
+                    >{`Retriever: ${key}`}</Typography>
+                    {queryResults.map((queryResult, index) => {
+                      const id = "result_" + key + index;
+                      const editorAnnotatedTexts = annotatedTexts.filter(
+                        (item) => item.source_text === queryResult.chunk
+                      );
+                      return (
+                        <Box key={index} sx={styles.resultBox}>
+                          <TextAnnotator
+                            id={id}
+                            file_name={queryResult.metadata.file_name}
+                            text={queryResult.chunk}
+                            annotatedTexts={editorAnnotatedTexts}
+                            onTextAnnotation={(annotation) =>
+                              handleTextAnnotation({
+                                ...annotation,
+                                source_text: queryResult.chunk,
+                              })
+                            }
+                          />
+                        </Box>
+                      );
+                    })}
+                  </Box>
+                );
+              }
+            )}
             <AdditionalInfoContainer
               additionalInfoList={additionalInfoList}
               status={documentsListStatus}

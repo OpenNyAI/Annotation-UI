@@ -24,6 +24,7 @@ export type DocumentWithContent = {
 export type ResultChunk = {
   chunk: string;
   metadata: { chunk_id: number; file_name: string };
+  retriever_name: string;
 };
 
 export type AnnotatedText = {
