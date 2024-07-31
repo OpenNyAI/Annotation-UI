@@ -43,14 +43,17 @@ export const chunks: ResultChunk[] = [
   {
     chunk: "chunk-1",
     metadata: { chunk_id: 1, file_name: "file-1" },
+    retriever_name: "retriever-1",
   },
   {
     chunk: "chunk-2",
     metadata: { chunk_id: 2, file_name: "file-2" },
+    retriever_name: "retriever-1",
   },
   {
     chunk: "chunk-3",
     metadata: { chunk_id: 3, file_name: "file-3" },
+    retriever_name: "retriever-2",
   },
 ];
 

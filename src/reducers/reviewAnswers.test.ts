@@ -48,6 +48,7 @@ const qnaResponse: DocumentQuestionAnswer = {
         {
           chunk: "hello this is from source",
           metadata: { file_name: "file3.txt", chunk_id: 1 },
+          retriever_name: "retriever-1",
         },
       ],
       file_name: "file1.txt",
@@ -75,6 +76,7 @@ const qnaResponse: DocumentQuestionAnswer = {
         {
           chunk: "chunk-result-2",
           metadata: { file_name: "file1.txt", chunk_id: 1 },
+          retriever_name: "retriever-1",
         },
       ],
       query: "Where is the answer?",
@@ -129,6 +131,7 @@ describe("review answers reducer", () => {
         {
           chunk: "hello this is from source",
           metadata: { file_name: "file3.txt", chunk_id: 1 },
+          retriever_name: "retriever-1",
         },
       ],
       currentQuestion: 0,
@@ -161,6 +164,7 @@ describe("review answers reducer", () => {
             chunk_id: 1,
             file_name: "file1.txt",
           },
+          retriever_name: "retriever-1",
         },
       ],
       currentQuestion: 1,
