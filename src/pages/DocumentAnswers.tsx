@@ -1,5 +1,5 @@
 import { ChevronLeft, ChevronRight } from "@mui/icons-material";
-import { Box, IconButton, Typography } from "@mui/material";
+import { Box, Chip, IconButton, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -9,6 +9,7 @@ import { LoadingSpinner } from "../components/LoadingSpinner";
 import useAxios from "../hooks/useAxios";
 import { DocumentQuestionAnswer } from "../types/api";
 import { Styles } from "../types/styles";
+import { QuestionMetaData } from "../components/QuestionMetadata";
 
 const styles: Styles = {
   container: {
@@ -126,6 +127,10 @@ export const DocumentAnswers = () => {
           >
             {question?.query}
           </Typography>
+          <QuestionMetaData
+            questionCategory={question!.query_category}
+            questionType={question!.query_type}
+          />
         </Box>
         <Box sx={{ display: "flex", flexDirection: "column", height: "65%" }}>
           <Typography variant="h6">Answer</Typography>

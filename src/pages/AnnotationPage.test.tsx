@@ -151,6 +151,14 @@ describe("Annotation Page", () => {
     await userEvent.type(questionField, "test-query");
     await userEvent.click(queryBtn);
 
+    const queryTypeRadioBtn = screen.getByRole("radio", { name: "Small" });
+    const queryCategoryRadioBtn = screen.getByRole("radio", {
+      name: "Category 1",
+    });
+
+    await userEvent.click(queryTypeRadioBtn);
+    await userEvent.click(queryCategoryRadioBtn);
+
     const submitBtn = screen.getByRole("button", { name: "Submit" });
 
     await userEvent.type(additionalInfoField, "anwer");
@@ -211,6 +219,14 @@ describe("Annotation Page", () => {
     await userEvent.type(questionField, "test-query");
     await userEvent.type(idealAnswerField, "ideal answer");
     await userEvent.click(queryBtn);
+
+    const queryTypeRadioBtn = screen.getByRole("radio", { name: "Small" });
+    const queryCategoryRadioBtn = screen.getByRole("radio", {
+      name: "Category 1",
+    });
+
+    await userEvent.click(queryTypeRadioBtn);
+    await userEvent.click(queryCategoryRadioBtn);
 
     const submitBtn = screen.getByRole("button", { name: "Submit" });
 

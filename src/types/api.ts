@@ -44,6 +44,8 @@ export type AdditionalInfo = {
 export type SubmitAnswerBody = {
   document_id: string;
   query: string;
+  query_type: string;
+  query_category: string;
   annotated_text: AnnotatedText[];
   additional_answer?: AdditionalInfo[];
   chunk_result: ResultChunk[];
@@ -57,6 +59,8 @@ export type QueryResult = {
 
 export type SingleQuestionAnswer = {
   query: string;
+  query_type: string;
+  query_category: string;
   file_name: string;
   version_number: number;
   answers: AnnotatedText[];
@@ -97,4 +101,11 @@ export type DocumentBaseInfo = {
 
 export type DocumentBaseInfoResponse = {
   documents: DocumentBaseInfo[];
+};
+
+export type Option = { label: string; value: string };
+
+export type QuestionConfigResponse = {
+  question_type: Option[];
+  question_category: Option[];
 };

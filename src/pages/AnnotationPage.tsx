@@ -1,32 +1,27 @@
-import { Send } from "@mui/icons-material";
-import { LoadingButton } from "@mui/lab";
-import { Box, Button, Divider, Typography } from "@mui/material";
-import { produce } from "immer";
-import {
-  ChangeEvent,
-  KeyboardEventHandler,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import { Box, Button, Divider } from "@mui/material";
+import { useEffect, useMemo, useReducer } from "react";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { AdditionalInfoContainer } from "../components/AdditionalInfoContainer";
 import { ErrorMessage } from "../components/ErrorMessage";
 import { IdeaAnswerInput } from "../components/IdealAnswerInput";
-import { LabelledInput } from "../components/LabelledInput";
 import { LoadingSpinner } from "../components/LoadingSpinner";
+import { QueryResults } from "../components/QueryResults";
+import { QuestionInputForm } from "../components/QuestionInputForm";
 import { AnnotationSummarySidePanel } from "../components/annotation/AnnotationSummarySidePanel";
 import TextAnnotator, {
   TextAnnotation,
 } from "../components/annotation/TextAnnotator";
 import useAxios from "../hooks/useAxios";
 import {
+  annotateAnswersReducer,
+  AnnotateAnswersState,
+} from "../reducers/annotateAnswers";
+import {
   AdditionalInfo,
+  AnnotatedText,
   DocumentBaseInfoResponse,
   DocumentWithContent,
-  QueryResult,
-  ResultChunk,
   SubmitAnswerBody,
 } from "../types/api";
 import { Styles } from "../types/styles";
@@ -72,15 +67,26 @@ const styles: Styles = {
   optionalText: { fontSize: { xs: "12px", md: "14px" } },
 };
 
-export const AnnotationPage = () => {
-  const [question, setQuestion] = useState("");
-  const [annotatedTexts, setAnnotatedTexts] = useState<TextAnnotation[]>([]);
-  const [result, setResult] = useState<QueryResult>();
-  const [additionalInfoList, setAdditionalInfoList] = useState<
-    AdditionalInfo[]
-  >([]);
-  const [idealAnswer, setIdealAnswer] = useState<string>();
+const initialState: AnnotateAnswersState = {
+  question: "",
+  questionType: "",
+  questionCategory: "",
+  annotatedTexts: [],
+  additionalInfoList: [],
+  idealAnswer: "",
+};
 
+export const AnnotationPage = () => {
+  const [state, dispatch] = useReducer(annotateAnswersReducer, initialState);
+  const {
+    question,
+    annotatedTexts,
+    questionCategory,
+    questionType,
+    result,
+    additionalInfoList,
+    idealAnswer,
+  } = state;
   const { documentId } = useParams();
 
   const {
@@ -92,9 +98,6 @@ export const AnnotationPage = () => {
 
   const { makeRequest: submitAnswer } = useAxios<string>();
 
-  const { makeRequest: queryQuestion, status: queryStatus } =
-    useAxios<QueryResult>();
-
   const {
     makeRequest: getDocumentsListApi,
     status: documentsListStatus,
@@ -102,48 +105,36 @@ export const AnnotationPage = () => {
   } = useAxios<DocumentBaseInfoResponse>();
 
   const handleTextAnnotation = (annotatedText: TextAnnotation) => {
-    setAnnotatedTexts((prev) => [
-      ...prev.map((annotation) => ({ ...annotation, isFocused: false })),
-      annotatedText,
-    ]);
+    dispatch({
+      type: "add-annotated-text",
+      payload: { newAnnotation: annotatedText },
+    });
   };
 
   const isValidAdditionalInfo = useMemo(() => {
-    return additionalInfoList.some(
-      (info) => info.id === "" || info.file_name === "" || info.text === ""
+    return additionalInfoList.every(
+      (info) => info.id !== "" && info.file_name !== "" && info.text !== ""
     );
   }, [additionalInfoList]);
 
+  const isValidQuestionInfo = useMemo(() => {
+    return (
+      question.length > 0 &&
+      questionType.length > 0 &&
+      questionCategory.length > 0
+    );
+  }, [question, questionCategory, questionType]);
+
   const handleDeleteTextAnnotation = (index: number) => {
-    const updatedAnnotations = produce(annotatedTexts, (draft) => {
-      draft.forEach((item) => {
-        item.isFocused = false;
-      });
-      draft.splice(index, 1);
-      return draft;
-    });
-    setAnnotatedTexts(updatedAnnotations);
+    dispatch({ type: "delete-annotated-text", payload: { index } });
   };
 
   const handleSelectTextAnnotation = (index: number) => {
-    const updatedAnnotations = produce(annotatedTexts, (draft) => {
-      const updatedAnnotatedTexts = draft.map((annotatedTex, idx) => {
-        return {
-          ...annotatedTex,
-          isFocused: idx === index,
-        };
-      });
-      return updatedAnnotatedTexts;
-    });
-    setAnnotatedTexts(updatedAnnotations);
+    dispatch({ type: "select-annotated-text", payload: { index } });
   };
 
   const resetQuery = () => {
-    setQuestion("");
-    setAnnotatedTexts([]);
-    setAdditionalInfoList([]);
-    setResult(undefined);
-    setIdealAnswer("");
+    dispatch({ type: "reset", payload: { annotateAnswerState: initialState } });
   };
 
   const handleSubmitAnswer = async () => {
@@ -153,6 +144,8 @@ export const AnnotationPage = () => {
     try {
       const answerBody: SubmitAnswerBody = {
         query: result?.query ?? question,
+        query_type: questionType,
+        query_category: questionCategory,
         annotated_text: annotatedTexts,
         additional_answer: additionalInfoList,
         document_id: documentId!,
@@ -172,32 +165,27 @@ export const AnnotationPage = () => {
     }
   };
 
-  const handleQueryQuestion = async () => {
-    if (!question) {
-      return;
-    }
-    try {
-      const response = await queryQuestion(
-        `/user/query?query=${question}`,
-        "GET"
-      );
-      setResult(response);
-      setAnnotatedTexts((prevState) =>
-        prevState.filter((text) => !text.source_text)
-      );
-    } catch (err: any) {
-      toast.error(err.message);
-    }
+  const handleUpdateAnnotationsOrder = (annotations: AnnotatedText[]) => {
+    dispatch({
+      type: "update-annotations",
+      payload: { updatedAnnotations: annotations },
+    });
   };
 
-  const handleQuestionChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setQuestion(event.target.value);
+  const handleIdealAnswerChange = (answer: string) => {
+    dispatch({
+      type: "update-ideal-answer",
+      payload: { updatedValue: answer },
+    });
   };
 
-  const handleKeyDown: KeyboardEventHandler<HTMLInputElement> = (event) => {
-    if (event.key === "Enter") {
-      handleQueryQuestion();
-    }
+  const handleAdditionalInfoChange = (
+    updatedAdditionalInfo: AdditionalInfo[]
+  ) => {
+    dispatch({
+      type: "update-additional-info-list",
+      payload: { updatedInfo: updatedAdditionalInfo },
+    });
   };
 
   useEffect(() => {
@@ -224,20 +212,6 @@ export const AnnotationPage = () => {
     getDocumentsList();
   }, []);
 
-  const groupedQueryResults = useMemo(
-    () =>
-      result?.chunks.reduce<Map<string, ResultChunk[]>>((prev, current) => {
-        const val = prev.get(current.retriever_name);
-        if (!val) {
-          prev.set(current.retriever_name, [current]);
-        } else {
-          prev.set(current.retriever_name, [...val, current]);
-        }
-        return prev;
-      }, new Map()),
-    [result]
-  );
-
   if (fileContentStatus === "pending") {
     return <LoadingSpinner />;
   }
@@ -250,6 +224,11 @@ export const AnnotationPage = () => {
       />
     );
   }
+
+  const canSubmit =
+    isValidQuestionInfo &&
+    (annotatedTexts.length > 0 ||
+      (additionalInfoList.length > 0 && isValidAdditionalInfo));
 
   return (
     fileContentStatus === "resolved" && (
@@ -267,80 +246,26 @@ export const AnnotationPage = () => {
             />
           </Box>
           <Box sx={styles.resultsContainer}>
-            <Box sx={{ display: "flex", gap: "16px" }}>
-              <LabelledInput
-                label={<Typography variant="subtitle1">Question</Typography>}
-                size="small"
-                fullWidth
-                spellCheck
-                placeholder="Enter your question"
-                type="text"
-                onChange={handleQuestionChange}
-                onKeyDown={handleKeyDown}
-              />
-              <LoadingButton
-                variant="contained"
-                loading={queryStatus === "pending"}
-                disabled={!question}
-                sx={{ textTransform: "none", alignSelf: "center", mt: "32px" }}
-                endIcon={<Send />}
-                onClick={handleQueryQuestion}
-              >
-                Query
-              </LoadingButton>
-            </Box>
-            {queryStatus === "resolved" && (
-              <Typography variant="subtitle1">Results</Typography>
-            )}
-            {[...(groupedQueryResults?.entries() ?? [])].map(
-              ([key, queryResults]) => {
-                return (
-                  <Box key={key}>
-                    <Typography
-                      sx={{ mb: "16px" }}
-                      variant="subtitle1"
-                    >{`Retriever: ${key}`}</Typography>
-                    {queryResults.map((queryResult, index) => {
-                      const id = "result_" + key + index;
-                      const editorAnnotatedTexts = annotatedTexts.filter(
-                        (item) => item.source_text === queryResult.chunk
-                      );
-                      return (
-                        <Box key={index} sx={styles.resultBox}>
-                          <TextAnnotator
-                            id={id}
-                            file_name={queryResult.metadata.file_name}
-                            text={queryResult.chunk}
-                            annotatedTexts={editorAnnotatedTexts}
-                            onTextAnnotation={(annotation) =>
-                              handleTextAnnotation({
-                                ...annotation,
-                                source_text: queryResult.chunk,
-                              })
-                            }
-                          />
-                        </Box>
-                      );
-                    })}
-                  </Box>
-                );
-              }
-            )}
+            <QuestionInputForm state={state} dispatch={dispatch} />
+            <QueryResults
+              results={result?.chunks ?? []}
+              annotatedTexts={annotatedTexts}
+              onTextAnnotation={handleTextAnnotation}
+            />
             <AdditionalInfoContainer
               additionalInfoList={additionalInfoList}
               status={documentsListStatus}
               filesList={documentsList?.documents ?? []}
-              onAdditionalInfoChange={setAdditionalInfoList}
+              onAdditionalInfoChange={handleAdditionalInfoChange}
             />
-            <IdeaAnswerInput value={idealAnswer} onChange={setIdealAnswer} />
+            <IdeaAnswerInput
+              value={idealAnswer}
+              onChange={handleIdealAnswerChange}
+            />
             <Button
               variant="contained"
               sx={{ width: "120px", mx: "auto" }}
-              disabled={
-                question
-                  ? annotatedTexts.length === 0 && isValidAdditionalInfo
-                  : true
-              }
+              disabled={!canSubmit}
               onClick={handleSubmitAnswer}
             >
               Submit
@@ -354,7 +279,7 @@ export const AnnotationPage = () => {
               textAnnotations={annotatedTexts}
               onDelete={handleDeleteTextAnnotation}
               onSelect={handleSelectTextAnnotation}
-              onUpdateSelections={setAnnotatedTexts}
+              onUpdateSelections={handleUpdateAnnotationsOrder}
             />
           </>
         )}

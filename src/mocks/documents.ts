@@ -6,6 +6,7 @@ import {
   DocumentWithContent,
   QueryResult,
   QuestionAnswer,
+  QuestionConfigResponse,
   ResultChunk,
 } from "../types/api";
 
@@ -102,6 +103,8 @@ export const answer1: QuestionAnswer = {
   flag: false,
   file_name: "File-1.txt",
   query: "Question-1",
+  query_type: "small",
+  query_category: "category-1",
   version_number: 1,
   answers: answer1Annotations,
   chunk_results: [],
@@ -118,8 +121,11 @@ export const answer1: QuestionAnswer = {
 export const answer2: QuestionAnswer = {
   id: "doc-1",
   flag: false,
+
   file_name: "File-1.txt",
   query: "Question-2",
+  query_type: "small",
+  query_category: "category-1",
   version_number: 1,
 
   chunk_results: [],
@@ -161,3 +167,26 @@ export const titleDocuments: DocumentBaseInfo[] = [
     file_name: "file-3.txt",
   },
 ];
+
+export const questionConfig: QuestionConfigResponse = {
+  question_category: [
+    {
+      label: "Category 1",
+      value: "category-1",
+    },
+    {
+      label: "Category 2",
+      value: "category-2",
+    },
+  ],
+  question_type: [
+    {
+      label: "Small",
+      value: "small",
+    },
+    {
+      label: "Medium",
+      value: "medium",
+    },
+  ],
+};

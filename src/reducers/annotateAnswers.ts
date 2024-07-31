@@ -1,25 +1,36 @@
 import { produce } from "immer";
 import { TextAnnotation } from "../components/annotation/TextAnnotator";
-import {
-  AdditionalInfo,
-  DocumentQuestionAnswer,
-  ResultChunk,
-  SingleQuestionAnswer,
-} from "../types/api";
+import { AdditionalInfo, QueryResult } from "../types/api";
 
-export type ReviewAnswerState = {
+export type AnnotateAnswersState = {
   question: string;
   questionType: string;
   questionCategory: string;
   annotatedTexts: TextAnnotation[];
-  resultChunks: ResultChunk[];
-  qnaResponse?: DocumentQuestionAnswer;
-  currentQuestion: number;
+  result?: QueryResult;
   additionalInfoList: AdditionalInfo[];
   idealAnswer?: string;
 };
 
-type ReviewAnswersAction =
+export type AnnotateAnswersAction =
+  | {
+      type: "update-question";
+      payload: {
+        updatedQuestion: string;
+      };
+    }
+  | {
+      type: "update-question-type";
+      payload: {
+        type: string;
+      };
+    }
+  | {
+      type: "update-question-category";
+      payload: {
+        category: string;
+      };
+    }
   | {
       type: "add-annotated-text";
       payload: {
@@ -48,23 +59,14 @@ type ReviewAnswersAction =
         updatedInfo: AdditionalInfo[];
       };
     }
-  | {
-      type: "update-current-question";
-      payload: {
-        questionIndex: number;
-      };
-    }
-  | { type: "update-answer-version"; payload: SingleQuestionAnswer }
   | { type: "update-ideal-answer"; payload: { updatedValue: string } }
-  | {
-      type: "initialize-state";
-      payload: DocumentQuestionAnswer;
-    };
+  | { type: "update-query-result"; payload: { result: QueryResult } }
+  | { type: "reset"; payload: { annotateAnswerState: AnnotateAnswersState } };
 
-export const reviewAnswersReducer = (
-  state: ReviewAnswerState,
-  action: ReviewAnswersAction
-) => {
+export const annotateAnswersReducer = (
+  state: AnnotateAnswersState,
+  action: AnnotateAnswersAction
+): AnnotateAnswersState => {
   const { type, payload } = action;
   switch (type) {
     case "add-annotated-text":
@@ -109,59 +111,36 @@ export const reviewAnswersReducer = (
         draft.annotatedTexts = payload.updatedAnnotations;
         return draft;
       });
-    case "update-current-question":
-      return produce(state, (draft) => {
-        const { questionIndex } = payload;
-        const currentQnA = draft.qnaResponse?.qna[questionIndex];
-        const { chunk_results, answers } = currentQnA!;
-        draft.annotatedTexts = answers;
-        draft.resultChunks = chunk_results;
-        draft.additionalInfoList = currentQnA?.additional_text ?? [];
-        draft.question = currentQnA!.query;
-        draft.questionType = currentQnA!.query_type;
-        draft.questionCategory = currentQnA!.query_category;
-        draft.currentQuestion = questionIndex;
-        draft.idealAnswer = currentQnA?.generation_response ?? "";
-        return draft;
-      });
-    case "initialize-state":
-      return produce(state, (draft) => {
-        draft.qnaResponse = payload;
-        const { currentQuestion } = draft;
-        const currentQnA = draft.qnaResponse?.qna[currentQuestion];
-        const { chunk_results, answers } = currentQnA!;
-        draft.annotatedTexts = answers;
-        draft.resultChunks = chunk_results;
-        draft.additionalInfoList = currentQnA?.additional_text ?? [];
-        draft.question = currentQnA!.query;
-        draft.questionType = currentQnA!.query_type;
-        draft.questionCategory = currentQnA!.query_category;
-        draft.idealAnswer = currentQnA.generation_response ?? "";
-        return draft;
-      });
-    case "update-answer-version":
-      return produce(state, (draft) => {
-        const {
-          answers,
-          additional_text,
-          query,
-          query_category,
-          query_type,
-          generation_response,
-        } = payload;
-        draft.annotatedTexts = answers;
-        draft.additionalInfoList = additional_text ?? [];
-        draft.question = query;
-        draft.questionType = query_type;
-        draft.questionCategory = query_category;
-        draft.idealAnswer = generation_response ?? "";
-        return draft;
-      });
     case "update-ideal-answer":
       return produce(state, (draft) => {
         draft.idealAnswer = payload.updatedValue;
         return draft;
       });
+    case "update-query-result":
+      return produce(state, (draft) => {
+        draft.result = payload.result;
+        draft.annotatedTexts = draft.annotatedTexts.filter((text) => {
+          !text.source_text;
+        });
+        return draft;
+      });
+    case "update-question":
+      return produce(state, (draft) => {
+        draft.question = payload.updatedQuestion;
+        return draft;
+      });
+    case "update-question-type":
+      return produce(state, (draft) => {
+        draft.questionType = payload.type;
+        return draft;
+      });
+    case "update-question-category":
+      return produce(state, (draft) => {
+        draft.questionCategory = payload.category;
+        return draft;
+      });
+    case "reset":
+      return payload.annotateAnswerState;
     default:
       return state;
   }

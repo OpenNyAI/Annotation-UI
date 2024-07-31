@@ -1,98 +1,33 @@
+import { AdditionalInfo, QueryResult } from "../types/api";
 import {
-  AdditionalInfo,
-  DocumentQuestionAnswer,
-  SingleQuestionAnswer,
-} from "../types/api";
-import { ReviewAnswerState, reviewAnswersReducer } from "./reviewAnswers";
+  annotateAnswersReducer,
+  AnnotateAnswersState,
+} from "./annotateAnswers";
 
-const initialState: ReviewAnswerState = {
+const initialState: AnnotateAnswersState = {
   question: "",
   questionCategory: "",
   questionType: "",
   annotatedTexts: [],
-  resultChunks: [],
-  qnaResponse: { qna: [] },
-  currentQuestion: 0,
+  result: undefined,
   additionalInfoList: [],
 };
 
-const updatedAnswerVersionResult: SingleQuestionAnswer = {
-  answers: [
-    { end_index: 4, start_index: 0, text: "hello", file_name: "file1.txt" },
-  ],
-  file_name: "file1.txt",
-  version_number: 2,
-  query: "Greet me? Version 2",
-  additional_text: [
+const queryResult: QueryResult = {
+  query: "query",
+  chunks: [
     {
-      id: "1",
-      file_name: "file-1",
-      text: "additional-text version 2",
-    },
-  ],
-  query_category: "category-2",
-  query_type: "type-2",
-  generation_response: "Generated answer",
-};
-
-const qnaResponse: DocumentQuestionAnswer = {
-  qna: [
-    {
-      answers: [
-        { end_index: 4, start_index: 0, text: "hello", file_name: "file1.txt" },
-        {
-          end_index: 4,
-          start_index: 0,
-          text: "hello",
-          file_name: "file3.txt",
-          source_text: "hello this is from source",
-        },
-      ],
-      chunk_results: [
-        {
-          chunk: "hello this is from source",
-          metadata: { file_name: "file3.txt", chunk_id: 1 },
-          retriever_name: "retriever-1",
-        },
-      ],
-      file_name: "file1.txt",
-      id: "id-1",
-      flag: false,
-      version_number: 1,
-      query_category: "category-1",
-      query_type: "type-1",
-      query: "Greet me?",
-      additional_text: [
-        {
-          id: "1",
-          file_name: "file-1",
-          text: "additional-text",
-        },
-      ],
-    },
-    {
-      flag: false,
-      answers: [
-        { end_index: 4, start_index: 0, text: "there", file_name: "file1.txt" },
-      ],
-      file_name: "file1.txt",
-      query_category: "category-2",
-      query_type: "type-2",
-      id: "id-2",
-      version_number: 1,
-      chunk_results: [
-        {
-          chunk: "chunk-result-2",
-          metadata: { file_name: "file1.txt", chunk_id: 1 },
-          retriever_name: "retriever-1",
-        },
-      ],
-      query: "Where is the answer?",
+      chunk: "chuk-1",
+      metadata: {
+        file_name: "file-1",
+        chunk_id: 1,
+      },
+      retriever_name: "r-1",
     },
   ],
 };
 
-describe("review answers reducer", () => {
+describe("annotate answers reducer", () => {
   it("should update the additional info when action type is update-additional-info", () => {
     const updatedInfo: AdditionalInfo[] = [
       {
@@ -101,12 +36,12 @@ describe("review answers reducer", () => {
         text: "updated info",
       },
     ];
-    const expectedState: ReviewAnswerState = {
+    const expectedState: AnnotateAnswersState = {
       ...initialState,
       additionalInfoList: updatedInfo,
     };
 
-    const state = reviewAnswersReducer(initialState, {
+    const state = annotateAnswersReducer(initialState, {
       type: "update-additional-info-list",
       payload: { updatedInfo },
     });
@@ -114,78 +49,8 @@ describe("review answers reducer", () => {
     expect(state).toEqual(expectedState);
   });
 
-  it("should initialize annotated texts and result texts for the current question when action type is initialize-state", () => {
-    const expectedState: ReviewAnswerState = {
-      question: "Greet me?",
-      questionCategory: "category-1",
-      questionType: "type-1",
-      additionalInfoList: [
-        {
-          id: "1",
-          file_name: "file-1",
-          text: "additional-text",
-        },
-      ],
-      annotatedTexts: [
-        { end_index: 4, start_index: 0, text: "hello", file_name: "file1.txt" },
-        {
-          end_index: 4,
-          start_index: 0,
-          text: "hello",
-          file_name: "file3.txt",
-          source_text: "hello this is from source",
-        },
-      ],
-      qnaResponse,
-      resultChunks: [
-        {
-          chunk: "hello this is from source",
-          metadata: { file_name: "file3.txt", chunk_id: 1 },
-          retriever_name: "retriever-1",
-        },
-      ],
-      currentQuestion: 0,
-      idealAnswer: "",
-    };
-
-    let state = reviewAnswersReducer(initialState, {
-      type: "initialize-state",
-      payload: qnaResponse,
-    });
-
-    expect(state).toEqual(expectedState);
-
-    state = reviewAnswersReducer(state, {
-      type: "update-current-question",
-      payload: { questionIndex: 1 },
-    });
-
-    expect(state).toEqual({
-      question: "Where is the answer?",
-      questionCategory: "category-2",
-      questionType: "type-2",
-      additionalInfoList: [],
-      annotatedTexts: [
-        { end_index: 4, start_index: 0, text: "there", file_name: "file1.txt" },
-      ],
-      qnaResponse,
-      resultChunks: [
-        {
-          chunk: "chunk-result-2",
-          metadata: {
-            chunk_id: 1,
-            file_name: "file1.txt",
-          },
-          retriever_name: "retriever-1",
-        },
-      ],
-      currentQuestion: 1,
-      idealAnswer: "",
-    });
-  });
-
   it("should update annotated texts when action type is add annotation", () => {
-    const expectedState: ReviewAnswerState = {
+    const expectedState: AnnotateAnswersState = {
       ...initialState,
       annotatedTexts: [
         {
@@ -197,7 +62,7 @@ describe("review answers reducer", () => {
       ],
     };
 
-    const state = reviewAnswersReducer(initialState, {
+    const state = annotateAnswersReducer(initialState, {
       type: "add-annotated-text",
       payload: {
         newAnnotation: {
@@ -213,7 +78,7 @@ describe("review answers reducer", () => {
   });
 
   it("should remove annotated text when action type is remove annotation", () => {
-    const expectedState: ReviewAnswerState = {
+    const expectedState: AnnotateAnswersState = {
       ...initialState,
       annotatedTexts: [
         {
@@ -225,7 +90,7 @@ describe("review answers reducer", () => {
       ],
     };
 
-    let state = reviewAnswersReducer(initialState, {
+    let state = annotateAnswersReducer(initialState, {
       type: "add-annotated-text",
       payload: {
         newAnnotation: {
@@ -239,7 +104,7 @@ describe("review answers reducer", () => {
 
     expect(state).toEqual(expectedState);
 
-    state = reviewAnswersReducer(state, {
+    state = annotateAnswersReducer(state, {
       type: "delete-annotated-text",
       payload: {
         index: 0,
@@ -270,12 +135,12 @@ describe("review answers reducer", () => {
         file_name: "file3.txt",
       },
     ];
-    const expectedState: ReviewAnswerState = {
+    const expectedState: AnnotateAnswersState = {
       ...initialState,
       annotatedTexts: updatedAnnotations,
     };
 
-    const state = reviewAnswersReducer(initialState, {
+    const state = annotateAnswersReducer(initialState, {
       type: "update-annotations",
       payload: {
         updatedAnnotations,
@@ -306,7 +171,7 @@ describe("review answers reducer", () => {
         file_name: "file3.txt",
       },
     ];
-    const expectedState: ReviewAnswerState = {
+    const expectedState: AnnotateAnswersState = {
       ...initialState,
       annotatedTexts: [
         {
@@ -333,7 +198,7 @@ describe("review answers reducer", () => {
       ],
     };
 
-    const state = reviewAnswersReducer(
+    const state = annotateAnswersReducer(
       { ...initialState, annotatedTexts: updatedAnnotations },
       {
         type: "select-annotated-text",
@@ -361,7 +226,7 @@ describe("review answers reducer", () => {
         file_name: "file3.txt",
       },
     ];
-    const expectedState: ReviewAnswerState = {
+    const expectedState: AnnotateAnswersState = {
       ...initialState,
       annotatedTexts: [
         {
@@ -381,7 +246,7 @@ describe("review answers reducer", () => {
       ],
     };
 
-    let state = reviewAnswersReducer(
+    let state = annotateAnswersReducer(
       { ...initialState, annotatedTexts: updatedAnnotations },
       {
         type: "select-annotated-text",
@@ -393,7 +258,7 @@ describe("review answers reducer", () => {
 
     expect(state).toEqual(expectedState);
 
-    state = reviewAnswersReducer(state, {
+    state = annotateAnswersReducer(state, {
       type: "add-annotated-text",
       payload: {
         newAnnotation: {
@@ -432,42 +297,25 @@ describe("review answers reducer", () => {
     });
   });
 
-  it("should update the answer to given version of answer result", () => {
-    const expectedState: ReviewAnswerState = {
-      question: "Greet me? Version 2",
-      questionCategory: "category-2",
-      questionType: "type-2",
-      additionalInfoList: [
-        {
-          id: "1",
-          file_name: "file-1",
-          text: "additional-text version 2",
-        },
-      ],
-      annotatedTexts: [
-        { end_index: 4, start_index: 0, text: "hello", file_name: "file1.txt" },
-      ],
-      qnaResponse: { qna: [] },
-      resultChunks: [],
-      currentQuestion: 0,
-      idealAnswer: "Generated answer",
-    };
-
-    const state = reviewAnswersReducer(initialState, {
-      type: "update-answer-version",
-      payload: updatedAnswerVersionResult,
+  it("should update the query result to given result result", () => {
+    const state = annotateAnswersReducer(initialState, {
+      type: "update-query-result",
+      payload: { result: queryResult },
     });
 
-    expect(state).toEqual(expectedState);
+    expect(state).toEqual({
+      ...initialState,
+      result: queryResult,
+    });
   });
 
   it("should update the ideal answer to given text value", () => {
-    const expectedState: ReviewAnswerState = {
+    const expectedState: AnnotateAnswersState = {
       ...initialState,
       idealAnswer: "updated answer",
     };
 
-    const state = reviewAnswersReducer(initialState, {
+    const state = annotateAnswersReducer(initialState, {
       type: "update-ideal-answer",
       payload: { updatedValue: "updated answer" },
     });
@@ -476,11 +324,39 @@ describe("review answers reducer", () => {
   });
 
   it("should return prev state if the action type is wrong", () => {
-    const state = reviewAnswersReducer(initialState, {
+    const state = annotateAnswersReducer(initialState, {
       type: "new-state" as any,
       payload: {} as any,
     });
 
     expect(state).toEqual(initialState);
+  });
+
+  it("should update question type to given value when action is udpate-question-type", () => {
+    const expectedState: AnnotateAnswersState = {
+      ...initialState,
+      questionType: "updated type",
+    };
+
+    const state = annotateAnswersReducer(initialState, {
+      type: "update-question-type",
+      payload: { type: "updated type" },
+    });
+
+    expect(state).toEqual(expectedState);
+  });
+
+  it("should update question category to given value when action is udpate-question-category", () => {
+    const expectedState: AnnotateAnswersState = {
+      ...initialState,
+      questionCategory: "updated category",
+    };
+
+    const state = annotateAnswersReducer(initialState, {
+      type: "update-question-category",
+      payload: { category: "updated category" },
+    });
+
+    expect(state).toEqual(expectedState);
   });
 });

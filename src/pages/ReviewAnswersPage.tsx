@@ -1,18 +1,13 @@
-import {
-  Box,
-  Button,
-  Divider,
-  FormControl,
-  FormControlLabel,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Box, Button, Divider, Typography } from "@mui/material";
 import { useEffect, useMemo, useReducer } from "react";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { AdditionalInfoContainer } from "../components/AdditionalInfoContainer";
 import { ErrorMessage } from "../components/ErrorMessage";
+import { IdeaAnswerInput } from "../components/IdealAnswerInput";
 import { LoadingSpinner } from "../components/LoadingSpinner";
+import { QueryResults } from "../components/QueryResults";
+import { QuestionMetaData } from "../components/QuestionMetadata";
 import { ReviewAnswersHeader } from "../components/ReviewAnswersHeader";
 import { AnnotationSummarySidePanel } from "../components/annotation/AnnotationSummarySidePanel";
 import TextAnnotator, {
@@ -29,13 +24,10 @@ import {
   DocumentQuestionAnswer,
   DocumentWithContent,
   FlagQueryRequest,
-  ResultChunk,
   SingleQuestionAnswer,
   SubmitAnswerBody,
 } from "../types/api";
 import { Styles } from "../types/styles";
-import { LabelledInput } from "../components/LabelledInput";
-import { IdeaAnswerInput } from "../components/IdealAnswerInput";
 
 const styles: Styles = {
   container: {
@@ -84,6 +76,8 @@ const styles: Styles = {
 
 const initialState: ReviewAnswerState = {
   question: "",
+  questionCategory: "",
+  questionType: "",
   annotatedTexts: [],
   resultChunks: [],
   qnaResponse: { qna: [] },
@@ -96,6 +90,8 @@ export const ReviewAnswersPage = () => {
   const [
     {
       question,
+      questionType,
+      questionCategory,
       currentQuestion,
       annotatedTexts,
       resultChunks,
@@ -167,6 +163,8 @@ export const ReviewAnswersPage = () => {
         document_id: documentId!,
         chunk_result: resultChunks,
         generation_response: idealAnswer,
+        query_type: questionType,
+        query_category: questionCategory,
       };
       const response = await submitAnswer(
         `/user/qna/${questionId}`,
@@ -281,20 +279,6 @@ export const ReviewAnswersPage = () => {
     getDocumentsList();
   }, []);
 
-  const groupedQueryResults = useMemo(
-    () =>
-      resultChunks?.reduce<Map<string, ResultChunk[]>>((prev, current) => {
-        const val = prev.get(current.retriever_name);
-        if (!val) {
-          prev.set(current.retriever_name, [current]);
-        } else {
-          prev.set(current.retriever_name, [...val, current]);
-        }
-        return prev;
-      }, new Map()),
-    [resultChunks]
-  );
-
   if (fileContentStatus === "pending" || qnaStatus === "pending") {
     return <LoadingSpinner />;
   }
@@ -360,43 +344,16 @@ export const ReviewAnswersPage = () => {
                 <Typography variant="body1" sx={styles.questionBox}>
                   {question}
                 </Typography>
+                <QuestionMetaData
+                  questionCategory={questionCategory}
+                  questionType={questionType}
+                />
               </Box>
-              {resultChunks && resultChunks.length > 0 && (
-                <Typography variant="subtitle1">Results</Typography>
-              )}
-              {[...(groupedQueryResults?.entries() ?? [])].map(
-                ([key, queryResults]) => {
-                  return (
-                    <Box key={key}>
-                      <Typography sx={{ mb: "16px" }} variant="subtitle1">
-                        {`Retriever: ${key}`}
-                      </Typography>
-                      {queryResults.map((queryResult, index) => {
-                        const id = "result_" + key + index;
-                        const editorAnnotatedTexts = annotatedTexts.filter(
-                          (item) => item.source_text === queryResult.chunk
-                        );
-                        return (
-                          <Box key={index} sx={styles.resultBox}>
-                            <TextAnnotator
-                              id={id}
-                              file_name={queryResult.metadata.file_name}
-                              text={queryResult.chunk}
-                              annotatedTexts={editorAnnotatedTexts}
-                              onTextAnnotation={(annotation) =>
-                                handleTextAnnotation({
-                                  ...annotation,
-                                  source_text: queryResult.chunk,
-                                })
-                              }
-                            />
-                          </Box>
-                        );
-                      })}
-                    </Box>
-                  );
-                }
-              )}
+              <QueryResults
+                results={resultChunks}
+                annotatedTexts={annotatedTexts}
+                onTextAnnotation={handleTextAnnotation}
+              />
               <AdditionalInfoContainer
                 additionalInfoList={additionalInfoList ?? []}
                 status={documentsListStatus}

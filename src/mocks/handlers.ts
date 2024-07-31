@@ -6,6 +6,7 @@ import {
   myDocumentsWithAnswers,
   qnaResponse,
   queryChunksResponse,
+  questionConfig,
   reviewDocuments,
   titleDocuments,
 } from "./documents";
@@ -70,5 +71,9 @@ export const handlers = [
 
   http.get("/user/document-titles", () => {
     return HttpResponse.json({ documents: titleDocuments });
+  }),
+
+  http.get("/user/question-config", () => {
+    return HttpResponse.json(questionConfig);
   }),
 ];
