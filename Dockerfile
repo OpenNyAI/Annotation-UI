@@ -2,10 +2,15 @@ FROM node:20.11.1-alpine3.19 AS build
 WORKDIR /app
 
 COPY package*.json ./
-RUN npm install
-COPY . .
 
-ENV NODE_ENV production
+RUN npm ci
+
+COPY src ./src
+COPY public ./public
+COPY index.html ./
+COPY vite.config.ts ./
+
+ENV NODE_ENV=production
 ARG API_URL="http://localhost:8080"
 ENV VITE_API_URL=${API_URL}
 ARG TALLY_FORM_URL="#tally-open=form_id"
@@ -20,4 +25,4 @@ COPY --from=build /app/dist /var/www/html/
 
 EXPOSE 80
 
-ENTRYPOINT ["nginx","-g","daemon off;"]
+ENTRYPOINT ["nginx", "-g", "daemon off;"]
