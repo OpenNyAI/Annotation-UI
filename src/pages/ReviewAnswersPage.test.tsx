@@ -50,6 +50,8 @@ const answer2Annotations: AnnotatedText[] = [
 ];
 const answer1: QuestionAnswer = {
   id: "question-1",
+  query_type: "type-1",
+  query_category: "category-1",
   flag: false,
   file_name: "File-1.txt",
   query: "Question-1",
@@ -73,6 +75,8 @@ const answer2: QuestionAnswer = {
   flag: false,
   file_name: "File-1.txt",
   query: "Question-2",
+  query_type: "type-1",
+  query_category: "category-1",
   version_number: 1,
   answers: answer2Annotations,
   chunk_results: [],
@@ -81,6 +85,8 @@ const answer2: QuestionAnswer = {
 const answer1OldVersion: SingleQuestionAnswer = {
   file_name: "File-1.txt",
   query: "Question-1",
+  query_type: "type-1",
+  query_category: "category-1",
   version_number: 1,
   answers: answer1Annotations,
   additional_text: [],
