@@ -1,6 +1,7 @@
 # Annotation UI
 
 Annotation UI is a powerful tool designed for creating benchmarking datasets. It streamlines the process of data annotation through a structured four-phase approach.
+This Annotation UI repository has a respective backend repository which can be found here: https://github.com/OpenNyAI/Annotation-Backend. The setup instruction for the backend is present in that repository's README documentation.
 
 ## Features
 
@@ -73,8 +74,8 @@ Adjust the values as needed for your environment.
 1. Clone the repository:
 
    ```
-   git clone https://github.com/OpenNyAI/custom-ui.git
-   cd custom-ui
+   git clone git@github.com:OpenNyAI/Annotation-UI.git
+   cd Annotation-UI
    ```
 
 2. Install dependencies:
@@ -109,11 +110,11 @@ The Dockerfile uses build arguments to set environment variables. Here's how to 
 2. Run the container:
 
    ```
-   docker run -p 8080:80 annotation-ui
+   docker run -p 5000:80 annotation-ui
    ```
 
-   This command maps port 8080 on your host to port 80 in the container. Adjust the port mapping if needed.
+   This command maps port 5000 on your host to port 80 in the container. Adjust the port mapping if needed.
 
-3. Access the application at `http://localhost:8080` in your browser.
+3. Access the application at `http://localhost:5000` in your browser.
 
 Note: The environment variables `VITE_API_URL` and `VITE_TALLY_FORM_URL` are set inside the container based on the build arguments. You don't need to pass them again when running the container.
