@@ -1,3 +1,4 @@
+import { jwtDecode } from "jwt-decode";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
@@ -55,6 +56,13 @@ const SignInSchema = zod.object({
 });
 type SignInFields = zod.infer<typeof SignInSchema>;
 
+
+type JWTDecoded = {
+  username: string;
+  role: string[]; // Array of roles
+  exp: number;
+};
+
 export const SignIn = () => {
   const [showPassword, setShowPassword] = useState(false);
   const { setAuth } = useAuth();
@@ -84,7 +92,13 @@ export const SignIn = () => {
     try {
       const response = await makeRequest("/auth/login", "POST", formData);
       setAuth({ accessToken: response.access_token });
-      navigate("/");
+
+      const decodedToken: JWTDecoded = jwtDecode(response.access_token);
+      if (decodedToken.role.includes("Admin")) {
+        navigate("/admin");
+      } else {
+        navigate("/"); 
+      }
     } catch (err: any) {
       toast.error(err.message);
     }
