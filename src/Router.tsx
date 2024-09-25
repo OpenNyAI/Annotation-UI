@@ -14,6 +14,7 @@ import { ReviewAnswersPage } from "./pages/ReviewAnswersPage";
 import { ReviewDocumentsList } from "./pages/ReviewDocumentsList";
 import { SignIn } from "./pages/SignIn";
 import { SignUp } from "./pages/SignUp";
+import { AdminPage } from "./pages/AdminPage";
 
 export const Router = () => {
   const { app_state } = useAppConfig();
@@ -65,6 +66,15 @@ export const Router = () => {
           </PublicRoute>
         }
       />
+      <Route
+        path="/admin"
+        element={
+          <PrivateRoute>
+            <AdminPage />
+          </PrivateRoute>
+        }
+      />
+
       <Route element={<AppLayout />}>
         <Route
           path="/"
