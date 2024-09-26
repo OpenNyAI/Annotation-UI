@@ -65,7 +65,6 @@ export const DocumentsList = () => {
               onClick={() => handleDocumentClick(doc)}
             >
               <DocumentInfoItem.Title file_name={doc.file_name} />
-              {app_state !== "onboarding" && (
                 <DocumentInfoItem.Actions>
                   {doc.last_edited_by && (
                     <DocumentInfoItem.LastEditedBy
@@ -77,7 +76,6 @@ export const DocumentsList = () => {
                     max_questions={doc.max_questions}
                   />
                 </DocumentInfoItem.Actions>
-              )}
             </DocumentInfoItem>
           </Grid>
         );

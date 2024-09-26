@@ -3,7 +3,6 @@ export type DocumentStatus =
   | "QueryFinished"
   | "OnReview"
   | "Reviewed"
-  | "OnExpertReview"
   | "Completed";
 
 export type DocumentInfo = {

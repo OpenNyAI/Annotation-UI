@@ -1,7 +1,7 @@
 import { createContext, PropsWithChildren } from "react";
 
 export type AppConfigState = {
-  app_state: "annotation" | "review" | "expert-review" | "onboarding" | "none";
+  app_state: "annotation" | "review" | "none";
 };
 
 export const AppConfigContext = createContext<AppConfigState | undefined>(

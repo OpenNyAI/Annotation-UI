@@ -111,7 +111,7 @@ export const AppDrawer = ({
           flex: "1 0 auto",
         }}
       >
-        {["annotation", "onboarding"].includes(appState) && (
+        {["annotation"].includes(appState) && (
           <>
             <NavigationItem
               title="Annotate"
@@ -129,7 +129,7 @@ export const AppDrawer = ({
             />
           </>
         )}
-        {(appState === "review" || appState === "expert-review") && (
+        {(appState === "review") && (
           <NavigationItem
             title="Review Q&A"
             to="/review"

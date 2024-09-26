@@ -102,7 +102,7 @@ describe("Router", () => {
     });
   });
 
-  describe("should render review routes when app is in review or expert-review state", () => {
+  describe("should render review routes when app is in review state", () => {
     it("should render review documents list page", async () => {
       render(<Router />, {
         initialEntries: ["/review"],
@@ -116,15 +116,6 @@ describe("Router", () => {
       render(<Router />, {
         initialEntries: ["/review/doc-1"],
         appConfig: { app_state: "review" },
-      });
-
-      expect(screen.getByText("Review Answers page")).toBeInTheDocument();
-    });
-
-    it("should render review qna  page when app state is expert-review", async () => {
-      render(<Router />, {
-        initialEntries: ["/review/doc-1"],
-        appConfig: { app_state: "expert-review" },
       });
 
       expect(screen.getByText("Review Answers page")).toBeInTheDocument();
