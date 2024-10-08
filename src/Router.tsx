@@ -22,12 +22,12 @@ export const Router = () => {
   const homeRoute = (() => {
     switch (app_state) {
       case "annotation":
-      case "onboarding":
         return "/";
       case "review":
-      case "expert-review":
         return "/review";
       case "none":
+        return "/";
+      default:
         return "/";
     }
   })();
@@ -80,7 +80,7 @@ export const Router = () => {
           path="/"
           element={
             <PrivateRoute>
-              {["annotation", "onboarding"].includes(app_state) ? (
+              {["annotation"].includes(app_state) ? (
                 <DocumentsList />
               ) : (
                 <Navigate to={homeRoute} />

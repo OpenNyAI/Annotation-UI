@@ -15,12 +15,8 @@ function getApplicationPhase(appState: AppConfigState["app_state"]) {
   switch (appState) {
     case "annotation":
       return "Annotate";
-    case "onboarding":
-      return "Onboard";
     case "review":
       return "Review";
-    case "expert-review":
-      return "Expert Review";
     case "none":
   }
 }

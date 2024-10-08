@@ -59,7 +59,6 @@ export const MyAnswersList = () => {
               onClick={() => navigate(`/answers/${doc.id}`)}
             >
               <DocumentInfoItem.Title file_name={doc.file_name} />
-              {app_state !== "onboarding" && (
                 <DocumentInfoItem.Actions>
                   {doc.last_edited_by && (
                     <DocumentInfoItem.LastEditedBy
@@ -71,7 +70,6 @@ export const MyAnswersList = () => {
                     max_questions={doc.max_questions}
                   />
                 </DocumentInfoItem.Actions>
-              )}
             </DocumentInfoItem>
           </Grid>
         );

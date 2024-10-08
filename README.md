@@ -6,22 +6,16 @@ This Annotation UI repository has a respective backend repository which can be f
 ## Features
 
 - User authentication (Sign up and Sign in)
-- Four-phase workflow:
-  1. Onboarding
-  2. Annotation
-  3. Review
-  4. Expert Review
+- Two-phase workflow:
+  1. Annotation
+  2. Review
 - Document annotation
 - Answer versioning
 - Flag system for irrelevant questions
 
 ## Phases
 
-### 1. Onboarding
-
-This includes a calibration exercise which allows multiple users to annotate on the same document, to mark them on a scale of 1-5. This ensures the quality of annotators.
-
-### 2. Annotation
+### 1. Annotation
 
 Users can:
 
@@ -32,7 +26,7 @@ Users can:
 - Put together a comprehensive answer to their question
 - View previously annotated answers
 
-### 3. Review
+### 2. Review
 
 In this phase, users can:
 
@@ -40,10 +34,6 @@ In this phase, users can:
 - Modify answers, creating new versions
 - Switch between different answer versions
 - Flag questions deemed irrelevant
-
-### 4. Expert Review
-
-Final review phase for ensuring data quality (details to be added)
 
 ## Technologies
 
