@@ -9,6 +9,7 @@ import {
   questionConfig,
   reviewDocuments,
   titleDocuments,
+  mockDatasets,
 } from "./documents";
 
 export const handlers = [
@@ -75,5 +76,8 @@ export const handlers = [
 
   http.get("/user/question-config", () => {
     return HttpResponse.json(questionConfig);
+  }),
+  http.get("/admin/datasets", () => {
+    return HttpResponse.json(mockDatasets);
   }),
 ];

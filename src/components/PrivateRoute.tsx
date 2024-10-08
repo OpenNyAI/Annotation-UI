@@ -5,23 +5,27 @@ import { jwtDecode } from "jwt-decode";
 
 type JWTDecoded = {
   username: string;
-  role: string[]; // Array of roles
+  role: string[];
   exp: number;
 };
 
 export const PrivateRoute = ({ children }: PropsWithChildren) => {
   const { auth } = useAuth();
+  const token = auth.accessToken ?? "";
 
-  if(!auth.accessToken){
-    return <Navigate to={"/signin"} />
+  if (!token) {
+    return <Navigate to="/signin" />;
   }
-  var decodedToken: JWTDecoded | null = null;
-  const token = auth.accessToken??"";
-  if(token!=""){
-     decodedToken = jwtDecode(token);
-  }
-  if (token && !decodedToken?.role.includes("Admin") && window.location.pathname === '/admin') {
+
+  const decodedToken: JWTDecoded = jwtDecode(token);
+
+  if (window.location.pathname === '/admin' && !decodedToken.role.includes("Admin")) {
     return <Navigate to="/" />;
   }
-  return children;
+
+  if (window.location.pathname !== '/admin' && decodedToken.role.includes("Admin")) {
+    return <Navigate to="/admin" />;
+  }
+
+  return <>{children}</>;
 };

@@ -1,32 +1,18 @@
 import userEvent from "@testing-library/user-event";
+import { AdminPage } from "./AdminPage";
+import { server } from "../mocks/server";
+import { Route, Routes } from "react-router-dom";
 import { render, screen, waitFor } from "../utility/test-utils";
-import {AdminPage} from "./AdminPage";
+
 
 describe("Admin Page", () => {
   it("should render Admin page with datasets", async () => {
-    const mockDatasets = [
-      {
-        name: "Dataset 1",
-        date: "2023-10-26",
-        created_by: "John Doe",
-        status: "Active",
-      },
-      {
-        name: "Dataset 2",
-        date: "2023-10-27",
-        created_by: "Jane Doe",
-        status: "Inactive",
-      },
-    ];
-
-    render(
-        <AdminPage />
-    );
-
+    render(<AdminPage />);
     await waitFor(() => {
       expect(screen.getByText("Annotation UI")).toBeInTheDocument();
     });
   });
+
 
   it("should open and close Create Dataset form", async () => {
     render(
@@ -61,6 +47,55 @@ describe("Admin Page", () => {
     expect(sidebar).toHaveStyle("transform: translateX(-100%)"); // When hidden
     await userEvent.click(hamburgerButton);
     expect(sidebar).toHaveStyle("transform: translateX(0)"); // When visible
+
+  });
+
+  it("should open Dataset information", async () => {
+
+    render(
+      <Routes>
+        <Route path="/" element={<AdminPage />} />
+      </Routes>,
+      { initialEntries: ["/"] }
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText("Annotation UI")).toBeInTheDocument();
+    });
+
+    const datasetCard = await screen.findByText("Dataset 1");
+    userEvent.click(datasetCard);
+
+    await waitFor(() => {
+      expect(screen.getByText("INDEX DATASET")).toBeInTheDocument();
+    });
+  });
+
+  it("should open and submit IndexDatasetForm", async () => {
+
+    render(
+      <Routes>
+        <Route path="/" element={<AdminPage />} />
+      </Routes>,
+      { initialEntries: ["/"] }
+    );
+
+    
+
+    const datasetCard = await screen.findByText("Dataset 1");
+    userEvent.click(datasetCard);
+
+    //Open Dataset Info page
+    await waitFor(() => {
+      expect(screen.getByText("INDEX DATASET")).toBeInTheDocument();
+    });
+
+    const indexButton = screen.getByRole("button", { name: "INDEX DATASET" });
+    userEvent.click(indexButton);
+
+    await waitFor(() => {
+      expect(screen.getByRole("button", { name: "INDEX" })).toBeInTheDocument();
+    })
 
   });
 });
