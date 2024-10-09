@@ -190,3 +190,20 @@ export const questionConfig: QuestionConfigResponse = {
     },
   ],
 };
+
+export const mockDatasets = [
+  {
+    id: 1,
+    name: "Dataset 1",
+    created_at: "2023-10-26",
+    created_by: "John Doe",
+    status: "Active",
+  },
+  {
+    id: 2,
+    name: "Dataset 2",
+    created_at: "2023-10-27",
+    created_by: "Jane Doe",
+    status: "Inactive",
+  },
+];

@@ -60,21 +60,30 @@ const CreateDatasetForm: React.FC<CreateDatasetFormProps> = ({ open, handleClose
 
   const handleSubmit = async () => {
     const formData = new FormData();
-    formData.append('dataset_name', datasetName);
-    formData.append('dataset_description', description);
+    
+  formData.append('dataset_name', datasetName);
+  formData.append('dataset_description', description);
 
-    files.forEach((file) => {
-      formData.append('files', file);
-    });
-    console.log(formData);
+  files.forEach((file) => {
+    formData.append('files', file); 
+  });
+
+  console.log([...formData.entries()]);  
+  
     try {
-      const response = await makeRequest(`admin/datasets?dataset_name=${datasetName}&dataset_description=${description}`, 'POST', formData);
+      const response = await makeRequest(
+        `admin/datasets?dataset_name=${datasetName}&dataset_description=${description}`, 
+        'POST', 
+        formData
+      );
+      
       toast.info('Dataset upload is successful');
       handleClose(true);
     } catch (err: any) {
       toast.error(`Error: ${err.message || 'Failed to upload dataset'}`);
     }
   };
+  
 
   return (
     <Dialog open={open} onClose={handleClose} PaperProps={{
