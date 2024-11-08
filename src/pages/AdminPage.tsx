@@ -8,6 +8,8 @@ import LogoutIcon from '../assets/logout.png';
 import { useAuth } from '../hooks/useAuth';
 import { DatasetInfo } from './AdminPageComponents/DatasetInfoContent';
 import { MainContent } from './AdminPageComponents/MainContent';
+import useAxios from '../hooks/useAxios';
+import { toast } from 'react-toastify';
 
 
 const styles = {
@@ -47,7 +49,9 @@ const styles = {
     flex: 1,
     // padding: '20px',
     backgroundColor: '#f5f5f5',
-    height:'calc(100vh - 4rem)'
+    height:'calc(100vh - 4rem)',
+    width: 'calc(100vw - 240px)'
+
   },
   header: {
     color: 'black',
@@ -94,19 +98,55 @@ const SidebarItem: React.FC<SidebarItemProps> = ({ pngSrc, label, onClick }) => 
 
 //Admin Page (Main page)
 export const AdminPage = () => {
+  const { makeRequest } = useAxios<any>();
   const { setAuth } = useAuth();
   const navigate = useNavigate();
   const [selectedDataset, setSelectedDataset] = useState<any | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   
   useEffect(() => {
+    CheckForUserRoles()
   }, []);
+
+
+  //Checks whether the items are in localStorage and sets them.
+  const CheckForUserRoles = async ()=>{
+    if(!localStorage.getItem("AllRoles")){
+      try {
+        const response = await makeRequest('/admin/all-roles', 'GET');
+        if (response) {
+          localStorage.setItem("AllRoles",JSON.stringify(response));
+        }
+      } 
+      catch (err) {
+        toast.error(`Error fetching all roles: ${err}`);
+      }
+    }
+    if(!localStorage.getItem("UserRoles")){
+      try {
+        const response = await makeRequest('/admin/user-roles', 'GET');
+        if (response) {
+          console.log(response);
+          localStorage.setItem("UserRoles",JSON.stringify(response));
+        }
+      } 
+      catch (err) {
+        console.log(err);
+        toast.error(`Error fetching user roles: ${err}`);
+      }
+    }
+  }
 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
   };
   const handleLogOut = () => {
     setAuth({});
+    localStorage.removeItem("AllRoles");
+    localStorage.removeItem("UserRoles");
+    localStorage.removeItem("accessToken");
+
+
     navigate("/signin");
   };
   const handleNavbarItemClick = () => {
@@ -121,7 +161,7 @@ export const AdminPage = () => {
   };
 
   return (
-    <Box sx={{position:'fixed',minHeight:'100vh',minWidth:'100vw',top:'0',left:'0',backgroundColor:'#f5f5f5'}}>      
+    <Box sx={{position:'fixed',minHeight:'100vh',minWidth:'100vw',top:'0',left:'0',backgroundColor:'#f5f5f5', }}>      
       <Box sx={styles.container}>
         <Box sx={styles.topBar}>
           <Box sx={styles.hamburger} onClick={toggleSidebar} data-testid="hamburger">
