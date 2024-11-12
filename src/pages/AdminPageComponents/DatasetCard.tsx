@@ -7,56 +7,58 @@ const styles = {
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-between',
-        backgroundColor:'#D9D9D9',
-        cursor:'pointer',
+        backgroundColor: '#D9D9D9',
+        cursor: 'pointer',
+        transition: 'background-color 0.3s ease, transform 0.3s ease',
         '&:hover': {
-          backgroundColor: '#A0A0A0',
+            backgroundColor: '#A0A0A0',
+            transform: 'scale(1.03)',  // Slight scaling effect on hover
         },
-      },
-      cardContent: {
-        color:'black',
+    },
+    cardContent: {
+        color: 'black',
         flexGrow: 1,
-      },
-      statusChip: {
+    },
+    statusChip: {
         fontWeight: 'bold',
         fontSize: '0.75rem',
-      },
+    },
 };
 
 interface DatasetCardProps {
-  name: string;
-  created_at: string;
-  created_by: string;
-  status: string;
-  onClick: () => void;
+    name: string;
+    created_at: string;
+    created_by: string;
+    status: string;
+    onClick: () => void;
 }
 
 export const DatasetCard: React.FC<DatasetCardProps> = ({ name, created_at, created_by, status, onClick }) => {
-  const date = new Date(created_at);
+    const date = new Date(created_at);
 
-  return (
-    <Card sx={styles.card} onClick={onClick}>
-      <CardContent sx={styles.cardContent}>
-        <Typography variant="body2" color="black" fontWeight={'bold'} gutterBottom>{name}</Typography>
-        <br/><br/>
-        <Typography variant="body2" color="black" sx={{paddingTop:'20px', fontSize:'0.8rem'}} >{date.toISOString().split('T')[0]}</Typography> 
-        <br/>
-      <Box sx={{ paddingTop: 2, display:'flex', alignItems:'center', justifyContent:'space-between'}}>
-        <Box>
-        <Typography variant="body3" color="black" fontWeight={'bold'}>Created By: </Typography>
-        <Typography variant="body3" color="black">{created_by}</Typography>
-        </Box>
-        <Typography 
-          variant="body2" 
-          sx={{
-            ...styles.statusChip,
-            color: 'black',
-          }}
-        >
-          {status}
-        </Typography>
-      </Box>
-      </CardContent>
-    </Card>
-  );
+    return (
+        <Card sx={styles.card} onClick={onClick}>
+            <CardContent sx={styles.cardContent}>
+                <Typography variant="body2" color="black" fontWeight="bold" gutterBottom>{name}</Typography>
+                <br /><br />
+                <Typography variant="body2" color="black" sx={{ paddingTop: '20px', fontSize: '0.8rem' }}>{date.toISOString().split('T')[0]}</Typography>
+                <br />
+                <Box sx={{ paddingTop: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <Box>
+                        <Typography variant="body3" color="black" fontWeight="bold">Created By: </Typography>
+                        <Typography variant="body3" color="black">{created_by}</Typography>
+                    </Box>
+                    <Typography
+                        variant="body2"
+                        sx={{
+                            ...styles.statusChip,
+                            color: 'black',
+                        }}
+                    >
+                        {status}
+                    </Typography>
+                </Box>
+            </CardContent>
+        </Card>
+    );
 };
