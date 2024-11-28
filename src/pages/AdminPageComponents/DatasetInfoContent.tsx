@@ -4,8 +4,7 @@ import useAxios from '../../hooks/useAxios';
 import { toast } from 'react-toastify';
 import IndexDatasetForm from '../../components/IndexDatasetForm';
 import { LoadingSpinner } from "../../components/LoadingSpinner";
-import AnnotatorReviewerForm from '../../components/AnnotatorReviewerAssignmentForm';
-
+import AssignmentForm from '../../components/AssignmentForm';  //Import for AssignmentForm
 
 interface DatasetInfoProps {
   dataset: {
@@ -43,7 +42,7 @@ interface UserRole {
 
 const styles = {
   container: {
-    padding: '20px',
+    padding: '30px',
     color: 'black', 
     
   },
@@ -108,7 +107,8 @@ const styles = {
 };
 
 
-export const DatasetInfo: React.FC<DatasetInfoProps> = ({ dataset, handleBack }) => {
+export const DatasetInfo: React.FC<DatasetInfoProps> = ({ dataset }) => {
+  
   const { makeRequest } = useAxios<any>();
   const [files, setFiles] = useState<FileInfo[]>([]);
   const [isIndexDatasetFormVisible, setIsIndexDatasetFormVisible] = useState(false);
@@ -237,10 +237,13 @@ export const DatasetInfo: React.FC<DatasetInfoProps> = ({ dataset, handleBack })
 
   return (
     <Box sx={styles.container}>
-      {/* <Button onClick={handleBack} sx={styles.backButton}>
-        Back to List
-      </Button> */}
-      <AnnotatorReviewerForm open={isAnnotatorReviewerFormVisible} handleClose={(successStatus:Boolean)=>handleAssignPersonClose(successStatus)} availablePeople={availablePeopleList??[]} documentID={selectedDocument?.id??""} type={annotatorReviewerType??""}/>
+      <AssignmentForm open={isAnnotatorReviewerFormVisible} 
+        handleClose={(successStatus: Boolean) => handleAssignPersonClose(successStatus)} 
+        availableEntities={availablePeopleList?.map(person => ({id: person.id, name: person.username})) ?? []} 
+        type={annotatorReviewerType ?? ""} 
+        additionalData={{user_name:"", user_id:"", documentID: selectedDocument?.id}} 
+        submitUrl={'admin/datasets/${documentID}/document-assignment'}
+        requestMethod={'POST'}/>
       <IndexDatasetForm open={isIndexDatasetFormVisible} handleClose={(successStatus:Boolean)=>handleIndexDatasetClose(successStatus)} datasetID={datasetState.id}/>
       <Box sx={styles.header}>
         <Typography variant="h5" sx={styles.datasetName}>

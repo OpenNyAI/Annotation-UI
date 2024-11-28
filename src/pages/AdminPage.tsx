@@ -4,13 +4,14 @@ import { useNavigate } from 'react-router-dom';
 import DatasetsIcon from '../assets/Datasets.png';
 import ProjectsIcon from '../assets/Projects.png';
 import ListItemIcon from '../assets/ListItem.png';
+import UserItemIcon from '../assets/UserList.png';
 import LogoutIcon from '../assets/logout.png';
 import { useAuth } from '../hooks/useAuth';
 import { DatasetInfo } from './AdminPageComponents/DatasetInfoContent';
 import { MainContent } from './AdminPageComponents/MainContent';
 import useAxios from '../hooks/useAxios';
 import { toast } from 'react-toastify';
-
+import UserDetailContent from './AdminPageComponents/UserDetailContent';
 
 const styles = {
   container: {
@@ -103,7 +104,9 @@ export const AdminPage = () => {
   const navigate = useNavigate();
   const [selectedDataset, setSelectedDataset] = useState<any | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  
+  const [showUsersPage, setShowUsersPage] = useState(false);
+
+
   useEffect(() => {
     CheckForUserRoles()
   }, []);
@@ -158,7 +161,13 @@ export const AdminPage = () => {
   };
   const ShowDatasetsPage = () => {
     setSelectedDataset(null);
+    setShowUsersPage(false)
   };
+  
+  const ShowUsersPage = () => {
+    setSelectedDataset(null);
+    setShowUsersPage(true);
+  }
 
   return (
     <Box sx={{position:'fixed',minHeight:'100vh',minWidth:'100vw',top:'0',left:'0',backgroundColor:'#f5f5f5', }}>      
@@ -177,12 +186,15 @@ export const AdminPage = () => {
         </Box>
         <Box sx={{ ...styles.sidebar, ...(sidebarOpen ? {} : styles.sidebarHidden) }} data-testid="sidebar">
           <SidebarItem pngSrc={DatasetsIcon} label="Datasets" onClick={ShowDatasetsPage}/>
-          <SidebarItem pngSrc={ProjectsIcon} label="Projects" onClick={handleNavbarItemClick}/>
+          <SidebarItem pngSrc={UserItemIcon} label="Users" onClick={ShowUsersPage}/>
           <SidebarItem pngSrc={ListItemIcon} label="List item" onClick={handleNavbarItemClick}/>
           <SidebarItem pngSrc={LogoutIcon} label="Logout" onClick={handleLogOut}/>
         </Box>
         <Box sx={{...styles.content,...(sidebarOpen ? {marginLeft:'240px'} : {})}}>
           {
+            showUsersPage?
+            (<UserDetailContent/>)
+            :
           selectedDataset ? 
           (<DatasetInfo dataset={selectedDataset} handleBack = {ShowDatasetsPage}/>) 
           : 

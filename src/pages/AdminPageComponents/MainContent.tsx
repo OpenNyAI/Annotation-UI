@@ -21,7 +21,7 @@ const styles = {
     zIndex: '0'
   },
   main: {
-    padding: '20px',
+    padding: '30px',
   }
 };
 
