@@ -1,11 +1,6 @@
-/*The AssignmentForm is designed for assigning roles and type details to entities, such as annotators, reviewers etc. 
-It dynamically handles different assignment types through customizable configurations, ensuring flexibility for various use cases. 
-The form allows users to select entities from a list for specific types, and display in chip.
-It integrates with backend APIs to submit data.*/
-
-/*The AssignmentForm is more suitable than AnnotatorReviewerAssignmentForm due to its flexibility and ability to handle different scenarios, 
-the AnnotatorReviewerForm is simpler and more focused for that specific task 
-whereas AssignmentForm can handle multiple types of assignments at a single time and provides more dynamic option
+/*The RoleAssignmentForm component is designed for assigning roles to entities, with the flexibility to handle various assignment types like annotators and reviewers. 
+It allows users to select entities from a list, displaying selected entities as clickable chips for easy selection and deselection. 
+By integrating with backend APIs, the form ensures seamless data submission to update role assignments.
 */
 
 
@@ -25,12 +20,11 @@ import { toast } from 'react-toastify';
 import useAxios from '../hooks/useAxios';
 
 // Interface for the component props
-interface AssignmentFormProps {
+interface RoleAssignmentFormProps {
   additionalData: AdditionalData; // Additional data like user_name, user_id, documentID
   open: boolean; // Tracks if the form is opened
   handleClose: (successStatus: boolean) => void; 
   availableEntities: Entity[]; // List of available people (entities) for assignment
-  type: string; // Type of assignment (e.g., annotator, reviewer)
   submitUrl: string; // API URL for form submission
   requestMethod: "GET" | "POST" | "PUT" | "DELETE"; // HTTP method for the request
 }
@@ -49,80 +43,60 @@ interface AdditionalData {
   documentID?: string;
 }
 
-const AssignmentForm: React.FC<AssignmentFormProps> = ({
+const RoleAssignmentForm: React.FC<RoleAssignmentFormProps> = ({
   additionalData,
   open, // Tracks if the form is opened
   handleClose, // Handles closure of the form
   availableEntities, // List of available people (entities)
-  type, // Handles the type of assignment (annotator, reviewer, etc.)
   submitUrl, // API URL for form submission
   requestMethod, // HTTP method for request (GET, POST, etc.)
 }) => {
-  const [selectedEntity, setSelectedEntity] = useState<Entity | null>(null); // State to track selected entity
+  const [selectedRoles, setSelectedRoles] = useState<Entity[] | []>([]); // State to track selected entity
   const { makeRequest, status } = useAxios(); // Custom hook to handle API requests
 
   // Config object for different assignment types (annotator, reviewer, etc.)
-  const config = {
-    annotator: {
-      title: 'Configure Annotator',
-      successMessage: 'Annotator assigned successfully!',
-      errorMessage: 'Failed to assign annotator',
-      submitButtonLabel: 'Assigned Annotator',
-    },
-
-    reviewer: {
-      title: 'Configure Reviewer',
-      successMessage: 'Reviewer assigned successfully!',
-      errorMessage: 'Failed to assign reviewer',
-      submitButtonLabel: 'Assigned Reviewer',
-    },
-  };
-
-  // Default config if no matching type is found
-  const currentConfig = config[type as keyof typeof config] || {
-    title: 'Configure Default',
-    successMessage: 'Default assigned successfully!',
-    errorMessage: 'Failed to assign default',
-    submitButtonLabel: 'Assigned Default',
+  const currentConfig = {
+      title: 'Configure Role',
+      successMessage: 'Role assigned successfully!',
+      errorMessage: 'Failed to assign role',
+      submitButtonLabel: 'Assigned Role'
   };
 
   // Reset selected entity when form is opened
   useEffect(() => {
     if (open) {
-      setSelectedEntity(null);
+      setSelectedRoles([]);
     }
   }, [open]);
 
   // Function to handle entity selection
-  const handleSelectEntity = (entity: Entity) => {
-    if (!selectedEntity) {
-      setSelectedEntity(entity);
+  const handleSelectRole = (entity: Entity) => {
+    if (selectedRoles.length <= 2 && !selectedRoles.some(role => role.id === entity.id)) {
+      setSelectedRoles((prev) => [...prev, entity]);
     }
   };
+  
 
   // Function to handle entity removal (deselecting an entity)
   const handleRemoveEntity = (entity: Entity | null) => {
-    setSelectedEntity(null);
+    setSelectedRoles((prev)=>prev.filter(item=>item.id != entity?.id));
   };
 
   // Function to handle form submission
   const handleSubmit = async () => {
-    if (!selectedEntity) {
-      toast.error(`Please select an option for ${type}`);
+    if (!selectedRoles) {
+      toast.error(`Please select a role`);
       return;
     }
 
     // Prepare the data object for DB based on the type
-    let data = {};
-    if (type === "annotator" || type === "reviewer") {
-      data = [{
-        type,
-        document_id: additionalData.documentID,
-        user_id: selectedEntity?.id,
-      }];
-    } else {
-      data = [{}];
-    }
+
+    const data = selectedRoles.map((role)=>({
+        user_id:additionalData.user_id,
+        role_id:role.id
+    })) ;
+    
+    
 
     try {
       // Send the API request to submit the data
@@ -156,30 +130,30 @@ const AssignmentForm: React.FC<AssignmentFormProps> = ({
         </IconButton>
       </DialogTitle>
       <DialogContent style={{ color: 'black' }}>
-        <Typography variant="h6" align="center">{type}</Typography> {/* Display type of assignment */}
+        <Typography variant="h6" align="center">User Roles</Typography> {/* Display type of assignment */}
         <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', marginTop: '10px' }}>
           {/* Render a list of available entities as clickable chips */}
           {availableEntities.map((entity) => (
             <Chip
               key={entity.id}
               label={entity.name}
-              onClick={() => handleSelectEntity(entity)} // Select an entity when clicked
+              onClick={() => handleSelectRole(entity)} // Select an entity when clicked
               style={{ margin: '5px', color: 'black', backgroundColor: 'azure' }}
               clickable
-              color={selectedEntity?.id === entity.id ? 'primary' : 'default'} // Highlighting the selected entity
             />
           ))}
           
           {/* Show the selected entity with a Delete option */}
-          {selectedEntity && (
+          {selectedRoles.map((entity) => (
             <Chip
-              key={selectedEntity.id}
-              label={selectedEntity.name}
-              onDelete={() => handleRemoveEntity(selectedEntity)} // Remove the entity from selection
+              key={entity.id}
+              label={entity.name}
+              onDelete={() => handleRemoveEntity(entity)}  // Remove the entity from selection
               style={{ margin: '5px', backgroundColor: '#2196F3', color: 'white' }}
               color="primary"
             />
-          )}
+          ))}
+
         </div>
       </DialogContent>
       <DialogActions style={{ justifyContent: 'center' }}>
@@ -198,4 +172,4 @@ const AssignmentForm: React.FC<AssignmentFormProps> = ({
   );
 };
 
-export default AssignmentForm;
+export default RoleAssignmentForm;

@@ -129,7 +129,7 @@ export const AdminPage = () => {
       try {
         const response = await makeRequest('/admin/user-roles', 'GET');
         if (response) {
-          console.log(response);
+          // console.log(response);
           localStorage.setItem("UserRoles",JSON.stringify(response));
         }
       } 
@@ -156,7 +156,7 @@ export const AdminPage = () => {
 
   };
   const onDatasetClick = (dataset: any) => {
-    console.log(dataset);
+    // console.log(dataset);
     setSelectedDataset(dataset);
   };
   const ShowDatasetsPage = () => {
