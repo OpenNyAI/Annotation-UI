@@ -21,7 +21,7 @@ const styles = {
     zIndex: '0'
   },
   main: {
-    padding: '20px',
+    padding: '30px',
   }
 };
 
@@ -39,7 +39,7 @@ export const MainContent: React.FC<ContentProps> = ({ onDatasetClick }) => {
     try {
       const response = await makeRequest('/admin/datasets', 'GET');
       if (response) {
-        console.log(response);
+        // console.log(response);
         setDatasets(response);
       }
     } catch (err) {
