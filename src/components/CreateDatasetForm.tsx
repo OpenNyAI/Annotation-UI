@@ -7,7 +7,7 @@ import { toast } from 'react-toastify';
 
 interface CreateDatasetFormProps {
   open: boolean;
-  handleClose: (successStatus:Boolean) => void;
+  handleClose: (successStatus:boolean) => void;
 }
 
 const Input = styled('input')({
