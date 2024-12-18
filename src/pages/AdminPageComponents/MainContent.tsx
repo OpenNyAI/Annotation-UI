@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Button, Grid } from '@mui/material';
-import { toast } from "react-toastify";
+import { toast } from 'react-toastify';
 import CreateDatasetForm from '../../components/CreateDatasetForm';
 import useAxios from '../../hooks/useAxios';
 import { DatasetCard } from './DatasetCard';
 import { LoadingSpinner } from "../../components/LoadingSpinner";
+import { useNavigate } from 'react-router-dom';
 
 const styles = {
   header: {
@@ -25,21 +26,27 @@ const styles = {
   }
 };
 
-interface ContentProps {
-  onDatasetClick: (dataset: any) => void;
+interface Dataset {
+  id: string;
+  name: string;
+  created_at: string;
+  created_by: string;
+  status: string;
+  description?: string;
 }
 
-export const MainContent: React.FC<ContentProps> = ({ onDatasetClick }) => {
+export const MainContent: React.FC = () => {
+  const navigate = useNavigate();  // Use navigate hook for routing
   const { makeRequest } = useAxios<any[]>();
-  const [datasets, setDatasets] = useState<any[]>([]);
+  const [datasets, setDatasets] = useState<Dataset[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isCreateDatasetFormVisible, setIsCreateDatasetFormVisible] = useState(false);
 
+  // Fetch the list of datasets from the server
   const fetchDatasets = async () => {
     try {
       const response = await makeRequest('/admin/datasets', 'GET');
       if (response) {
-        // console.log(response);
         setDatasets(response);
       }
     } catch (err) {
@@ -54,10 +61,12 @@ export const MainContent: React.FC<ContentProps> = ({ onDatasetClick }) => {
     fetchDatasets();
   }, []);
 
+  // Handle opening the dataset creation form
   const handleCreateDatasetOpen = () => {
     setIsCreateDatasetFormVisible(true);
   };
 
+  // Handle closing the dataset creation form
   const handleCreateDatasetClose = (successStatus: Boolean) => {
     if (successStatus) {
       fetchDatasets();
@@ -65,12 +74,20 @@ export const MainContent: React.FC<ContentProps> = ({ onDatasetClick }) => {
     setIsCreateDatasetFormVisible(false);
   };
 
-  if(isLoading){
-    return(<LoadingSpinner/>)
+  // Handle the click on a dataset to navigate to DatasetInfoContent page
+  const handleDatasetClick = (dataset: Dataset) => {
+    // Navigate to the dataset details page and pass the dataset as state
+    navigate(`/admin/dataset/${dataset.id}`, { state: { dataset } });
+  };
+
+  // Show loading spinner while datasets are being fetched
+  if (isLoading) {
+    return <LoadingSpinner />;
   }
 
   return (
     <Box sx={styles.main}>
+      {/* Header with create dataset button */}
       <Box sx={styles.header}>
         <Button
           sx={{ backgroundColor: "#2196F3", fontWeight: '400' }}
@@ -82,15 +99,18 @@ export const MainContent: React.FC<ContentProps> = ({ onDatasetClick }) => {
           + CREATE DATASET
         </Button>
       </Box>
-      <CreateDatasetForm open={isCreateDatasetFormVisible} handleClose={(successStatus: Boolean) => handleCreateDatasetClose(successStatus)} />
+      
+      {/* Dataset creation form */}
+      <CreateDatasetForm open={isCreateDatasetFormVisible} handleClose={handleCreateDatasetClose} />
+      
+      {/* Display the list of datasets */}
       <Grid container spacing={3}>
-        {(
-          datasets.map((dataset, index) => (
-            <Grid item xs={14} sm={6} md={4} key={index}>
-              <DatasetCard {...dataset} onClick={() => onDatasetClick(dataset)} />
-            </Grid>
-          ))
-        )}
+        {datasets.map((dataset) => (
+          <Grid item xs={14} sm={6} md={4} key={dataset.id}>
+            {/* Pass the dataset details and the click handler to DatasetCard */}
+            <DatasetCard {...dataset} onClick={() => handleDatasetClick(dataset)} />
+          </Grid>
+        ))}
       </Grid>
     </Box>
   );

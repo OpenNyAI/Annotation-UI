@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Typography } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import DatasetsIcon from '../assets/Datasets.png';
 import UserItemIcon from '../assets/UserList.png';
 import QnAIcon from '../assets/Questionmark.png';
@@ -10,8 +10,8 @@ import { DatasetInfo } from './AdminPageComponents/DatasetInfoContent';
 import { MainContent } from './AdminPageComponents/MainContent';
 import useAxios from '../hooks/useAxios';
 import { toast } from 'react-toastify';
-import UserDetailContent from './AdminPageComponents/UserDetailContent';
-import {QuestionListDataset} from './AdminPageComponents/QuesListDataset';
+import { UserDetailContent } from './AdminPageComponents/UserDetailContent';
+import { QuesListDataset } from './AdminPageComponents/QuesListDataset';
 import { QuesDatasetContent } from './AdminPageComponents/QuesDatasetContent';
 
 const styles = {
@@ -74,9 +74,10 @@ interface SidebarItemProps {
   pngSrc: string;
   label: string;
   onClick: () => void;
+  isActive: boolean;
 }
 
-const SidebarItem: React.FC<SidebarItemProps & { isActive: boolean }> = ({ pngSrc, label, onClick, isActive }) => (
+const SidebarItem: React.FC<SidebarItemProps> = ({ pngSrc, label, onClick, isActive }) => (
   <Box
     onClick={onClick}
     sx={{
@@ -101,8 +102,8 @@ export const AdminPage = () => {
   const { makeRequest } = useAxios<any>();
   const { setAuth } = useAuth();
   const navigate = useNavigate();
-  const [selectedDataset, setSelectedDataset] = useState<any | null>(null);
-  const [selectedQuesDataset, setSelectedQuesDataset] = useState<any | null>(null);
+  const location = useLocation();
+  const [selectedDataset, setSelectedDataset] = useState<any | null>(null); 
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [currentPage, setCurrentPage] = useState<PageState>(PageState.Datasets);
 
@@ -145,49 +146,40 @@ export const AdminPage = () => {
     navigate('/signin');
   };
 
-  const onDatasetClick = (dataset: any) => {
-    setSelectedDataset(dataset);
-    setCurrentPage(PageState.Datasets); 
-  };
-
-  const onQuesDatasetClick = (dataset: any)=> {
-    setSelectedQuesDataset(dataset);
-    setCurrentPage(PageState.QnA);
-  }
-
   const handleSidebarClick = (page: PageState) => {
     if (page === PageState.Datasets && selectedDataset) {
       setSelectedDataset(null); // Reset dataset selection when clicking on Datasets again
     }
-    else if (page === PageState.QnA && selectedQuesDataset) {
-      setSelectedQuesDataset(null); // Reset dataset selection when clicking on Datasets again
+    if (page === PageState.QnA) {
+      navigate('/admin/qna'); // Navigate to the Qna route
     }
-    
+
+    if (page === PageState.Users) {
+      navigate('/admin/users'); // Navigate to the Users route
+    }
+
+    if (page === PageState.Datasets) {
+      navigate('/admin'); // Navigate to the Datasets route
+    }
+
     setCurrentPage(page);
   };
 
   const renderPageContent = () => {
     switch (currentPage) {
-      case PageState.Datasets:
-        return selectedDataset ? (
-          <DatasetInfo dataset={selectedDataset} handleBack={() => setCurrentPage(PageState.Datasets)} />
-        ) : (
-          <MainContent onDatasetClick={onDatasetClick} />
-        );
-      case PageState.Users:
-        return <UserDetailContent />;
-      case PageState.QnA:
-        return selectedQuesDataset? (
-          <QuesDatasetContent dataset={selectedQuesDataset} handleBack={() => setCurrentPage(PageState.QnA)} />
-        ) : (
-          <QuestionListDataset onDatasetClick={onQuesDatasetClick} />
-        );
       case PageState.Logout:
         handleLogOut();
         return null;
       default:
         return null;
     }
+  };
+
+  const getCurrentRoute = () => {
+    if (location.pathname.includes('datasets')) return PageState.Datasets;
+    if (location.pathname.includes('users')) return PageState.Users;
+    if (location.pathname.includes('qna')) return PageState.QnA;
+    return PageState.Datasets;
   };
 
   return (
@@ -208,23 +200,23 @@ export const AdminPage = () => {
           </Box>
         </Box>
         <Box sx={{ ...styles.sidebar, ...(sidebarOpen ? {} : styles.sidebarHidden) }} data-testid="sidebar">
-        <SidebarItem
+          <SidebarItem
             pngSrc={DatasetsIcon}
             label="Datasets"
             onClick={() => handleSidebarClick(PageState.Datasets)}
-            isActive={currentPage === PageState.Datasets}
+            isActive={getCurrentRoute() === PageState.Datasets}
           />
           <SidebarItem
             pngSrc={UserItemIcon}
             label="Users"
             onClick={() => handleSidebarClick(PageState.Users)}
-            isActive={currentPage === PageState.Users}
+            isActive={getCurrentRoute() === PageState.Users}
           />
           <SidebarItem
             pngSrc={QnAIcon}
             label="Q&A"
             onClick={() => handleSidebarClick(PageState.QnA)}
-            isActive={currentPage === PageState.QnA}
+            isActive={getCurrentRoute() === PageState.QnA}
           />
           <SidebarItem
             pngSrc={LogoutIcon}
@@ -235,6 +227,7 @@ export const AdminPage = () => {
         </Box>
         <Box sx={{ ...styles.content, ...(sidebarOpen ? { marginLeft: '240px' } : {}) }}>
           {renderPageContent()}
+          <Outlet />
         </Box>
       </Box>
     </Box>

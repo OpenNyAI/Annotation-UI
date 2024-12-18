@@ -1,20 +1,20 @@
 /* QuesDetail page serves as a detailed view for displaying and managing questions and answers (QnA) associated with a specific file within a dataset. 
 It provides a comprehensive overview of the file, including metadata such as the file name, annotator, and number of queries. 
 The main focus of the page is to show the questions and their corresponding answers, offering a clear, organized table format for easy viewing and analysis.*/
-
 import React, { useEffect, useState } from 'react';
 import { Box, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
+import { useLocation } from 'react-router-dom'; // useLocation to get route params
 import useAxios from '../../hooks/useAxios'; 
 import { toast } from 'react-toastify';  
-import { LoadingSpinner } from '../../components/LoadingSpinner';  
+import { LoadingSpinner } from '../../components/LoadingSpinner';
 
 // Interfaces for types used in the component
 interface Answer {
-  text: string;  
+  text: string; 
 }
 
 interface QnaItem {
-  query: string;  // 
+  query: string;   
   answers: Answer[];  
 }
 
@@ -35,6 +35,7 @@ interface FileInfo {
 // Styles object for the component's layout and appearance
 const styles = {
   container: {
+    padding: '30px',
     color: 'black',
   },
   header: {
@@ -80,26 +81,19 @@ const styles = {
 };
 
 // Props type for the component, including dataset and file details
-interface QuesDetailProps {
-  dataset: {
-    id: string;
-    name: string;
-    status: string;
-    description?: string;
-  };
-  file: FileInfo;  // The selected file for which we are displaying details
-}
+export const QuesDetail: React.FC = () => {
+  const location = useLocation();  // Hook to get route params (dataset and file info)
+  const dataset = location.state?.dataset;  // Dataset passed via location state
+  const file = location.state?.file;  // File passed via location state
 
-export const QuesDetail: React.FC<QuesDetailProps> = ({ dataset, file }) => {
   const { makeRequest } = useAxios<QuesDetails>();  // API request hook
   const [Ques, setQues] = useState<QnaItem[]>([]);  // Store QnA data
   const [isLoading, setIsLoading] = useState(true);  // Loading state
-  const [documentState, setDocumentState] = useState(file);  // Keep the current file details
 
   // Function to fetch QnA data for the selected file
   const fetchQues = async () => {
     try {
-      const response = await makeRequest(`/admin/qna/document/${documentState.id}`, 'GET');
+      const response = await makeRequest(`/admin/qna/document/${file.id}`, 'GET');
       if (response) {
         setQues(response.qna);  // Set the QnA data
       }
@@ -113,8 +107,10 @@ export const QuesDetail: React.FC<QuesDetailProps> = ({ dataset, file }) => {
 
   // Fetch QnA data when the component is mounted
   useEffect(() => {
-    fetchQues();
-  }, []);  // Empty dependency array means it runs only once when the component mounts
+    if (dataset && file) {
+      fetchQues();
+    }
+  }, [dataset, file]);  // Re-fetch if dataset or file changes
 
   // Show a loading spinner while fetching the data
   if (isLoading) {
@@ -126,22 +122,22 @@ export const QuesDetail: React.FC<QuesDetailProps> = ({ dataset, file }) => {
       {/* Header Section */}
       <Box sx={styles.header}>
         <Typography variant="h5" sx={styles.datasetName}>
-          {dataset.name}
+          {dataset?.name}
         </Typography>
       </Box>
 
       {/* File Details Section */}
       <Box sx={{ marginBottom: '20px' }}>
-        <Typography variant="h6">File Details</Typography><br></br>
-        <Typography><strong>File Name:</strong> {file.file_name}</Typography><br></br>
-        <Typography><strong>Annotator:</strong> {file.annotator || "No annotators assigned for this document"}</Typography><br></br>
-        <Typography><strong>Number of Questions:</strong> {file.number_of_queries}</Typography><br></br>
+        <Typography variant="h6">File Details</Typography><br />
+        <Typography><strong>File Name:</strong> {file?.file_name}</Typography><br />
+        <Typography><strong>Annotator:</strong> {file?.annotator || "No annotators assigned for this document"}</Typography><br />
+        <Typography><strong>Number of Questions:</strong> {file?.number_of_queries}</Typography><br />
       </Box>
 
       {/* Queries and Answers Table */}
       <Typography variant="h6">Queries and Answers:</Typography>
       <TableContainer component={Paper} sx={styles.tableContainer}>
-        <Table sx={{border: '2px solid black'}}>
+        <Table sx={{ border: '2px solid black' }}>
           <TableHead sx={styles.tableHeader}>
             <TableRow>
               <TableCell sx={styles.tableCellHeader}>Query</TableCell>
