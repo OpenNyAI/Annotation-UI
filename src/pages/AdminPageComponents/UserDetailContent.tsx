@@ -89,7 +89,7 @@ const styles = {
   },
 };
 
-const UserDetailContent: React.FC = () => {
+export const UserDetailContent: React.FC = () => {
   const { makeRequest } = useAxios<any>();
   const [userRoles, setUserRoles] = useState<UserInfo[]>([]);
   const [isRoleFormVisible, setIsRoleFormVisible] = useState(false);
@@ -326,4 +326,3 @@ const UserDetailContent: React.FC = () => {
   );
 };
 
-export default UserDetailContent;

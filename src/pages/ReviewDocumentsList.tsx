@@ -51,22 +51,16 @@ export const ReviewDocumentsList = () => {
       </Grid>
       {data?.documents.map((doc) => {
         return (
-          <Grid item md={4} xs={6} key={doc.id}>
+          <Grid item md={4} xs={6} key={doc.id} data-testid={`document-${doc.id}`}>
             <DocumentInfoItem
               id={doc.id}
               onClick={() => navigate(`/review/${doc.id}`)}
             >
               <DocumentInfoItem.Title file_name={doc.file_name} />
               <DocumentInfoItem.Actions>
-                {doc.last_edited_by && (
-                  <DocumentInfoItem.LastEditedBy
-                    last_edited_by={doc.last_edited_by}
+              <DocumentInfoItem.TotalQna
+                    number_of_questions={doc.number_of_questions}
                   />
-                )}
-                <DocumentInfoItem.ProgressBar
-                  number_of_questions={doc.number_of_questions}
-                  max_questions={doc.max_questions}
-                />
               </DocumentInfoItem.Actions>
             </DocumentInfoItem>
           </Grid>

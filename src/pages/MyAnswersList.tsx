@@ -60,14 +60,13 @@ export const MyAnswersList = () => {
             >
               <DocumentInfoItem.Title file_name={doc.file_name} />
                 <DocumentInfoItem.Actions>
-                  {doc.last_edited_by && (
-                    <DocumentInfoItem.LastEditedBy
-                      last_edited_by={doc.last_edited_by}
-                    />
-                  )}
-                  <DocumentInfoItem.ProgressBar
+                  {/* {doc.last_edited_by && (
+                    // <DocumentInfoItem.LastEditedBy
+                    //   last_edited_by={doc.last_edited_by}
+                    // />
+                  )} */}
+                  <DocumentInfoItem.TotalQna
                     number_of_questions={doc.number_of_questions}
-                    max_questions={doc.max_questions}
                   />
                 </DocumentInfoItem.Actions>
             </DocumentInfoItem>

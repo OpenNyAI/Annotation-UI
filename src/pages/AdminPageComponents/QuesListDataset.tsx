@@ -2,11 +2,12 @@
   Each dataset name is clickable, and when clicked, it triggers a function (onDatasetClick) that can be used to view or 
   interact with more detailed information about the selected dataset.*/
 
-import React, { useEffect, useState } from 'react';
+  import React, { useEffect, useState } from 'react';
 import { Box, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
-import { toast } from "react-toastify";
+import { toast } from 'react-toastify';
 import useAxios from '../../hooks/useAxios';
-import { LoadingSpinner } from "../../components/LoadingSpinner";
+import { LoadingSpinner } from '../../components/LoadingSpinner';
+import { useNavigate } from 'react-router-dom';
 
 const styles = {
   container: {
@@ -60,14 +61,18 @@ const styles = {
   },
 };
 
-interface ContentProps {
-  onDatasetClick: (dataset: any) => void;
+interface Dataset {
+  id: string;
+  name: string;
+  description: string;
+  status: string;
 }
 
-export const QuestionListDataset: React.FC<ContentProps> = ({ onDatasetClick }) => {
+export const QuesListDataset: React.FC = () => {
   const { makeRequest } = useAxios<any[]>();
-  const [datasets, setDatasets] = useState<any[]>([]);
+  const [datasets, setDatasets] = useState<Dataset[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const navigate = useNavigate();
 
   // Fetch datasets from the backend API
   const fetchDatasets = async () => {
@@ -88,6 +93,11 @@ export const QuestionListDataset: React.FC<ContentProps> = ({ onDatasetClick }) 
     fetchDatasets();  // Fetch datasets when the component mounts
   }, []);
 
+  // Handle dataset click: navigate to QuesDatasetContent with selected dataset
+  const handleDatasetClick = (dataset: Dataset) => {
+    navigate(`/admin/qna/${dataset.id}`, { state: { dataset } });
+  };
+
   if (isLoading) {
     return <LoadingSpinner />;
   }
@@ -102,7 +112,7 @@ export const QuestionListDataset: React.FC<ContentProps> = ({ onDatasetClick }) 
       
       {/* Table displaying datasets */}
       <TableContainer component={Paper} sx={styles.tableContainer}>
-        <Table sx={{border: '2px solid black'}}>
+        <Table sx={{ border: '2px solid black' }}>
           <TableHead sx={styles.tableHeader}>
             <TableRow>
               <TableCell sx={styles.tableCellHeader}>Dataset Name</TableCell>
@@ -111,12 +121,12 @@ export const QuestionListDataset: React.FC<ContentProps> = ({ onDatasetClick }) 
             </TableRow>
           </TableHead>
           <TableBody sx={styles.tableBody}>
-            {datasets.map((dataset, index) => (
-              <TableRow key={index}>
+            {datasets.map((dataset) => (
+              <TableRow key={dataset.id}>
                 <TableCell sx={styles.tableCell}>
                   {/* Dataset name is clickable and triggers onDatasetClick */}
                   <span
-                    onClick={() => onDatasetClick(dataset)}
+                    onClick={() => handleDatasetClick(dataset)}
                     style={styles.clickable}
                   >
                     {dataset.name}

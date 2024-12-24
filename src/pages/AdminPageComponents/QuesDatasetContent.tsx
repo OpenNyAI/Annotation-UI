@@ -4,20 +4,10 @@ The layout is designed to be user-friendly, offering a clear overview with a tab
 
 import React, { useEffect, useState } from 'react';
 import { Box, Typography, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
-import useAxios from '../../hooks/useAxios';  
-import { toast } from 'react-toastify';  
-import { LoadingSpinner } from "../../components/LoadingSpinner";  
-import { QuesDetail } from './QuesDetail';  
-
-interface QuesDatasetInfoProps {
-  dataset: {
-    id: string;
-    name: string;
-    status: string;
-    description?: string;
-  };
-  handleBack: () => void;  
-}
+import { useLocation, useNavigate } from 'react-router-dom'; // Use navigate and location hooks
+import useAxios from '../../hooks/useAxios';
+import { toast } from 'react-toastify';
+import { LoadingSpinner } from '../../components/LoadingSpinner';
 
 interface FileInfo {
   id: string;
@@ -81,85 +71,83 @@ const styles = {
   },
 };
 
-export const QuesDatasetContent: React.FC<QuesDatasetInfoProps> = ({ dataset }) => {
-  const { makeRequest } = useAxios<any>();  // Hook for making API requests
-  const [files, setFiles] = useState<FileInfo[]>([]);  // State for storing files info
-  const [isLoading, setIsLoading] = useState(true);  // Loading state
-  const [selectedFile, setSelectedFile] = useState<FileInfo | null>(null);  // State for selected file
+export const QuesDatasetContent: React.FC = () => {
+  const location = useLocation();  // Hook to get the current location and passed state
+  const dataset = location.state?.dataset;  // Retrieve dataset from location state
+  const navigate = useNavigate();  // Hook to navigate programmatically
+
+  const { makeRequest } = useAxios<any>(); // Hook for making API requests
+  const [files, setFiles] = useState<FileInfo[]>([]); // State for storing files info
+  const [isLoading, setIsLoading] = useState(true); // Loading state
 
   // Fetch dataset info from the API
   const fetchDatasetInfo = async () => {
-    try {
-      const response: FileInfo[] = await makeRequest(`admin/datasets/${dataset.id}`, 'GET');
-      if (response) {
-        setFiles(response);  
-        setIsLoading(false);  
+    if (dataset) {
+      try {
+        const response: FileInfo[] = await makeRequest(`/admin/datasets/${dataset.id}`, 'GET');
+        if (response) {
+          setFiles(response); 
+          setIsLoading(false); 
+        }
+      } catch (err) {
+        toast.error(`Error fetching dataset info: ${err}`); // Handle error
+        console.error('Error fetching dataset info:', err);
       }
-    } catch (err) {
-      toast.error(`Error fetching dataset info: ${err}`);  
-      console.error('Error fetching dataset info:', err);
     }
   };
 
-  // Handle file selection to view details
+  // Handle file selection to navigate to the QuesDetail page with datasetId and fileId
   const handleQuesDetailOpen = (file: FileInfo) => {
-    setSelectedFile(file); 
+    // Navigate to the QuesDetail page, passing datasetId and fileId as state
+    navigate(`/admin/qna/${dataset.id}/${file.id}`, {
+      state: { dataset, file }  // Pass dataset and file in state
+    });
   };
 
-  // Handle back button to go back to the dataset list view
-  const handleBack = () => {
-    setSelectedFile(null);  
-  };
-
-  // Effect to fetch dataset info on component mount
+  // Effect hook to fetch dataset info when the component mounts
   useEffect(() => {
-    fetchDatasetInfo();
-  }, []);  
+    fetchDatasetInfo(); // Call fetchDatasetInfo on component mount
+  }, [dataset]); // Re-fetch data if dataset changes
 
+  // Show loading spinner while fetching data
   if (isLoading) {
     return <LoadingSpinner />;
   }
 
   return (
     <Box sx={styles.container}>
-      {selectedFile ? (
-        <QuesDetail dataset={dataset} file={selectedFile} />
-      ) : (
-        <>
-          <Box sx={styles.header}>
-            <Typography variant="h5" sx={styles.datasetName}>
-              {dataset.name}  {/* Display dataset name */}
-            </Typography>
-          </Box>
-          <TableContainer component={Paper} sx={styles.tableContainer}>
-            <Table sx={{border: '2px solid black'}}>
-              <TableHead sx={styles.tableHeader}>
-                <TableRow>
-                  <TableCell sx={styles.tableCellHeader}>Filename</TableCell>
-                  <TableCell sx={styles.tableCellHeader}>Number of Questions</TableCell>
-                  <TableCell sx={styles.tableCellHeader}>Annotator</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody sx={styles.tableBody}>
-                {files.map((file, index) => (
-                  <TableRow key={index}>
-                    <TableCell sx={styles.tableCell}>
-                      <span
-                        onClick={() => handleQuesDetailOpen(file)}  // Open file details on click
-                        style={styles.clickable}
-                      >
-                        {file.file_name}
-                      </span>
-                    </TableCell>
-                    <TableCell sx={styles.tableCell}>{file.number_of_queries}</TableCell>
-                    <TableCell sx={styles.tableCell}>{file.annotator}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </>
-      )}
+      <Box sx={styles.header}>
+        <Typography variant="h5" sx={styles.datasetName}>
+          {dataset?.name} {/* Display the name of the dataset */}
+        </Typography>
+      </Box>
+      <TableContainer component={Paper} sx={styles.tableContainer}>
+        <Table sx={{ border: '2px solid black' }}>
+          <TableHead sx={styles.tableHeader}>
+            <TableRow>
+              <TableCell sx={styles.tableCellHeader}>Filename</TableCell>
+              <TableCell sx={styles.tableCellHeader}>Number of Questions</TableCell>
+              <TableCell sx={styles.tableCellHeader}>Annotator</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody sx={styles.tableBody}>
+            {files.map((file, index) => (
+              <TableRow key={index}>
+                <TableCell sx={styles.tableCell}>
+                  <span
+                    onClick={() => handleQuesDetailOpen(file)}  // Trigger navigation
+                    style={styles.clickable}
+                  >
+                    {file.file_name}
+                  </span>
+                </TableCell>
+                <TableCell sx={styles.tableCell}>{file.number_of_queries}</TableCell>
+                <TableCell sx={styles.tableCell}>{file.annotator}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
     </Box>
   );
 };

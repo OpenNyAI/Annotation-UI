@@ -1,11 +1,13 @@
 import userEvent from "@testing-library/user-event";
 import { Router } from "./Router";
 import { render, screen, waitFor } from "./utility/test-utils";
+import { MemoryRouter } from "react-router-dom";
+import { ReactNode } from "react";
 
-vitest.mock("./pages/SignIn", () => ({
-  SignIn: () => <div>SignIn page</div>,
-}));
 
+
+
+// Mocking the SignUp module and providing PasswordSchema export
 vitest.mock("./pages/SignUp", () => ({
   SignUp: () => <div>SignUp page</div>,
   PasswordSchema: vitest.fn().mockResolvedValue({}),
@@ -39,16 +41,33 @@ vitest.mock("./pages/ReviewAnswersPage", () => ({
   ReviewAnswersPage: () => <div>Review Answers page</div>,
 }));
 
+vitest.mock("./pages/NotFound", () => ({
+  NotFound: () => <div>Page Not Found</div>,
+}));
+
+
+// Mocking PrivateRoute and PublicRoute components
+vi.mock('./components/PrivateRoute', () => ({
+  PrivateRoute: ({ children }: { children: ReactNode }) => <>{children}</>,
+}));
+
+vi.mock('./components/PublicRoute', () => ({
+  PublicRoute: ({ children }: { children: ReactNode }) => <>{children}</>,
+}));
+
+
 describe("Router", () => {
-  it("should render signin page", async () => {
+  // Test for rendering SignIn page
+  it("Should render signin page", async () => {
     render(<Router />, { initialEntries: ["/signin"], authState: {} });
 
     await waitFor(() => {
-      expect(screen.getByText("SignIn page")).toBeInTheDocument();
+      expect(screen.getByText("Sign In")).toBeInTheDocument();
     });
   });
 
-  it("should render signup page", async () => {
+  // Test for rendering SignUp page
+  it("Should render signup page", async () => {
     render(<Router />, { initialEntries: ["/signup"], authState: {} });
 
     await waitFor(() => {
@@ -56,7 +75,8 @@ describe("Router", () => {
     });
   });
 
-  it("should render forgot password page", async () => {
+  // Test for rendering ForgotPassword page
+  it("Should render forgot password page", async () => {
     render(<Router />, { initialEntries: ["/forgot-password"], authState: {} });
 
     await waitFor(() => {
@@ -64,27 +84,55 @@ describe("Router", () => {
     });
   });
 
-  describe("should render annotation routes when app is in annotation state", () => {
-    it("Should render documents page when the app state is annotation", async () => {
-      render(<Router />);
+ // Mocking jwt-decode
+vitest.mock('jwt-decode', () => ({
+  __esModule: true,
+  default: vitest.fn(() => ({
+    sub: "userId", // Example mock token payload
+    exp: Math.floor(Date.now() / 1000) + 60 * 60, // 1 hour from now
+    role: "admin", // Example role
+  })),
+}));
 
-      expect(screen.getByText("DocumentsList page")).toBeInTheDocument();
+describe("should render annotation routes when app is in annotation state", () => {
+    it("should render documents page when the app state is annotation", async () => {
+      render(<Router />, {
+        initialEntries: ["/"],
+        appConfig: { app_state: "annotation" },
+      });
+
+      await waitFor(() => {
+        expect(screen.getByText("DocumentsList page")).toBeInTheDocument();
+      });
     });
 
     it("Should render my answers page when route is answers", async () => {
-      render(<Router />, { initialEntries: ["/answers"] });
+      render(<Router />, {
+        initialEntries: ["/answers"],
+        appConfig: { app_state: "annotation" },
+      });
 
-      expect(screen.getByText("MyAnswersList page")).toBeInTheDocument();
+      await waitFor(() => {
+        expect(screen.getByText("MyAnswersList page")).toBeInTheDocument();
+      });
     });
 
-    it("Should render Annotations when the route is annotate", async () => {
-      render(<Router />, { initialEntries: ["/annotate/file-1"] });
+    it("Should render Annotation page when the route is annotate", async () => {
+      render(<Router />, {
+        initialEntries: ["/annotate/file-1"],
+        appConfig: { app_state: "annotation" },
+      });
 
-      expect(screen.getByText("Annotation page")).toBeInTheDocument();
+      await waitFor(() => {
+        expect(screen.getByText("Annotation page")).toBeInTheDocument();
+      });
     });
 
     it("Should expand drawer to show the name of navigation item", async () => {
-      render(<Router />, { initialEntries: ["/annotate/file-1"] });
+      render(<Router />, {
+        initialEntries: ["/annotate/file-1"],
+        appConfig: { app_state: "annotation" },
+      });
 
       expect(screen.getByText("Annotation page")).toBeInTheDocument();
 
@@ -96,9 +144,14 @@ describe("Router", () => {
     });
 
     it("Should render DocumentAnswers page when route is answers/id", async () => {
-      render(<Router />, { initialEntries: ["/answers/file-1"] });
+      render(<Router />, {
+        initialEntries: ["/answers/file-1"],
+        appConfig: { app_state: "annotation" },
+      });
 
-      expect(screen.getByText("Document Answers page")).toBeInTheDocument();
+      await waitFor(() => {
+        expect(screen.getByText("Document Answers page")).toBeInTheDocument();
+      });
     });
   });
 
@@ -109,16 +162,20 @@ describe("Router", () => {
         appConfig: { app_state: "review" },
       });
 
-      expect(screen.getByText("Review Documents page")).toBeInTheDocument();
+      await waitFor(() => {
+        expect(screen.getByText("Review Documents page")).toBeInTheDocument();
+      });
     });
 
-    it("should render review qna  page", async () => {
+    it("should render review qna page", async () => {
       render(<Router />, {
-        initialEntries: ["/review/doc-1"],
+        initialEntries: ["/review/answers/doc-1"],
         appConfig: { app_state: "review" },
       });
 
-      expect(screen.getByText("Review Answers page")).toBeInTheDocument();
+      await waitFor(() => {
+        expect(screen.getByText("Review Answers page")).toBeInTheDocument();
+      });
     });
 
     it("should not render any annotation pages when state is review", async () => {
@@ -127,7 +184,22 @@ describe("Router", () => {
         appConfig: { app_state: "review" },
       });
 
-      expect(screen.getByText("Page Not Found")).toBeInTheDocument();
+      await waitFor(() => {
+        expect(screen.getByText("Page Not Found")).toBeInTheDocument();
+      });
+    });
+  });
+
+  describe("should handle invalid routes", () => {
+    it("should render the NotFound page when an invalid route is accessed", async () => {
+      render(<Router />, {
+        initialEntries: ["/non-existent-route"],
+        appConfig: { app_state: "annotation" },
+      });
+
+      await waitFor(() => {
+        expect(screen.getByText("Page Not Found")).toBeInTheDocument();
+      });
     });
   });
 });

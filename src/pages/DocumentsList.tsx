@@ -41,11 +41,11 @@ export const DocumentsList = () => {
     );
   }
 
-  const handleDocumentClick = (doc: DocumentInfo) => {
-    if (doc.number_of_questions < doc.max_questions) {
-      navigate(`/annotate/${doc.id}`);
-    }
-  };
+  // const handleDocumentClick = (doc: DocumentInfo) => {
+  //   if (doc.number_of_questions < doc.max_questions) {
+  //     navigate(`/annotate/${doc.id}`);
+  //   }
+  // };
 
   return (
     <Grid
@@ -62,18 +62,17 @@ export const DocumentsList = () => {
           <Grid item md={4} xs={6} key={doc.id}>
             <DocumentInfoItem
               id={doc.id}
-              onClick={() => handleDocumentClick(doc)}
+              onClick={() => navigate(`/annotate/${doc.id}`)}
             >
               <DocumentInfoItem.Title file_name={doc.file_name} />
                 <DocumentInfoItem.Actions>
-                  {doc.last_edited_by && (
+                  {/* {doc.last_edited_by && (
                     <DocumentInfoItem.LastEditedBy
                       last_edited_by={doc.last_edited_by}
                     />
-                  )}
-                  <DocumentInfoItem.ProgressBar
+                  )} */}
+                  <DocumentInfoItem.TotalQna
                     number_of_questions={doc.number_of_questions}
-                    max_questions={doc.max_questions}
                   />
                 </DocumentInfoItem.Actions>
             </DocumentInfoItem>
